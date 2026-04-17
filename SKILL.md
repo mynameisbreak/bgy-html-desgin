@@ -13,12 +13,7 @@ metadata:
 
 ## 🎯 核心目标
 
-| 维度 | 目标描述 |
-|------|----------|
-| **逻辑架构** | 运用金字塔汇报原理构建逻辑严密的 PPT 框架 |
-| **内容提炼** | 将冗长信息转化为简洁、专业且具备落地性的演示内容 |
-| **视觉规范** | 提供系统性的排版、配色、动效建议,确保专业统一 |
-| **资源整合** | 输出可直接使用的 HTML 单文件（内嵌CSS样式和图表数据） |
+输出逻辑清晰、内容克制、视觉统一、可直接落地的 PPT 单页 HTML 与 `deck.json` 结构。
 
 ## 🎨 设计规范
 
@@ -65,6 +60,12 @@ metadata:
 | 左右 | `0.75` |
 | 顶部 | `0.6` |
 | 底部 | `0.5` |
+
+统一约束：
+- 所有组件必须显式给出 `x/y/w/h`
+- 所有元素必须位于标题栏下方
+- 不依赖浏览器流式排版，按绝对坐标布局
+- 页面不得溢出可视区域，且必须满足以上安全边距
 
 ### 文本预算
 
@@ -138,11 +139,7 @@ metadata:
 
 ### 布局禁止
 - ❌ 页面尺寸修改：禁止修改 1920px × 1080px 的固定尺寸
-- ❌ 内容溢出：禁止任何元素超出页面可视区域
-- ❌ 内容越界标题栏：所有内容组件（文字、图表、图片、形状等）的 y 坐标必须位于标题栏下方，严禁任何内容遮挡或超出标题栏区域
-- ❌ 安全边距不足：页面四周必须保留至少 40px 的安全边距
-- ❌ 缺少坐标：禁止组件不指定 x/y/w/h
-- ❌ 浏览器流式排版：不要依赖浏览器自动流式排版，所有组件必须显式定位
+- ❌ 破坏统一约束：禁止违反固定画布、安全边距、标题栏下方定位、显式坐标、绝对定位这些基础规则
 - ❌ 无 deck.json 输出：禁止生成不包含内嵌 deck.json 的 HTML 文件，所有页面数据必须通过 `<script type="application/json" id="deckData">` 内嵌，并严格遵循 deck.json 数据规范（包含 meta、slides、components 完整结构）
 
 ## 📎 输出格式
@@ -239,12 +236,6 @@ metadata:
 - 如果用户没有明确要求炫技，避免连续背景特效压过正文
 - 必须尊重 `prefers-reduced-motion: reduce`，不要强行覆盖
 
-输出时默认提供：
-- 核心观点
-- 布局方案：`slide type + layoutVariant`
-- 图表/配图说明
-- 16:9 与安全边距检查
-
 如需查看完整单页输出格式示例，按需读取：
 - [references/components.md](references/components.md)
 
@@ -263,18 +254,6 @@ metadata:
 - 生成新页面时优先在此模板上替换标题、内容区组件和数据，不要重写整套基础画布
 - 模板中的标题占位符固定为 `{slideNumber}` 与 `{slideTitle}`
 - 图片路径保持相对路径 `模版底图/image1.png`、`模版底图/image5.png`
-
-最小替换示例：
-```html
-<div class="slide">
-  <img class="img-large" src="模版底图/image5.png" alt="image5">
-  <img class="img-small" src="模版底图/image1.png" alt="image1">
-  <div class="title-bar">
-    <span style="font-family:'等线',sans-serif;font-size:37pt;">{slideNumber}</span>
-    <span style="margin-left:53px;"></span>{slideTitle}
-  </div>
-</div>
-```
 
 如需查看完整模板，按需读取：
 - `assets/ppt-base-template/PPT基础模版.html`
