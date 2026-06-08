@@ -1,86 +1,97 @@
-﻿---
-name: ppt-design
-description: 专业的PPT内容策划助理,擅长根据不同场景搭建逻辑框架、提炼核心信息、优化内容表达、规范视觉呈现
-metadata:
-  author: huibao
-  version: "2.2.0"
-  tags: ["ppt", "presentation", "planning", "visualization", "charts"]
+---
+name: bgy-html-design
+description: 碧桂园服务/碧桂园体系 PPT 专用 HTML 设计技能。适用于创建、改写、润色或转换带有碧桂园服务品牌风格的 PPT、HTML 幻灯片预览、管理汇报、经营复盘、物业服务汇报、项目提案、月报/季报/年报、品质提升、节能降本、公维资金、消防维保、社区运营、客户服务、经营分析等文稿；凡是需要沿用内置碧桂园服务 PPT 模板和品牌视觉体系的演示文稿，都应使用本技能。
 ---
 
-# PPT 内容策划助理
+# 碧桂园服务 PPT HTML 设计
 
-你是一名专业的「PPT 内容策划助理」,擅长根据不同场景（职场汇报 / 项目提案 / 培训课件 / 客户宣讲等）搭建逻辑框架、提炼核心信息、优化内容表达、规范视觉呈现。
+使用本技能生成具有碧桂园服务品牌风格的 PPT 式 HTML 幻灯片。主要交付物是固定 16:9 比例的 HTML deck：多页项目默认输出 `index.html + slides/*.html` 聚合演示版；单页任务可只输出一个 HTML 文件。HTML 可直接预览，也可作为后续导出 PDF 或制作 PPT 的视觉与内容来源。
 
-## 🎯 核心目标
+## 核心定位
 
-输出逻辑清晰、内容克制、视觉统一、可直接落地的 PPT 单页 HTML 与 `deck.json` 结构。
+以碧桂园服务企业汇报设计师的标准工作：页面要符合内部管理汇报气质，层级清晰、视觉克制、结论明确、证据充分，并持续保持品牌资产一致。
 
-## 🎨 设计规范
+除非用户明确提供其他模板，默认使用技能内置的碧桂园服务基础模板：
 
-### 配色方案
-- **主色**：`#006d9a`（智慧蓝）- 用于常规信息
-- **强调色**：`#c00000`（深红）- 用于重点、警告、高亮
-- **辅助色**：灰色系 `#f8fafc`、`#64748b`
+- `assets/ppt-base-template/PPT基础模版.html`
+- `assets/ppt-base-template/模版底图/image1.png`
+- `assets/ppt-base-template/模版底图/image5.png`
+- `assets/deck_index.html`，多页 HTML deck 的默认聚合演示器
 
-### 字体规范
-- **中文**：`Noto Sans SC` 或 `微软雅黑`
-- **数字**：`Oswald` 或 `Arial`（等宽字体）
-- **层级**：标题24-32pt，正文12-16pt，注释10-12pt
+右上角小 logo 与右下角浅色水印属于默认品牌框架。除封面、章节页或用户明确要求更换母版外，应保留其位置与视觉关系。
 
-## ⚖️ 核心原则
+涉及外部项目照片、现场图、设备图、数据截图、合作方 logo 或用户提供的新品牌模板时，先读取 [references/brand-asset-checklist.md](references/brand-asset-checklist.md) 做资产自检。
 
-### 原则一：金字塔逻辑原则
-- **结论先行**：每页标题即核心结论
-- **以上统下**：二级支撑点完全服务于一级论点
-- **归类分组**：同级内容具备共同属性，MECE 不重叠、不遗漏
-- **逻辑递进**：按重要性或流程顺序排列
+## 工作流程
 
-### 原则二：16:9比例原则（严格限制）
-- **页面尺寸固定**：1920px × 1080px（16:9），严禁修改
-- **内容边界控制**：所有元素必须保留至少 40px 的安全边距
-- **禁止溢出**：任何文本、图表、图片不得超出页面可视区域
+1. 判断文稿场景：管理汇报、月度/季度复盘、项目提案、经营分析、品质服务、节能降本、维修/公维资金、培训课件或客户沟通。
+2. 将用户素材整理成页面大纲，每页标题必须优先表达结论。
+3. 为每页选择一个 `slide type` 和一个 `layoutVariant`。
+4. 创建或更新 `deck.json`，作为内容事实来源。
+5. 页数大于 1 页时，优先按 [references/html-deck-workflow.md](references/html-deck-workflow.md) 创建多文件 HTML deck。
+6. 基于固定 16:9 画布和内置模板资产生成 HTML。
+7. 交付前检查页面边界、文字密度、品牌一致性和本地资源路径。
 
-### 原则三：JSON数据驱动原则
-- **数据分离**：所有页面内容通过 `deck.json` 驱动，HTML 仅负责渲染
-- **JSON格式**：必须使用标准JSON格式，键名使用驼峰命名
-- **组件定位**：每个组件必须显式给出 `x/y/w/h`（单位：英寸）
-- **数据内嵌**：HTML 文件中通过 `<script type="application/json">` 内嵌 deck.json
+只有在缺失信息会阻塞输出时才追问，例如受众未知、页数要求未知、关键数据缺失等。
 
-## 📐 版式系统（Layout System）
+## 品牌视觉体系
 
-### 统一画布
-- 固定 `16:9` 比例
-- PowerPoint 宽屏坐标按**英寸**处理，总画布 `13.333 × 7.5`
-- HTML 渲染时按 1920×1080px 固定尺寸
+默认使用以下视觉规范：
 
-### 安全边距（英寸）
+| 项目 | 取值 | 用途 |
+|---|---|---|
+| 品牌主蓝 | `#006D9A` | 标题、章节编号、关键线条、图表强调 |
+| 深蓝 | `#004B6B` | 高强调标题、深色文字点缀 |
+| 警示红 | `#C00000` | 风险、逾期、负向偏差、紧急事项 |
+| 成效绿 | `#2E7D32` | 改善、完成、正向经营结果 |
+| 正文深灰 | `#1F2933` | 正文与说明文字 |
+| 辅助灰 | `#64748B` | 注释、辅助标签、说明信息 |
+| 浅底色 | `#F5F8FA` | 表头、浅色信息面板 |
+| 分隔线 | `#D8E3EA` | 表格线、分割线、弱边框 |
 
-| 位置 | 最小值 |
-|------|--------|
-| 左右 | `0.75` |
-| 顶部 | `0.6` |
-| 底部 | `0.5` |
+字体规则：
 
-统一约束：
-- 所有组件必须显式给出 `x/y/w/h`
-- 所有元素必须位于标题栏下方
-- 不依赖浏览器流式排版，按绝对坐标布局
-- 页面不得溢出可视区域，且必须满足以上安全边距
+- 中文优先使用 `Microsoft YaHei`、`Noto Sans SC` 或 `微软雅黑`。
+- 英文和数字可使用 `Arial`、`DIN` 或 `Oswald`。
+- 全稿最多使用两类字体。
+- 加粗只用于页面标题、章节标签、关键指标和短句强调。
 
-### 文本预算
+表达语气：
 
-| 类型 | 限制 |
-|------|------|
-| 封面标题 | ≤ 18 个汉字 |
-| 单页 bullet 数 | ≤ 5 个 |
-| 单个 bullet | ≤ 24 个汉字 |
-| 普通正文 | ≤ 90 个汉字 |
+- 使用企业管理汇报语言，准确、克制、面向行动。
+- 标题写结论，不写泛泛标签。例如用 `5月消防维保完成率保持100%`，不要只写 `消防维保情况`。
+- 数据必须配解释。不要只堆指标而不说明业务含义。
 
-### 页面类型与版式变体（layoutVariant）
+## 版式规则
 
-每种页面类型支持多种版式变体，生成时必须指定 `layoutVariant`。
+使用固定 16:9 画布。内置 HTML 模板为 `1280 x 720px`；如果制作高清独立 HTML，可使用 `1920 x 1080px`，但必须保持同一比例。
 
-基础 11 类 `slide type`：
+`deck.json` 使用 PowerPoint 英寸坐标：
+
+- 画布：`13.333 x 7.5`
+- 左右安全边距：至少 `0.75`
+- 顶部安全边距：至少 `0.6`
+- 底部安全边距：至少 `0.5`
+- 除封面和章节页外，正文内容应位于标题栏下方。
+- 每个组件必须显式给出 `x`、`y`、`w`、`h`。
+
+文字密度：
+
+| 元素 | 限制 |
+|---|---|
+| 封面标题 | 尽量不超过 18 个汉字 |
+| 页面标题 | 一个结论句，通常 16-28 个汉字 |
+| 单页要点 | 不超过 5 条 |
+| 单条要点 | 不超过 24 个汉字 |
+| 正文总量 | 单页尽量不超过 90 个汉字 |
+| 表格 | 优先控制在 3-6 列、3-8 行 |
+
+如果内容过密，应拆页处理，不要通过缩小字号解决可读性问题。
+
+## 页面类型
+
+优先使用以下基础页面类型：
+
 - `cover`
 - `agenda`
 - `section`
@@ -93,109 +104,55 @@ metadata:
 - `chart`
 - `quote`
 
-如需查看每类基础布局的推荐变体与适用场景，按需读取：
-- [references/basic-layout-variants.md](references/basic-layout-variants.md)
+选择基础 `layoutVariant` 时，按需读取 [references/basic-layout-variants.md](references/basic-layout-variants.md)。
 
-### 扩展版式目录（按需读取）
+只有当基础类型无法表达页面时，才读取 [references/layouts.md](references/layouts.md)，例如甘特图、流程图、行动号召页、致谢页、代码/演示页或网页感展示页。
 
-当任务满足以下任一条件时，读取 [references/layouts.md](references/layouts.md)：
-- 用户明确提到要参考 `html-ppt-skill`、网页感演示、Pitch Deck、秀场式单页布局
-- 当前 11 类基础 slide type 不足以表达页面，例如 `code`、`terminal`、`gantt`、`cta`、`thanks`
-- 需要和 `html-ppt-skill` 的 31 个 single-page layouts 兼容迁移
+一页只保留一个主布局，不要把多个互不相关的布局硬拼到同一页。
 
-使用规则：
-- 默认优先复用本文件已有的基础 `slide type + layoutVariant`
-- 如果基础类型不够用，可以直接采用扩展目录里的精确 `type`
-- 扩展 `type` 和 `layoutVariant` 一律使用 kebab-case
-- 一页只保留一个主布局，不要把多个 layout 生硬拼盘
+## deck.json 规范
 
-## 📋 行为规范
+`deck.json` 是内容事实来源。HTML 应从同一数据结构渲染，或至少内嵌同一份数据。
 
-### 需求前置确认
-- **核心主题**：PPT 的中心议题
-- **使用场景**：职场汇报 / 项目提案 / 培训课件 / 客户宣讲
-- **目标受众**：决策层 / 执行层 / 外部客户 / 公众
-- **汇报时长**：预计演讲时间
-- **核心目标**：方案审批 / 成果展示 / 知识传递 / 品牌宣传
+顶层结构：
 
-### 编辑规则
-- 优先改已有组件，不要随意重建整页
-- 改布局时先保留内容，再调整组件坐标与尺寸
-- 压缩内容时优先删冗余句，不要盲目缩小字号
-- 如果内容太长，应拆页而不是缩小到不可读
-
-## 🚫 禁止事项
-
-### 视觉禁止
-- ❌ 颜色滥用：辅助色不超过 3 种
-- ❌ 字体混乱：禁止使用 3 种以上字体
-- ❌ 装饰过度：禁止无意义的图形堆砌
-- ❌ 图标库混用：禁止 Font Awesome + Lucide 混用
-
-### 内容禁止
-- ❌ 文字堆砌：单页禁止超过 80 字
-- ❌ 无结论数据：禁止只放数据不给解读
-- ❌ 术语滥用：专业术语须通俗化解释
-
-### 布局禁止
-- ❌ 页面尺寸修改：禁止修改 1920px × 1080px 的固定尺寸
-- ❌ 破坏统一约束：禁止违反固定画布、安全边距、标题栏下方定位、显式坐标、绝对定位这些基础规则
-- ❌ 无 deck.json 输出：禁止生成不包含内嵌 deck.json 的 HTML 文件，所有页面数据必须通过 `<script type="application/json" id="deckData">` 内嵌，并严格遵循 deck.json 数据规范（包含 meta、slides、components 完整结构）
-
-## 📎 输出格式
-
-### deck.json 数据规范
-
-`deck.json` 是整个系统的唯一事实来源，HTML 仅作为渲染层。
-
-**顶层结构：**
 ```json
 {
   "meta": {
-    "title": "演示文稿标题",
-    "theme": "business-clean",
-    "template": "business-briefing",
-    "archetype": "general-briefing",
+    "title": "5月节能降本工作汇报",
+    "theme": "bgy-services",
+    "template": "bgy-services-base",
+    "archetype": "operation-report",
     "ratio": "16:9",
-    "mode": "editable"
+    "mode": "html-preview"
   },
   "slides": []
 }
 ```
 
-**meta 字段说明：**
-- `title`：演示文稿标题
-- `theme`：主题名称，决定配色方案
-- `template`：模板名称，决定视觉风格
-- `archetype`：内容脚手架名称，决定默认大纲
-- `ratio`：当前固定为 `16:9`
-- `mode`：支持 `editable`（可编辑）和 `fidelity`（高保真）
+单页结构：
 
-**单页 slide 结构：**
 ```json
 {
   "id": "slide-01",
   "label": "封面",
   "type": "cover",
-  "layoutVariant": "hero-right",
+  "layoutVariant": "hero-left",
   "components": []
 }
 ```
 
-**基础 slide type：** `cover`、`agenda`、`section`、`title-bullets`、`two-column`、`image-text`、`comparison`、`timeline`、`table`、`chart`、`quote`
+每个组件必须包含：
 
-**扩展兼容模式：**
-- 如需兼容 `html-ppt-skill`，允许直接使用 [references/layouts.md](references/layouts.md) 中的精确 `type`
-- 例如：`toc`、`code`、`diff`、`terminal`、`flow-diagram`、`gantt`、`cta`、`thanks`
-- 兼容模式仅在基础 11 类无法自然表达时使用，避免 schema 无意义膨胀
+- `id`
+- `type`
+- `x`
+- `y`
+- `w`
+- `h`
 
-### 组件类型规范
+常用组件类型：
 
-每个组件都必须包含：`id`、`type`、`x`、`y`、`w`、`h`（坐标单位统一使用英寸）
-
-建议额外包含：`label`、`style`
-
-常用组件：
 - `title`
 - `subtitle`
 - `text`
@@ -205,55 +162,130 @@ metadata:
 - `chart`
 - `quote-block`
 - `divider`
-- `shape`：`rect`、`roundedRect`、`circle`
+- `shape`
+- `metric-card`
+- `status-tag`
 
-如需查看常用组件的 JSON 示例和单页输出示例，按需读取：
-- [references/components.md](references/components.md)
+编写或修复组件 JSON 时，按需读取 [references/components.md](references/components.md)。
 
-### 动画字段（可选）
+## HTML 规则
 
-组件可选 `animation` 字段：
-```json
-{
-  "animation": {
-    "effect": "slide-up",
-    "build": 2,
-    "durationMs": 640,
-    "delayMs": 560
-  }
-}
-```
-- `effect`：默认使用克制的入场动画；完整目录见 [references/animations.md](references/animations.md)
-- `build`：出现批次，`1` 表示第一步出现
-- `durationMs`：动画时长
-- `delayMs`：额外延迟
+默认输出可直接预览的 HTML 文件。多页项目优先使用 `index.html + slides/*.html + shared/` 结构；单页任务可输出单个 HTML。本地图片资源应复制到相对路径可访问的位置，或保持与 HTML 文件匹配的相对引用。
 
-动画使用规则：
-- 优先使用轻量 CSS 动画，只有在封面、章节转场、致谢页、强氛围页面才使用 Canvas FX
-- CSS 动画可直接使用目录中的精确名称，例如 `fade-up`、`rise-in`、`zoom-pop`、`blur-in`、`typewriter`、`shimmer-sweep`
-- Canvas FX 使用 `fx:` 前缀，例如 `fx:particle-burst`、`fx:matrix-rain`、`fx:knowledge-graph`
-- 单页最多 1 个 Canvas FX；常规内容页最多 1-2 种不同动画
-- 如果用户没有明确要求炫技，避免连续背景特效压过正文
-- 必须尊重 `prefers-reduced-motion: reduce`，不要强行覆盖
+多页 HTML deck 规则：
 
-如需查看完整单页输出格式示例，按需读取：
-- [references/components.md](references/components.md)
+- 先读取 [references/html-deck-workflow.md](references/html-deck-workflow.md)。
+- 从 `assets/deck_index.html` 复制生成项目的 `index.html`。
+- 每页独立保存到 `slides/`，避免跨页 CSS 污染。
+- 共用品牌 token、logo、水印和模板底图放到 `shared/`。
+- 在 `index.html` 的 `window.DECK_MANIFEST` 中登记每页路径和标题。
+- 需要画廊缩略图时使用 `scripts/gen_deck_thumbs.mjs`。
+- 需要 PDF 交付时使用 `scripts/export_deck_pdf.mjs`。
 
-### 默认 HTML 基础模板（强制使用）
+可选组件规则：
 
-默认使用 skill 内置模板文件：
-- `assets/ppt-base-template/PPT基础模版.html`
+- 用户需要封面或重点页多方案对比时，读取 [references/interactive-components.md](references/interactive-components.md)，使用 `assets/design_canvas.jsx`。
+- 只有 1-4 页轻量单文件演示时，才可读取 [references/interactive-components.md](references/interactive-components.md)，使用 `assets/deck_stage.js`。
+- `assets/deck_stage.js` 不作为默认架构；5 页及以上必须回到多文件 HTML deck。
 
-对应底图资源：
-- `assets/ppt-base-template/模版底图/image1.png`
-- `assets/ppt-base-template/模版底图/image5.png`
+强制要求：
 
-使用规则：
-- 除非用户明确要求换模板，否则所有单页 HTML 演示默认从这个模板起步
-- 保留模板中的底图定位、标题栏定位、16:9 画布和阴影风格
-- 生成新页面时优先在此模板上替换标题、内容区组件和数据，不要重写整套基础画布
-- 模板中的标题占位符固定为 `{slideNumber}` 与 `{slideTitle}`
-- 图片路径保持相对路径 `模版底图/image1.png`、`模版底图/image5.png`
+- 使用 `lang="zh-CN"` 和 UTF-8。
+- 每页使用固定尺寸的 `.slide` 或 `.ppt-slide` 容器。
+- 每页设置 `overflow: hidden`。
+- 对高保真页面使用绝对定位摆放组件。
+- 用 `<script type="application/json" id="deckData">` 内嵌演示数据。
+- 模板图片路径必须相对 HTML 文件有效。
+- 幻灯片内容不要使用视口单位字号。
+- 不添加无关渐变、光斑、装饰插画或混用图标库。
 
-如需查看完整模板，按需读取：
-- `assets/ppt-base-template/PPT基础模版.html`
+复用内置模板时必须保留：
+
+- 右上角碧桂园服务 logo。
+- 右下角浅色品牌水印。
+- 标题栏位置和品牌蓝。
+- 白底页面和适度投影的浏览器预览效果。
+
+## 场景处理
+
+经营管理汇报：
+
+- 先给管理结论。
+- 内容按 `目标 / 完成情况 / 问题风险 / 下一步动作` 组织。
+- 项目清单用表格，趋势或完成率对比用图表。
+- 异常用红色、完成用绿色、核心指标用品牌蓝。
+
+月报或季报：
+
+- 封面后设置经营摘要页。
+- 先展示 3-5 个核心指标，再展开详细页面。
+- 一页只讲一个主题，例如安全、服务、品质、成本、收入、社区、风险、下月计划。
+
+项目提案：
+
+- 按 `背景痛点 / 目标方案 / 实施路径 / 资源需求 / 预期收益 / 风险控制` 组织。
+- 每页都要回答一个决策者关心的问题。
+
+节能降本：
+
+- 区分 `已完成降本`、`进行中措施`、`待协调事项`。
+- 必须展示基准值、当前值、变化量和业务解释。
+
+维修、公维资金、消防维保：
+
+- 优先使用表格，字段包括项目名称、责任人、状态、金额/日期、风险说明。
+- 状态标签统一为 `已完成`、`推进中`、`待审批`、`需协调`、`逾期风险`。
+
+## 动画
+
+动画仅用于 HTML 预览或演示 Demo，保持克制。
+
+默认可用效果：
+
+- `fade-up`
+- `rise-in`
+- `wipe-right`
+- `count-up`
+- `shimmer-sweep`，仅用于封面或章节页
+
+只有当用户明确需要动画或演示效果时，才读取 [references/animations.md](references/animations.md)。必须尊重 `prefers-reduced-motion: reduce`。
+
+## 工具脚本
+
+按需使用以下内置脚本：
+
+- `scripts/gen_deck_thumbs.mjs`：为 `slides/*.html` 生成 `thumbs/*.jpg` 缩略图，用于 `deck_index.html` 的画廊概览。
+- `scripts/export_deck_pdf.mjs`：将多文件 HTML deck 导出为高保真 PDF。
+- `scripts/verify.py`：用 Playwright 打开 HTML、截图并收集控制台错误。
+- `assets/design_canvas.jsx`：封面/重点页多方案对比组件。
+- `assets/deck_stage.js`：1-4 页轻量单文件演示组件，不用于正式多页 deck。
+
+脚本依赖通常在用户项目目录安装，不要把 `node_modules` 写入 skill 根目录。
+
+## 禁止事项
+
+禁止：
+
+- 把视觉风格改成通用 SaaS、科技风或营销网页风。
+- 用纯文字替代碧桂园服务 logo。
+- 单页使用超过三种辅助色。
+- 用低对比度灰色呈现关键经营数据。
+- 在浅色水印上堆放影响阅读的正文。
+- 在密集汇报页使用过大的海报式标题。
+- 用长段落填满页面。
+- 输出不含内嵌或配套 `deck.json` 数据的 HTML。
+
+## 交付校验
+
+最终评审可读取 [references/delivery-review-checklist.md](references/delivery-review-checklist.md)，按品牌一致性、视觉层级、内容功能性、细节执行和交付可用性检查。
+
+完成前必须确认：
+
+- HTML 可打开，且本地品牌图片不丢失。
+- 多页 deck 的 `index.html` 能正常加载所有 `slides/*.html`。
+- 每页保持 16:9，所有内容位于可视画布内。
+- 每页标题都是结论式表达。
+- 使用默认模板时，logo 和水印正常显示。
+- 表格和图表在演示尺寸下仍然清晰可读。
+- 可运行时，用 `scripts/verify.py` 截图检查页面；需要 PDF 时运行 `scripts/export_deck_pdf.mjs` 并确认输出文件存在且大小正常。
+- 无法执行的校验步骤必须在最终回复中说明。

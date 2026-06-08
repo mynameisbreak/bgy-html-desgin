@@ -1,0 +1,16 @@
+{
+  "name": "bgy-html-design-tools",
+  "version": "1.0.0",
+  "private": true,
+  "description": "HTML deck helper scripts for bgy-html-design",
+  "type": "module",
+  "scripts": {
+    "gen-deck-thumbs": "node gen_deck_thumbs.mjs",
+    "export-deck-pdf": "node export_deck_pdf.mjs"
+  },
+  "dependencies": {
+    "pdf-lib": "^1.17.1",
+    "playwright": "^1.60.0",
+    "sharp": "^0.34.3"
+  }
+}
