@@ -2,7 +2,7 @@
   "version": 1,
   "locked": true,
   "project": {
-    "title": "?????????",
+    "title": "项目级设计契约样例",
     "name": "project-contract-smoke",
     "type": "management-report",
     "preset": "management-report",
