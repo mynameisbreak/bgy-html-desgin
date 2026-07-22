@@ -185,8 +185,9 @@ description: 碧桂园服务/碧桂园体系 PPT 专用 HTML 设计技能。适�
 
 - 同一项目逐页生成时，必须优先使用 `scripts/init_bgy_project.mjs` 建立项目根目录，生成 `bgy.project.json`、`project-config.html`、`project-style-board.html`、`shared/tokens.css` 和 `shared/components.css`。
 - `project-config.html` 必须作为项目主题控制台：先通过主题卡片选择 preset；只有切到“自定义主题”时，才展开完整颜色、圆角、阴影、图标包和表格密度等细项。
-- `project-style-board.html` 必须作为组件库看板：按基础容器、数据展示、视觉辅助、页面结构展示组件效果；新增共享组件时必须同步加入预览。
+- `project-style-board.html` 必须作为组件库看板：按 KPI、Card、Chart、Progress、Comparison、Ranking、Process、Timeline、Risk、Image/Case 展示组件效果；新增共享组件时必须同步加入预览。
 - 每页 HTML 必须同时引入 `../shared/tokens.css` 和 `../shared/components.css`，并复用 `.bgy-card`、`.bgy-panel`、`.bgy-metric-card`、`.bgy-table`、`.bgy-status-tag`、`.bgy-divider` 等组件类。
+- 经营汇报页优先使用组件库中的 `.bgy-kpi-card`、`.bgy-data-card`、`.bgy-chart-frame`、`.bgy-progress`、`.bgy-comparison`、`.bgy-ranking-list`、`.bgy-process`、`.bgy-timeline`、`.bgy-risk-card`、`.bgy-image-frame` 等结构，不要在单页里重新发明卡片、进度、流程、排名或图片案例样式。
 - 不要在单页里临场发明新主题色、字体、圆角、阴影或组件风格；确实要改时，先改 `bgy.project.json`，再运行 `scripts/sync_bgy_project.mjs`。
 
 多页 HTML deck 规则：
@@ -322,6 +323,7 @@ BGY 脚本自身不声明 npm 依赖；需要浏览器时复用 `pptx-design` �
 - 线条/箭头使用 `data-ppt-line-start`、`data-ppt-line-end` 和 `data-ppt-line-dash` 显式声明，不要用图片或 SVG marker 猜测箭头。
 - 堆叠视觉用简单兄弟元素逐层表达，DOM 按底层到上层排列；需要稳定层级时使用数字 `data-ppt-layer`、`data-ppt-z` 或 `data-ppt-z-index`，不要依赖复杂嵌套 `z-index`、伪元素或混合模式。
 - 图表没有明确数据时用 `data-ppt-placeholder` 记录坐标；有明确数据时使用 `data-ppt-chart="bar|line|pie"` 和 `data-ppt-chart-data` JSON 直接转为原生 PPT 图表，不从视觉 HTML/canvas/SVG 反推数据。
+- 雷达图、瀑布图、复杂组合图、环形进度等暂不能稳定原生还原的组件，默认用 DOM/SVG 预览加 `data-ppt-placeholder` 或明确截图例外；真实业务文字仍放在普通 DOM 文本节点。
 - 只有 canvas 图表、复杂 SVG、复杂滤镜/遮罩/倒影、无法原生还原的复合视觉模块，才允许显式截图；大面积截图必须先确认用户接受不可编辑风险。
 - 默认不要使用 `--auto-snapshots`、`--no-module-screenshots`、`--debug-overlay`、`--keep-assets` 或 `--wait-until networkidle`；这些只用于诊断或明确的高保真截图例外。
 - 普通迭代用 `npm --prefix <skill-root>/scripts run export-bgy-pptx -- --slides-dir <project>/slides --out <project>/output/<deck>.pptx --mode normal`。

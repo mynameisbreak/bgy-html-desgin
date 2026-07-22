@@ -35,6 +35,7 @@
 | 元素 | HTML 写法 | PPTX 路由 |
 |---|---|---|
 | 普通卡片 | `.bgy-card`, `.bgy-panel`, `.bgy-metric-card` | native-shape + editable-text |
+| KPI/进度/对比/流程 | `.bgy-kpi-card`, `.bgy-progress`, `.bgy-comparison`, `.bgy-process`, `.bgy-timeline`, `.bgy-risk-card` | native-shape + editable-text |
 | 状态标签 | `.bgy-status-tag` | native-shape + editable-text |
 | 分割线 | `.bgy-divider`, `.bgy-line`, `<hr>` | native-shape line |
 | 圆点/圆形 | `.bgy-dot`, `.bgy-circle` | native-shape oval |
@@ -234,6 +235,13 @@ PPTX-bound 页面不要依赖复杂浏览器层叠上下文。普通堆叠视觉
 ```
 
 当前支持 `bar`、`line`、`pie`。不要从 canvas/SVG 视觉图自动反推数据；复杂图表必须提供显式 JSON 数据、使用占位，或作为明确截图例外。
+
+组件库中的图表口径：
+
+- 柱状图、横向柱状图、折线图、面积图预览优先写成 `.bgy-chart-frame[data-ppt-chart="bar|line"]`，并提供 `data-ppt-chart-data`。
+- 饼图可用 `.bgy-chart-frame[data-ppt-chart="pie"]`。
+- 环形图、雷达图、瀑布图和复杂组合图先用 `.bgy-chart-frame[data-ppt-placeholder]` 记录坐标；除非用户接受不可编辑，才标记截图。
+- 图表内部的 HTML/SVG 视觉只作为预览，真实数据必须来自 JSON。
 
 ## 动画和交互
 

@@ -20,6 +20,60 @@
 - `label`
 - `style`
 
+## 项目级 HTML 组件库
+
+同一项目生成页面时，优先复用 `shared/components.css` 中的 `.bgy-*` 组件类。新增页面不要在单页里重新发明圆角、阴影、表格、进度条或风险标签样式。
+
+### MVP 组件分类
+
+| 类别 | 推荐组件类 | PPTX 规则 |
+|---|---|---|
+| KPI 指标 | `.bgy-kpi-card`、`.bgy-metric-card`、`.bgy-target-card`、`.bgy-delta-card` | 真实 DOM 文本 + 原生形状 |
+| Card 卡片 | `.bgy-card`、`.bgy-data-card`、`.bgy-project-card`、`.bgy-highlight-card`、`.bgy-risk-card`、`.bgy-conclusion-card` | 不加截图标记 |
+| Chart 图表 | `.bgy-chart-frame` | 有数据用 `data-ppt-chart="bar|line|pie"`；雷达/瀑布/环形先用 `data-ppt-placeholder` |
+| Progress 进度 | `.bgy-progress`、`.bgy-progress__track`、`.bgy-progress__bar`、`.bgy-ring-progress`、`.bgy-stage-progress`、`.bgy-milestone-list` | 进度条转形状；环形进度文字必须留 DOM |
+| Comparison 对比 | `.bgy-comparison`、`.bgy-compare-card`、`.bgy-before-after`、`.bgy-target-card` | 对比项用兄弟 DOM，避免合成大图 |
+| Ranking 排名 | `.bgy-ranking-list`、`.bgy-ranking-card` | 使用 `<ol><li>`，排名和数值保持文本 |
+| Process 流程 | `.bgy-process`、`.bgy-process-step`、`.bgy-process-line`、`.bgy-process-loop`、`.bgy-pdca` | 箭头用 `data-ppt-line-end="triangle"` 等属性 |
+| Timeline 时间轴 | `.bgy-timeline`、`.bgy-timeline-item`、`.bgy-timeline-dot`、`.bgy-roadmap` | 节点和文本分开写，层级按 DOM 顺序 |
+| Risk / Problem | `.bgy-risk-card`、`.bgy-risk-level`、`.bgy-risk-matrix`、`.bgy-risk-action` | 风险等级用语义色 token |
+| Image / Case | `.bgy-image-frame`、`.bgy-image-placeholder`、`.bgy-image-card`、`.bgy-case-card`、`.bgy-image-grid`、`.bgy-image-text` | 真实素材用 `<img>`；缺素材用占位，文字不要进图片 |
+
+### 原生图表示例
+
+```html
+<div
+  class="bgy-chart-frame"
+  data-ppt-chart="bar"
+  data-ppt-chart-data='{"labels":["一区","二区","三区"],"series":[{"name":"完成率","values":[82,91,96]}],"colors":["006D9A","2E7D32","C97400"]}'>
+  <div class="bgy-chart-bars" aria-hidden="true">
+    <span class="bgy-chart-bar" style="height:82%"></span>
+    <span class="bgy-chart-bar" style="height:91%"></span>
+    <span class="bgy-chart-bar" style="height:96%"></span>
+  </div>
+</div>
+```
+
+### 复杂图表占位示例
+
+```html
+<div class="bgy-chart-frame bgy-chart-placeholder" data-ppt-placeholder="radar-risk-profile">
+  雷达图占位
+</div>
+```
+
+雷达图、瀑布图、复杂组合图、canvas 图表不要让转换器从视觉反推数据。需要可编辑时，先提供明确数据并在 PPT 原生阶段处理；没有数据时保留占位坐标。
+
+### 流程箭头示例
+
+```html
+<div class="bgy-process bgy-process--horizontal">
+  <div class="bgy-process-step"><strong>发现</strong><span>问题</span></div>
+  <span class="bgy-process-line" data-ppt-line-end="triangle"></span>
+  <div class="bgy-process-step"><strong>分析</strong><span>原因</span></div>
+</div>
+```
+
 ## 常用组件示例
 
 ### title

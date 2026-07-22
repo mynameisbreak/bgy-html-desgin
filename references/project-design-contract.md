@@ -69,7 +69,7 @@ npm --prefix <bgy-skill-root>/scripts run serve -- \
 
 如果只是双击 HTML 或普通静态预览，页面只能下载 `bgy.project.json`，不能直接写回文件。
 
-`project-style-board.html` 是组件库看板。它必须按组件类型展示当前主题下的预览效果，新增共享组件或新的 PPT 结构样式时，也要把示例同步加入这个看板，避免后续页面临场发明样式。
+`project-style-board.html` 是组件库看板。它必须按 KPI、Card、Chart、Progress、Comparison、Ranking、Process、Timeline、Risk、Image/Case 展示当前主题下的预览效果，新增共享组件或新的 PPT 结构样式时，也要把示例同步加入这个看板，避免后续页面临场发明样式。
 
 ## 同步命令
 
@@ -86,7 +86,7 @@ npm --prefix <bgy-skill-root>/scripts run sync-project -- --root <project>
 - 引入 `../shared/tokens.css`
 - 引入 `../shared/components.css`
 - 使用 `bgy.project.json` 的主题和组件规则
-- 优先使用 `.bgy-card`、`.bgy-panel`、`.bgy-metric-card`、`.bgy-table`、`.bgy-status-tag`、`.bgy-divider` 等共享组件类
+- 优先使用 `.bgy-card`、`.bgy-panel`、`.bgy-kpi-card`、`.bgy-table`、`.bgy-chart-frame`、`.bgy-progress`、`.bgy-comparison`、`.bgy-process`、`.bgy-timeline`、`.bgy-risk-card`、`.bgy-image-frame` 等共享组件类
 - 不直接发明新 hex 颜色、字体、阴影、圆角
 - 不使用远程 icon 库
 - 表格必须使用真实 `<table>`

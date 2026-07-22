@@ -30,6 +30,18 @@ function escapeHtml(value) {
     .replace(/"/g, "&quot;");
 }
 
+function jsonForAttr(value) {
+  return escapeHtml(JSON.stringify(value));
+}
+
+function cleanHex(value) {
+  return String(value || "").replace(/^#/, "");
+}
+
+function chartAttrs(type, data) {
+  return `data-ppt-chart="${escapeHtml(type)}" data-ppt-chart-data="${jsonForAttr(data)}"`;
+}
+
 const PRESET_ORDER = [
   "management-report",
   "monthly-review",
@@ -41,45 +53,122 @@ const PRESET_ORDER = [
 
 const COMPONENT_GROUPS = [
   {
-    id: "containers",
-    title: "基础容器",
-    summary: "卡片、面板、分隔线和栈式排版，用来稳定页面层级。",
+    id: "kpi",
+    title: "KPI 指标",
+    summary: "经营汇报最高频组件，优先保留为文本、形状和进度条。",
     items: [
-      { id: "panel", title: "面板 / 卡片", summary: "承载摘要、说明和小型信息块。", preview: "panel" },
-      { id: "stack", title: "栈 / 网格", summary: "让多块内容沿统一间距排列。", preview: "stack" },
-      { id: "divider", title: "分隔线", summary: "在不加重视觉负担的情况下划分信息。", preview: "divider" },
+      { id: "kpi-card", title: "KPI Card", summary: "标题、数值、说明三层信息。", preview: "kpi-basic" },
+      { id: "kpi-big-number", title: "大数字指标", summary: "用于单页核心结论或封面指标。", preview: "kpi-big-number" },
+      { id: "kpi-trend", title: "指标 + 趋势", summary: "展示同比、环比和趋势方向。", preview: "kpi-trend" },
+      { id: "kpi-cycle", title: "同比 / 环比", summary: "同一指标的两种变化口径。", preview: "kpi-cycle" },
+      { id: "kpi-target", title: "指标 + 目标", summary: "目标值、实际值和偏差一起展示。", preview: "kpi-target" },
+      { id: "kpi-progress", title: "指标 + 完成率", summary: "用真实进度条表达达成比例。", preview: "kpi-progress" },
     ],
   },
   {
-    id: "data",
-    title: "数据展示",
-    summary: "指标、状态、表格和图表尽量保留为 PPT 原生对象。",
+    id: "card",
+    title: "Card 卡片",
+    summary: "承载结论、问题、亮点、项目和风险信息。",
     items: [
-      { id: "metric", title: "指标卡", summary: "突出关键经营指标和完成情况。", preview: "metric" },
-      { id: "status", title: "状态标签", summary: "统一表达完成、推进、风险和待确认。", preview: "status" },
-      { id: "table", title: "表格", summary: "使用真实 table 结构，便于转为 PPT 表格。", preview: "table" },
-      { id: "chart", title: "图表配色", summary: "图表颜色来自同一套项目 token。", preview: "chart" },
+      { id: "card-normal", title: "普通 Card", summary: "正文信息承载容器。", preview: "card-normal" },
+      { id: "card-data", title: "数据 Card", summary: "指标与解释组合。", preview: "card-data" },
+      { id: "card-project", title: "项目 Card", summary: "项目名称、状态、责任人。", preview: "card-project" },
+      { id: "card-highlight", title: "重点 Card", summary: "强调结论或关键动作。", preview: "card-highlight" },
+      { id: "card-risk", title: "风险 Card", summary: "用于风险提示和逾期事项。", preview: "card-risk" },
+      { id: "card-conclusion", title: "结论 Card", summary: "适合页面右侧管理结论。", preview: "card-conclusion" },
     ],
   },
   {
-    id: "visual",
-    title: "视觉辅助",
-    summary: "图片、图标和提示块都保持克制，避免整块截图兜底。",
+    id: "chart",
+    title: "Chart 图表",
+    summary: "有数据时使用 data-ppt-chart，复杂图形先用占位契约。",
     items: [
-      { id: "callout", title: "重点提示", summary: "用于结论、风险和行动要求。", preview: "callout" },
-      { id: "image", title: "图片框", summary: "统一图片圆角、边线和占位状态。", preview: "image" },
-      { id: "icon", title: "图标芯片", summary: "优先 inline SVG，便于转换为形状。", preview: "icon" },
+      { id: "chart-bar", title: "柱状图", summary: "显式数据，可转原生图表。", preview: "chart-bar" },
+      { id: "chart-horizontal", title: "横向柱状图", summary: "适合项目或区域对比。", preview: "chart-horizontal-bar" },
+      { id: "chart-line", title: "折线图", summary: "适合月度趋势。", preview: "chart-line" },
+      { id: "chart-area", title: "面积图", summary: "作为 line 数据图表的预览变体。", preview: "chart-area" },
+      { id: "chart-pie-donut", title: "饼图 / 环形图", summary: "饼图可原生；环形先保留占位。", preview: "chart-pie-donut" },
+      { id: "chart-advanced", title: "雷达 / 组合 / 瀑布", summary: "先占位，避免从视觉反推数据。", preview: "chart-advanced" },
     ],
   },
   {
-    id: "layouts",
-    title: "页面结构",
-    summary: "封面、双栏、对比和时间线用于统一逐页生成的版式语言。",
+    id: "progress",
+    title: "Progress 进度",
+    summary: "项目进度、目标达成率、阶段节点和里程碑。",
     items: [
-      { id: "hero", title: "标题区", summary: "页标题、序号和结论表达。", preview: "hero" },
-      { id: "two-column", title: "双栏图文", summary: "左侧结论，右侧素材或示意。", preview: "two-column" },
-      { id: "comparison", title: "对比块", summary: "用于现状 / 优化后、目标 / 实际。", preview: "comparison" },
-      { id: "timeline", title: "时间线", summary: "用于计划、节点和闭环动作。", preview: "timeline" },
+      { id: "progress-bar", title: "进度条", summary: "最稳定的 PPT 友好进度表达。", preview: "progress-bar" },
+      { id: "progress-ring", title: "环形进度", summary: "用于完成率概览，文字仍为 DOM。", preview: "progress-ring" },
+      { id: "progress-completion", title: "完成率", summary: "状态标签加进度条组合。", preview: "progress-completion" },
+      { id: "progress-target", title: "目标达成率", summary: "目标值、实际值、达成率。", preview: "progress-target" },
+      { id: "progress-stage", title: "阶段进度", summary: "用于多阶段项目推进。", preview: "progress-stage" },
+      { id: "progress-milestone", title: "里程碑", summary: "节点、责任和日期。", preview: "progress-milestone" },
+    ],
+  },
+  {
+    id: "comparison",
+    title: "Comparison 对比",
+    summary: "同比、环比、目标实际、计划完成和前后对比。",
+    items: [
+      { id: "compare-yoy", title: "同比 / 环比", summary: "变化方向和幅度同屏展示。", preview: "compare-yoy" },
+      { id: "compare-target", title: "目标 vs 实际", summary: "管理汇报常用结果判断。", preview: "compare-target-actual" },
+      { id: "compare-plan", title: "计划 vs 完成", summary: "适合任务推进复盘。", preview: "compare-plan-finish" },
+      { id: "compare-before-after", title: "Before / After", summary: "改善前后对比。", preview: "compare-before-after" },
+      { id: "compare-ab", title: "A vs B", summary: "方案、项目或区域比较。", preview: "compare-ab" },
+    ],
+  },
+  {
+    id: "ranking",
+    title: "Ranking 排名",
+    summary: "区域、城市、项目和指标排名。",
+    items: [
+      { id: "ranking-top3", title: "TOP 3", summary: "前三名重点突出。", preview: "ranking-top3" },
+      { id: "ranking-list", title: "TOP 5 / TOP 10", summary: "适合经营指标列表。", preview: "ranking-list" },
+      { id: "ranking-project", title: "项目 / 城市排名", summary: "带指标值和趋势标记。", preview: "ranking-project" },
+    ],
+  },
+  {
+    id: "process",
+    title: "Process 流程",
+    summary: "管理逻辑、业务闭环、横纵流程和 PDCA。",
+    items: [
+      { id: "process-horizontal", title: "横向流程", summary: "用真实线条和箭头连接。", preview: "process-horizontal" },
+      { id: "process-vertical", title: "纵向流程", summary: "适合整改链路和审批链路。", preview: "process-vertical" },
+      { id: "process-loop", title: "业务闭环", summary: "问题到验收的闭环表达。", preview: "process-loop" },
+      { id: "process-pdca", title: "PDCA", summary: "计划、执行、检查、处理。", preview: "process-pdca" },
+    ],
+  },
+  {
+    id: "timeline",
+    title: "Timeline 时间轴",
+    summary: "项目过程、月度计划和路线图。",
+    items: [
+      { id: "timeline-project", title: "项目时间轴", summary: "展示关键节点和责任。", preview: "timeline-project" },
+      { id: "timeline-month", title: "月度时间轴", summary: "适合月报计划。", preview: "timeline-month" },
+      { id: "timeline-roadmap", title: "Roadmap", summary: "跨阶段规划。", preview: "timeline-roadmap" },
+    ],
+  },
+  {
+    id: "risk",
+    title: "Risk / Problem 风险问题",
+    summary: "风险等级、问题清单、风险矩阵和整改进度。",
+    items: [
+      { id: "risk-card", title: "风险 / 问题 Card", summary: "单项风险说明。", preview: "risk-card" },
+      { id: "risk-level", title: "风险等级", summary: "低、中、高等级标签。", preview: "risk-level" },
+      { id: "risk-matrix", title: "风险矩阵", summary: "影响和概率二维判断。", preview: "risk-matrix" },
+      { id: "risk-list", title: "问题清单", summary: "问题、责任、期限。", preview: "risk-list" },
+      { id: "risk-action", title: "风险 -> 措施", summary: "风险与动作闭环。", preview: "risk-action" },
+    ],
+  },
+  {
+    id: "image",
+    title: "Image / Case 图片案例",
+    summary: "项目照片、系统截图、案例卡和前后对比。",
+    items: [
+      { id: "image-single", title: "单图 + 文字", summary: "真实图片走 img，文字走 DOM。", preview: "image-single" },
+      { id: "image-text", title: "左右图文", summary: "左图右文或左文右图。", preview: "image-text" },
+      { id: "image-gallery", title: "三图 / 四图卡片", summary: "适合现场照片墙。", preview: "image-gallery" },
+      { id: "image-before-after", title: "Before / After", summary: "工程整改前后对比。", preview: "image-before-after" },
+      { id: "case-card", title: "案例 Card", summary: "图片、结论、标签组合。", preview: "case-card" },
     ],
   },
 ];
@@ -169,65 +258,309 @@ function iconSvg(name) {
 function componentPreviewMarkup(type, normalized) {
   const chart = normalized.theme.chart;
   const title = escapeHtml(normalized.project.title || "项目主题预览");
+  const chartColors = chart.map(cleanHex);
+  const barData = {
+    labels: ["一区", "二区", "三区", "四区"],
+    series: [{ name: "完成率", values: [82, 91, 96, 88] }],
+    colors: chartColors,
+  };
+  const lineData = {
+    labels: ["4月", "5月", "6月", "7月"],
+    series: [{ name: "闭环率", values: [78, 84, 90, 96] }],
+    colors: [chartColors[0]],
+  };
+  const pieData = {
+    labels: ["已完成", "推进中", "待协调"],
+    series: [{ name: "事项", values: [62, 26, 12] }],
+    colors: [chartColors[0], chartColors[1], chartColors[3]],
+  };
   switch (type) {
-    case "panel":
-      return `<div class="demo-panel bgy-panel">
-        <div class="demo-panel__head"><strong>项目概览</strong><span class="bgy-status-tag is-info">本周</span></div>
-        <p>用于承载摘要、说明、责任项和小型信息组。</p>
+    case "kpi-basic":
+      return `<div class="bgy-kpi-card">
+        <p class="bgy-kpi-card__label">重点任务完成率</p>
+        <p class="bgy-kpi-card__value">96.4%</p>
+        <p class="bgy-kpi-card__note">较计划进度高 3.2pct</p>
       </div>`;
-    case "stack":
-      return `<div class="demo-stack">
-        <div class="demo-stack__item"><strong>目标</strong><span>完成率 96.4%</span></div>
-        <div class="demo-stack__item"><strong>风险</strong><span>0 起重大事件</span></div>
-        <div class="demo-stack__item"><strong>下一步</strong><span>持续闭环</span></div>
+    case "kpi-big-number":
+      return `<div class="bgy-kpi-card bgy-kpi-card--hero">
+        <p class="bgy-kpi-card__label">本月闭环事项</p>
+        <p class="bgy-kpi-card__value">128</p>
+        <p class="bgy-kpi-card__unit">项</p>
       </div>`;
-    case "divider":
-      return `<div class="demo-divider">
-        <p>上半区用于结论。</p>
-        <div class="bgy-divider"></div>
-        <p>下半区用于行动项。</p>
+    case "kpi-trend":
+      return `<div class="bgy-kpi-card">
+        <p class="bgy-kpi-card__label">客户诉求闭环率</p>
+        <p class="bgy-kpi-card__value">92.8%</p>
+        <div class="bgy-kpi-card__trend is-up"><span>同比 +4.6%</span><span>环比 +1.8%</span></div>
       </div>`;
-    case "metric":
-      return `<div class="demo-metrics">
-        <div class="bgy-metric-card"><p class="bgy-metric-value">96.4%</p><p class="bgy-metric-label">完成率</p></div>
-        <div class="bgy-metric-card"><p class="bgy-metric-value">12项</p><p class="bgy-metric-label">闭环事项</p></div>
+    case "kpi-cycle":
+      return `<div class="bgy-delta-grid">
+        <div class="bgy-delta-card is-up"><strong>同比</strong><span>+6.2%</span><p>品质问题下降</p></div>
+        <div class="bgy-delta-card is-down"><strong>环比</strong><span>-1.4%</span><p>能耗略有回升</p></div>
       </div>`;
-    case "status":
-      return `<div class="demo-tags">
-        <span class="bgy-status-tag is-success">已完成</span>
+    case "kpi-target":
+      return `<div class="bgy-target-card">
+        <div><span>目标</span><strong>95%</strong></div>
+        <div><span>实际</span><strong>96.4%</strong></div>
+        <div><span>偏差</span><strong class="is-success">+1.4pct</strong></div>
+      </div>`;
+    case "kpi-progress":
+      return `<div class="bgy-kpi-card">
+        <div class="bgy-kpi-card__row"><span>年度目标达成</span><strong>78%</strong></div>
+        <div class="bgy-progress" role="img" aria-label="年度目标达成 78%">
+          <span class="bgy-progress__track"><span class="bgy-progress__bar" style="width:78%"></span></span>
+        </div>
+        <p class="bgy-kpi-card__note">剩余 22% 将在四季度完成。</p>
+      </div>`;
+    case "card-normal":
+      return `<article class="bgy-card">
+        <div class="bgy-card__body">
+          <h3 class="bgy-card__title">普通 Card</h3>
+          <p class="bgy-card__text">用于承载说明、摘要、责任项和小型信息组。</p>
+        </div>
+      </article>`;
+    case "card-data":
+      return `<article class="bgy-data-card">
+        <p class="bgy-card__eyebrow">经营数据</p>
+        <strong>收入完成率 101.2%</strong>
+        <span>重点项目贡献 42%</span>
+      </article>`;
+    case "card-project":
+      return `<article class="bgy-project-card">
+        <div><h3>凤凰城项目</h3><p>责任：工程部</p></div>
         <span class="bgy-status-tag is-warning">推进中</span>
-        <span class="bgy-status-tag is-danger">需协调</span>
-        <span class="bgy-status-tag is-info">待确认</span>
+      </article>`;
+    case "card-highlight":
+      return `<article class="bgy-highlight-card">
+        <p class="bgy-card__eyebrow">本页重点</p>
+        <strong>客户诉求平均闭环时长缩短 18%</strong>
+      </article>`;
+    case "card-risk":
+      return `<article class="bgy-risk-card">
+        <span class="bgy-risk-card__level is-high">高风险</span>
+        <strong>消防整改仍有 2 项需协调</strong>
+        <p>建议本周完成复核并更新台账。</p>
+      </article>`;
+    case "card-conclusion":
+      return `<article class="bgy-conclusion-card">
+        <p class="bgy-card__eyebrow">管理结论</p>
+        <strong>总体进度可控，需压实跨部门协同动作。</strong>
+      </article>`;
+    case "chart-bar":
+      return `<div class="bgy-chart-frame bgy-chart-frame--bar" ${chartAttrs("bar", barData)}>
+        <div class="bgy-chart-bars" aria-hidden="true">
+          ${barData.series[0].values.map((value, index) => `<span class="bgy-chart-bar" style="height:${value}%;background:${escapeHtml(chart[index % chart.length])}"></span>`).join("")}
+        </div>
       </div>`;
-    case "table":
+    case "chart-horizontal-bar":
+      return `<div class="bgy-chart-frame bgy-chart-frame--bar" ${chartAttrs("bar", barData)}>
+        <div class="bgy-chart-bars bgy-chart-bars--horizontal" aria-hidden="true">
+          ${barData.series[0].values.map((value, index) => `<span class="bgy-chart-bar" style="width:${value}%;background:${escapeHtml(chart[index % chart.length])}"><i>${escapeHtml(barData.labels[index])}</i></span>`).join("")}
+        </div>
+      </div>`;
+    case "chart-line":
+      return `<div class="bgy-chart-frame bgy-chart-frame--line" ${chartAttrs("line", lineData)}>
+        <svg class="bgy-chart-line-visual" viewBox="0 0 220 112" aria-hidden="true">
+          <polyline points="8,86 72,64 136,42 212,20" fill="none" stroke="currentColor" stroke-width="3"/>
+          <circle cx="8" cy="86" r="4"/><circle cx="72" cy="64" r="4"/><circle cx="136" cy="42" r="4"/><circle cx="212" cy="20" r="4"/>
+        </svg>
+      </div>`;
+    case "chart-area":
+      return `<div class="bgy-chart-frame bgy-chart-frame--area" ${chartAttrs("line", lineData)}>
+        <div class="bgy-chart-area-band" aria-hidden="true"></div>
+        <svg class="bgy-chart-line-visual" viewBox="0 0 220 112" aria-hidden="true">
+          <polygon points="8,86 72,64 136,42 212,20 212,104 8,104" fill="currentColor" opacity="0.14"/>
+          <polyline points="8,86 72,64 136,42 212,20" fill="none" stroke="currentColor" stroke-width="3"/>
+        </svg>
+      </div>`;
+    case "chart-pie-donut":
+      return `<div class="bgy-chart-split">
+        <div class="bgy-chart-frame bgy-chart-frame--pie" ${chartAttrs("pie", pieData)}>
+          <div class="bgy-chart-pie-legend"><span>已完成</span><strong>62%</strong></div>
+        </div>
+        <div class="bgy-chart-frame bgy-chart-frame--donut" data-ppt-placeholder="donut-progress">
+          <svg class="bgy-ring-progress__svg" viewBox="0 0 80 80" aria-hidden="true">
+            <circle cx="40" cy="40" r="28" fill="none" stroke="currentColor" stroke-width="8" opacity="0.18"/>
+            <path d="M40 12a28 28 0 1 1 -24.2 42" fill="none" stroke="currentColor" stroke-width="8" stroke-linecap="round"/>
+          </svg>
+          <span class="bgy-ring-progress__value">78%</span>
+        </div>
+      </div>`;
+    case "chart-advanced":
+      return `<div class="bgy-advanced-chart-grid">
+        <div class="bgy-chart-frame bgy-chart-placeholder" data-ppt-placeholder="radar-chart">雷达图占位</div>
+        <div class="bgy-chart-frame bgy-chart-placeholder" data-ppt-placeholder="combo-chart">组合图占位</div>
+        <div class="bgy-chart-frame bgy-chart-placeholder" data-ppt-placeholder="waterfall-chart">瀑布图占位</div>
+      </div>`;
+    case "progress-bar":
+      return `<div class="bgy-progress-panel">
+        <div class="bgy-kpi-card__row"><span>项目推进</span><strong>84%</strong></div>
+        <div class="bgy-progress"><span class="bgy-progress__track"><span class="bgy-progress__bar" style="width:84%"></span></span></div>
+      </div>`;
+    case "progress-ring":
+      return `<div class="bgy-ring-progress" role="img" aria-label="完成率 78%">
+        <svg class="bgy-ring-progress__svg" viewBox="0 0 80 80" aria-hidden="true">
+          <circle cx="40" cy="40" r="28" fill="none" stroke="currentColor" stroke-width="8" opacity="0.18"/>
+          <path d="M40 12a28 28 0 1 1 -24.2 42" fill="none" stroke="currentColor" stroke-width="8" stroke-linecap="round"/>
+        </svg>
+        <div><strong>78%</strong><span>完成率</span></div>
+      </div>`;
+    case "progress-completion":
+      return `<div class="bgy-progress-list">
+        <div><span>工程巡检</span><strong>100%</strong><span class="bgy-progress__track"><span class="bgy-progress__bar" style="width:100%"></span></span></div>
+        <div><span>客户闭环</span><strong>92%</strong><span class="bgy-progress__track"><span class="bgy-progress__bar" style="width:92%"></span></span></div>
+        <div><span>整改复核</span><strong>76%</strong><span class="bgy-progress__track"><span class="bgy-progress__bar is-warning" style="width:76%"></span></span></div>
+      </div>`;
+    case "progress-target":
+      return `<div class="bgy-target-card bgy-target-card--wide">
+        <div><span>目标</span><strong>120项</strong></div>
+        <div><span>实际</span><strong>128项</strong></div>
+        <div><span>达成率</span><strong class="is-success">106.7%</strong></div>
+      </div>`;
+    case "progress-stage":
+      return `<div class="bgy-stage-progress">
+        <span class="is-done">立项</span><span class="is-done">执行</span><span class="is-active">复核</span><span>归档</span>
+      </div>`;
+    case "progress-milestone":
+      return `<div class="bgy-milestone-list">
+        <div><strong>07.20</strong><span>完成巡检</span></div>
+        <div><strong>07.28</strong><span>问题复核</span></div>
+        <div><strong>08.05</strong><span>验收归档</span></div>
+      </div>`;
+    case "compare-yoy":
+      return `<div class="bgy-delta-grid">
+        <div class="bgy-delta-card is-up"><strong>同比</strong><span>+8.4%</span><p>收入提升</p></div>
+        <div class="bgy-delta-card is-down"><strong>环比</strong><span>-2.1%</span><p>投诉下降</p></div>
+      </div>`;
+    case "compare-target-actual":
+      return `<div class="bgy-comparison">
+        <div class="bgy-compare-card"><span>目标</span><strong>95%</strong></div>
+        <div class="bgy-compare-card is-primary"><span>实际</span><strong>96.4%</strong></div>
+      </div>`;
+    case "compare-plan-finish":
       return `<table class="bgy-table demo-table">
-        <thead><tr><th>事项</th><th>状态</th><th>责任</th></tr></thead>
-        <tbody>
-          <tr><td>巡检复核</td><td>已完成</td><td>工程部</td></tr>
-          <tr><td>诉求闭环</td><td>推进中</td><td>客服部</td></tr>
-          <tr><td>问题整改</td><td>需协调</td><td>品质部</td></tr>
-        </tbody>
+        <thead><tr><th>事项</th><th>计划</th><th>完成</th></tr></thead>
+        <tbody><tr><td>巡检</td><td>40</td><td>42</td></tr><tr><td>整改</td><td>18</td><td>16</td></tr></tbody>
       </table>`;
-    case "chart":
-      return `<div class="demo-chart">
-        ${chart.map((color, index) => `<span style="height:${46 + index * 17}px;background:${escapeHtml(color)}"></span>`).join("")}
+    case "compare-before-after":
+      return `<div class="bgy-before-after">
+        <div><span>Before</span><strong>流程分散</strong><p>跨部门沟通慢</p></div>
+        <div><span>After</span><strong>统一闭环</strong><p>责任节点清晰</p></div>
       </div>`;
-    case "callout":
-      return `<div class="bgy-callout">
-        <p class="bgy-callout__title">本页结论</p>
-        <p class="bgy-callout__text">重点任务已进入闭环阶段，风险项需在月底前完成复核。</p>
+    case "compare-ab":
+      return `<div class="bgy-comparison">
+        <div class="bgy-compare-card"><span>A 方案</span><strong>投入低</strong><p>周期较长</p></div>
+        <div class="bgy-compare-card"><span>B 方案</span><strong>见效快</strong><p>需资源协同</p></div>
       </div>`;
-    case "image":
-      return `<div class="bgy-image-frame demo-image-frame">
-        <div class="demo-image-placeholder">图片 / 现场图 / 系统截图</div>
+    case "ranking-top3":
+      return `<ol class="bgy-ranking-list bgy-ranking-list--top3">
+        <li><strong>01</strong><span>凤凰城</span><em>98.2</em></li>
+        <li><strong>02</strong><span>云山府</span><em>96.8</em></li>
+        <li><strong>03</strong><span>湖畔苑</span><em>95.1</em></li>
+      </ol>`;
+    case "ranking-list":
+      return `<ol class="bgy-ranking-list">
+        <li><strong>1</strong><span>一区</span><em>101.2%</em></li>
+        <li><strong>2</strong><span>二区</span><em>98.6%</em></li>
+        <li><strong>3</strong><span>三区</span><em>94.8%</em></li>
+        <li><strong>4</strong><span>四区</span><em>91.3%</em></li>
+      </ol>`;
+    case "ranking-project":
+      return `<div class="bgy-ranking-card">
+        <div><strong>TOP 项目</strong><span class="bgy-status-tag is-success">上升</span></div>
+        <ol class="bgy-ranking-list"><li><strong>1</strong><span>凤凰城</span><em>+4.2%</em></li><li><strong>2</strong><span>云山府</span><em>+2.8%</em></li></ol>
       </div>`;
-    case "icon":
-      return `<div class="demo-icons">
-        <span class="bgy-icon-chip">${iconSvg("check")}</span>
-        <span class="bgy-icon-chip">${iconSvg("clock")}</span>
-        <span class="bgy-icon-chip">${iconSvg("alert")}</span>
-        <span class="bgy-icon-chip">${iconSvg("chart")}</span>
+    case "process-horizontal":
+      return `<div class="bgy-process bgy-process--horizontal">
+        <div class="bgy-process-step"><strong>发现</strong><span>问题</span></div><span class="bgy-process-line" data-ppt-line-end="triangle"></span>
+        <div class="bgy-process-step"><strong>分析</strong><span>原因</span></div><span class="bgy-process-line" data-ppt-line-end="triangle"></span>
+        <div class="bgy-process-step"><strong>执行</strong><span>措施</span></div>
       </div>`;
+    case "process-vertical":
+      return `<div class="bgy-process bgy-process--vertical">
+        <div class="bgy-process-step"><strong>提交</strong><span>工单</span></div>
+        <div class="bgy-process-step"><strong>处理</strong><span>整改</span></div>
+        <div class="bgy-process-step"><strong>验收</strong><span>闭环</span></div>
+      </div>`;
+    case "process-loop":
+      return `<div class="bgy-process-loop">
+        <div class="bgy-process-step">发现问题</div><div class="bgy-process-step">制定措施</div>
+        <div class="bgy-process-step">执行复核</div><div class="bgy-process-step">验收闭环</div>
+      </div>`;
+    case "process-pdca":
+      return `<div class="bgy-pdca">
+        <div><strong>P</strong><span>计划</span></div><div><strong>D</strong><span>执行</span></div><div><strong>C</strong><span>检查</span></div><div><strong>A</strong><span>处理</span></div>
+      </div>`;
+    case "timeline-project":
+      return `<div class="bgy-timeline">
+        <div class="bgy-timeline-item"><span class="bgy-timeline-dot"></span><strong>7月</strong><p>主题锁定</p></div>
+        <div class="bgy-timeline-item"><span class="bgy-timeline-dot"></span><strong>8月</strong><p>页面复用</p></div>
+        <div class="bgy-timeline-item"><span class="bgy-timeline-dot"></span><strong>9月</strong><p>PPTX 交付</p></div>
+      </div>`;
+    case "timeline-month":
+      return `<div class="bgy-milestone-list">
+        <div><strong>第1周</strong><span>问题梳理</span></div>
+        <div><strong>第2周</strong><span>整改推进</span></div>
+        <div><strong>第4周</strong><span>复盘归档</span></div>
+      </div>`;
+    case "timeline-roadmap":
+      return `<div class="bgy-roadmap">
+        <div><strong>Q3</strong><span>标准化</span></div>
+        <div><strong>Q4</strong><span>全面复制</span></div>
+        <div><strong>Q1</strong><span>效果评估</span></div>
+      </div>`;
+    case "risk-card":
+      return `<article class="bgy-risk-card">
+        <span class="bgy-risk-card__level is-medium">中风险</span>
+        <strong>外包维保响应时效不足</strong>
+        <p>需明确 SLA 并按周复核。</p>
+      </article>`;
+    case "risk-level":
+      return `<div class="bgy-risk-levels">
+        <span class="bgy-risk-level is-low">低</span><span class="bgy-risk-level is-medium">中</span><span class="bgy-risk-level is-high">高</span>
+      </div>`;
+    case "risk-matrix":
+      return `<div class="bgy-risk-matrix">
+        <span class="bgy-risk-cell is-low">低</span><span class="bgy-risk-cell is-medium">中</span><span class="bgy-risk-cell is-high">高</span>
+        <span class="bgy-risk-cell is-medium">中</span><span class="bgy-risk-cell is-high">高</span><span class="bgy-risk-cell is-high">高</span>
+      </div>`;
+    case "risk-list":
+      return `<table class="bgy-table demo-table">
+        <thead><tr><th>问题</th><th>责任</th><th>期限</th></tr></thead>
+        <tbody><tr><td>台账缺项</td><td>工程</td><td>7.28</td></tr><tr><td>复核滞后</td><td>品质</td><td>8.05</td></tr></tbody>
+      </table>`;
+    case "risk-action":
+      return `<div class="bgy-risk-action">
+        <div><strong>风险</strong><span>整改时效不足</span></div>
+        <div><strong>措施</strong><span>按周复核并通报</span></div>
+      </div>`;
+    case "image-single":
+      return `<article class="bgy-image-card">
+        <div class="bgy-image-frame"><div class="bgy-image-placeholder">项目照片</div></div>
+        <p>图片为真实 img；缺素材时使用占位。</p>
+      </article>`;
+    case "image-text":
+      return `<div class="bgy-image-text">
+        <div class="bgy-image-frame"><div class="bgy-image-placeholder">现场图</div></div>
+        <div><strong>整改完成</strong><p>现场标识、动线和台账同步更新。</p></div>
+      </div>`;
+    case "image-gallery":
+      return `<div class="bgy-image-grid">
+        <div class="bgy-image-frame"><div class="bgy-image-placeholder">图1</div></div>
+        <div class="bgy-image-frame"><div class="bgy-image-placeholder">图2</div></div>
+        <div class="bgy-image-frame"><div class="bgy-image-placeholder">图3</div></div>
+        <div class="bgy-image-frame"><div class="bgy-image-placeholder">图4</div></div>
+      </div>`;
+    case "image-before-after":
+      return `<div class="bgy-before-after bgy-before-after--images">
+        <div><span>Before</span><div class="bgy-image-frame"><div class="bgy-image-placeholder">整改前</div></div></div>
+        <div><span>After</span><div class="bgy-image-frame"><div class="bgy-image-placeholder">整改后</div></div></div>
+      </div>`;
+    case "case-card":
+      return `<article class="bgy-case-card">
+        <div class="bgy-image-frame"><div class="bgy-image-placeholder">案例图</div></div>
+        <div><span class="bgy-status-tag is-success">已闭环</span><strong>电梯机房隐患整改</strong></div>
+      </article>`;
     case "hero":
       return `<div class="demo-hero">
         <span>01</span>
@@ -235,22 +568,6 @@ function componentPreviewMarkup(type, normalized) {
           <h3>${title}</h3>
           <p>主题、字体、组件和间距来自同一份 bgy.project.json。</p>
         </div>
-      </div>`;
-    case "two-column":
-      return `<div class="demo-two-col">
-        <div><strong>核心结论</strong><p>左侧放结论和要点，右侧放图片或图表。</p></div>
-        <div class="demo-mini-image"></div>
-      </div>`;
-    case "comparison":
-      return `<div class="demo-comparison">
-        <div><strong>现状</strong><p>流程分散</p></div>
-        <div><strong>优化后</strong><p>统一闭环</p></div>
-      </div>`;
-    case "timeline":
-      return `<div class="demo-timeline">
-        <div><span></span><strong>7月</strong><p>主题锁定</p></div>
-        <div><span></span><strong>8月</strong><p>页面复用</p></div>
-        <div><span></span><strong>9月</strong><p>PPTX 交付</p></div>
       </div>`;
     default:
       return `<div class="demo-panel bgy-panel"><p>组件预览</p></div>`;
@@ -283,10 +600,12 @@ function renderComponentSections(normalized, groups = COMPONENT_GROUPS) {
 
 function compactComponentCards(normalized) {
   const compactItems = [
-    COMPONENT_GROUPS[1].items[0],
-    COMPONENT_GROUPS[1].items[1],
-    COMPONENT_GROUPS[1].items[2],
+    COMPONENT_GROUPS[0].items[0],
+    COMPONENT_GROUPS[1].items[3],
     COMPONENT_GROUPS[2].items[0],
+    COMPONENT_GROUPS[3].items[0],
+    COMPONENT_GROUPS[4].items[0],
+    COMPONENT_GROUPS[9].items[1],
   ];
   return compactItems.map(item => renderComponentCard(item, normalized)).join("");
 }
@@ -345,6 +664,42 @@ export function buildProjectConfigHtml(config, presets = loadBuiltinPresets()) {
       --brand: ${normalized.theme.brand};
       --deep: ${normalized.theme.deepBrand};
       --radius: 8px;
+      --bgy-brand: ${normalized.theme.brand};
+      --bgy-deep-brand: ${normalized.theme.deepBrand};
+      --bgy-success: ${normalized.theme.success};
+      --bgy-success-bg: ${normalized.theme.successBg};
+      --bgy-warning: ${normalized.theme.warning};
+      --bgy-warning-bg: ${normalized.theme.warningBg};
+      --bgy-danger: ${normalized.theme.danger};
+      --bgy-danger-bg: ${normalized.theme.dangerBg};
+      --bgy-info: ${normalized.theme.info};
+      --bgy-info-bg: ${normalized.theme.infoBg};
+      --bgy-text: ${normalized.theme.text};
+      --bgy-muted: ${normalized.theme.muted};
+      --bgy-panel: ${normalized.theme.panel};
+      --bgy-surface: ${normalized.theme.surface};
+      --bgy-page-bg: ${normalized.theme.pageBg};
+      --bgy-line: ${normalized.theme.line};
+      --bgy-white: ${normalized.theme.white};
+      --bgy-black: ${normalized.theme.black};
+      --bgy-font-family: ${normalized.rules.fontFamily};
+      --bgy-card-radius: ${normalized.components.cardRadius}px;
+      --bgy-panel-radius: ${normalized.components.panelRadius}px;
+      --bgy-tag-radius: ${normalized.components.tagRadius}px;
+      --bgy-metric-radius: ${normalized.components.metricRadius}px;
+      --bgy-image-radius: ${normalized.components.imageRadius}px;
+      --bgy-border-width: ${normalized.components.borderWidth}px;
+      --bgy-card-shadow: ${normalized.components.cardShadow};
+      --bgy-panel-shadow: ${normalized.components.panelShadow};
+      --bgy-table-header-bg: ${normalized.components.tableHeaderBg};
+      --bgy-table-row-alt: ${normalized.components.tableRowAlt};
+      --bgy-table-border: ${normalized.components.tableBorder};
+      --bgy-section-gap: ${normalized.components.sectionGap}px;
+      --bgy-chart-1: ${normalized.theme.chart[0]};
+      --bgy-chart-2: ${normalized.theme.chart[1]};
+      --bgy-chart-3: ${normalized.theme.chart[2]};
+      --bgy-chart-4: ${normalized.theme.chart[3]};
+      --bgy-chart-5: ${normalized.theme.chart[4]};
       font-family: "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
     }
     * { box-sizing: border-box; }
@@ -679,6 +1034,53 @@ export function buildProjectConfigHtml(config, presets = loadBuiltinPresets()) {
       flex-wrap: wrap;
       gap: 8px;
     }
+    ${buildComponentsCss(normalized)}
+    .component-card__preview .bgy-table {
+      font-size: 12px;
+    }
+    .component-card__preview .bgy-table th,
+    .component-card__preview .bgy-table td {
+      padding: 6px 7px;
+    }
+    .component-card__preview .bgy-kpi-card,
+    .component-card__preview .bgy-card,
+    .component-card__preview .bgy-data-card,
+    .component-card__preview .bgy-highlight-card,
+    .component-card__preview .bgy-risk-card,
+    .component-card__preview .bgy-conclusion-card,
+    .component-card__preview .bgy-progress-panel,
+    .component-card__preview .bgy-image-card,
+    .component-card__preview .bgy-case-card {
+      padding: 12px;
+    }
+    .component-card__preview .bgy-kpi-card__value,
+    .component-card__preview .bgy-metric-value {
+      font-size: 24px;
+    }
+    .component-card__preview .bgy-kpi-card--hero .bgy-kpi-card__value {
+      font-size: 34px;
+    }
+    .component-card__preview .bgy-card__title,
+    .component-card__preview .bgy-data-card strong,
+    .component-card__preview .bgy-highlight-card strong,
+    .component-card__preview .bgy-risk-card strong,
+    .component-card__preview .bgy-conclusion-card strong,
+    .component-card__preview .bgy-case-card strong {
+      font-size: 15px;
+    }
+    .component-card__preview .bgy-card__text,
+    .component-card__preview .bgy-kpi-card__note,
+    .component-card__preview .bgy-image-card p {
+      font-size: 12px;
+    }
+    .component-card__preview .bgy-status-tag {
+      font-size: 12px;
+      padding: 4px 7px;
+    }
+    .component-card__preview .bgy-chart-frame {
+      min-height: 120px;
+      padding: 10px;
+    }
     .preview-shell {
       max-width: 1120px;
       margin: 0 auto;
@@ -996,6 +1398,7 @@ export function buildProjectConfigHtml(config, presets = loadBuiltinPresets()) {
     }
 
     function setThemeVars(target, theme, components) {
+      const chart = theme.chart || [];
       target.style.setProperty("--cfg-brand", theme.brand);
       target.style.setProperty("--cfg-deep", theme.deepBrand);
       target.style.setProperty("--cfg-success", theme.success);
@@ -1018,6 +1421,41 @@ export function buildProjectConfigHtml(config, presets = loadBuiltinPresets()) {
       target.style.setProperty("--cfg-metric-radius", (components.metricRadius ?? components.cardRadius ?? 8) + "px");
       target.style.setProperty("--cfg-card-shadow", components.cardShadow || "0 4px 14px rgba(0,0,0,0.08)");
       target.style.setProperty("--cfg-panel-shadow", components.panelShadow || "0 2px 8px rgba(0,0,0,0.05)");
+      target.style.setProperty("--bgy-brand", theme.brand);
+      target.style.setProperty("--bgy-deep-brand", theme.deepBrand);
+      target.style.setProperty("--bgy-success", theme.success);
+      target.style.setProperty("--bgy-success-bg", theme.successBg);
+      target.style.setProperty("--bgy-warning", theme.warning);
+      target.style.setProperty("--bgy-warning-bg", theme.warningBg);
+      target.style.setProperty("--bgy-danger", theme.danger);
+      target.style.setProperty("--bgy-danger-bg", theme.dangerBg);
+      target.style.setProperty("--bgy-info", theme.info);
+      target.style.setProperty("--bgy-info-bg", theme.infoBg);
+      target.style.setProperty("--bgy-text", theme.text);
+      target.style.setProperty("--bgy-muted", theme.muted);
+      target.style.setProperty("--bgy-panel", theme.panel);
+      target.style.setProperty("--bgy-surface", theme.surface || "#FFFFFF");
+      target.style.setProperty("--bgy-page-bg", theme.pageBg || "#FFFFFF");
+      target.style.setProperty("--bgy-line", theme.line);
+      target.style.setProperty("--bgy-white", theme.white || "#FFFFFF");
+      target.style.setProperty("--bgy-black", theme.black || "#000000");
+      target.style.setProperty("--bgy-card-radius", (components.cardRadius ?? 8) + "px");
+      target.style.setProperty("--bgy-panel-radius", (components.panelRadius ?? components.cardRadius ?? 8) + "px");
+      target.style.setProperty("--bgy-tag-radius", (components.tagRadius ?? 4) + "px");
+      target.style.setProperty("--bgy-metric-radius", (components.metricRadius ?? components.cardRadius ?? 8) + "px");
+      target.style.setProperty("--bgy-image-radius", (components.imageRadius ?? 6) + "px");
+      target.style.setProperty("--bgy-border-width", (components.borderWidth ?? 1) + "px");
+      target.style.setProperty("--bgy-card-shadow", components.cardShadow || "0 4px 14px rgba(0,0,0,0.08)");
+      target.style.setProperty("--bgy-panel-shadow", components.panelShadow || "0 2px 8px rgba(0,0,0,0.05)");
+      target.style.setProperty("--bgy-table-header-bg", components.tableHeaderBg || theme.panel);
+      target.style.setProperty("--bgy-table-row-alt", components.tableRowAlt || "#FAFCFD");
+      target.style.setProperty("--bgy-table-border", components.tableBorder || theme.line);
+      target.style.setProperty("--bgy-section-gap", (components.sectionGap ?? 24) + "px");
+      target.style.setProperty("--bgy-chart-1", chart[0] || theme.brand);
+      target.style.setProperty("--bgy-chart-2", chart[1] || theme.success);
+      target.style.setProperty("--bgy-chart-3", chart[2] || theme.danger);
+      target.style.setProperty("--bgy-chart-4", chart[3] || theme.warning);
+      target.style.setProperty("--bgy-chart-5", chart[4] || theme.muted);
     }
 
     function applyToForm() {
@@ -1195,7 +1633,6 @@ export function buildProjectConfigHtml(config, presets = loadBuiltinPresets()) {
 
 export function buildProjectStyleBoardHtml(config) {
   const normalized = normalizeProjectConfig(config);
-  const chart = normalized.theme.chart;
   const componentNav = COMPONENT_GROUPS.map(group => `<a href="#${escapeHtml(group.id)}">${escapeHtml(group.title)}</a>`).join("");
   const componentSections = renderComponentSections(normalized);
   return `<!DOCTYPE html>
@@ -1349,6 +1786,47 @@ export function buildProjectStyleBoardHtml(config) {
       min-height: 160px;
       padding: 16px;
       background: var(--bgy-panel);
+    }
+    .component-card__preview .bgy-table {
+      font-size: 12px;
+    }
+    .component-card__preview .bgy-table th,
+    .component-card__preview .bgy-table td {
+      padding: 6px 7px;
+    }
+    .component-card__preview .bgy-card,
+    .component-card__preview .bgy-kpi-card,
+    .component-card__preview .bgy-data-card,
+    .component-card__preview .bgy-highlight-card,
+    .component-card__preview .bgy-risk-card,
+    .component-card__preview .bgy-conclusion-card,
+    .component-card__preview .bgy-progress-panel,
+    .component-card__preview .bgy-image-card,
+    .component-card__preview .bgy-case-card {
+      padding: 12px;
+    }
+    .component-card__preview .bgy-card__title,
+    .component-card__preview .bgy-data-card strong,
+    .component-card__preview .bgy-highlight-card strong,
+    .component-card__preview .bgy-risk-card strong,
+    .component-card__preview .bgy-conclusion-card strong,
+    .component-card__preview .bgy-case-card strong {
+      font-size: 15px;
+    }
+    .component-card__preview .bgy-kpi-card__value,
+    .component-card__preview .bgy-metric-value {
+      font-size: 24px;
+    }
+    .component-card__preview .bgy-kpi-card--hero .bgy-kpi-card__value {
+      font-size: 34px;
+    }
+    .component-card__preview .bgy-status-tag {
+      font-size: 12px;
+      padding: 4px 7px;
+    }
+    .component-card__preview .bgy-chart-frame {
+      min-height: 118px;
+      padding: 10px;
     }
     .demo-panel {
       padding: 14px;
@@ -1526,46 +2004,6 @@ export function buildProjectStyleBoardHtml(config) {
     <p>以下按组件类型展示当前主题下的可复用样式，生成 PPT 页面时优先复用这些结构和 class。</p>
     <nav class="component-nav">${componentNav}</nav>
     ${componentSections}
-
-    <h2>组件</h2>
-    <section class="grid">
-      <div class="bgy-metric-card">
-        <p class="bgy-metric-value">96.4%</p>
-        <p class="bgy-metric-label">重点任务完成率</p>
-      </div>
-      <div class="bgy-metric-card">
-        <p class="bgy-metric-value">12项</p>
-        <p class="bgy-metric-label">本月闭环事项</p>
-      </div>
-      <div class="bgy-metric-card">
-        <p class="bgy-metric-value">0起</p>
-        <p class="bgy-metric-label">重大风险事件</p>
-      </div>
-    </section>
-
-    <h2>状态标签</h2>
-    <p>
-      <span class="bgy-status-tag is-success">已完成</span>
-      <span class="bgy-status-tag is-warning">推进中</span>
-      <span class="bgy-status-tag is-danger">需协调</span>
-      <span class="bgy-status-tag is-info">待确认</span>
-    </p>
-
-    <h2>表格</h2>
-    <table class="bgy-table">
-      <thead><tr><th>事项</th><th>状态</th><th>责任部门</th><th>完成时间</th></tr></thead>
-      <tbody>
-        <tr><td>消防维保巡检</td><td>已完成</td><td>工程部</td><td>7月20日</td></tr>
-        <tr><td>客户诉求闭环</td><td>推进中</td><td>客服部</td><td>7月31日</td></tr>
-        <tr><td>品质问题复查</td><td>需协调</td><td>品质部</td><td>8月05日</td></tr>
-      </tbody>
-    </table>
-
-    <h2>图表配色</h2>
-    <div class="chart-bars">
-      ${chart.map((color, index) => `<div class="bar" style="height:${45 + index * 16}px;background:${color}"></div>`).join("")}
-    </div>
-
   </main>
 </body>
 </html>

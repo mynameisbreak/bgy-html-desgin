@@ -605,7 +605,7 @@ function checkSnapshotMarkers(html, warnings) {
     const attrs = match[2] || "";
     if (hasAttr(attrs, "data-ppt-force-snapshot")) continue;
     const identity = `${attrValue(attrs, "id")} ${attrValue(attrs, "class")}`.toLowerCase();
-    const ordinary = /\b(card|panel|metric|kpi|tag|divider|line|circle|title-bar|summary|status)\b/.test(identity);
+    const ordinary = /\b(card|panel|metric|kpi|tag|divider|line|circle|title-bar|summary|status|progress|ranking|timeline|process|comparison|compare|target|delta|milestone|risk|problem|conclusion)\b/.test(identity);
     const explicitComplex = /\b(chart|canvas|map|photo|image|screenshot|complex|heatmap)\b/.test(identity);
     if (/^(div|section|article|aside|span|hr)$/i.test(tag) && ordinary && !explicitComplex) {
       warnings.push(`${descriptor(tag, attrs)} has a screenshot marker; ordinary BGY shapes should stay native PPT shapes.`);
