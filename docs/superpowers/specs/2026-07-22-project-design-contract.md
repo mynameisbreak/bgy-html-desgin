@@ -14,7 +14,7 @@
 把“项目设计”从“页面生成”中拆出来，形成固定顺序：
 
 1. 新建项目时先生成 `bgy.project.json`
-2. 通过根目录 `project-config.html` 选 preset、微调主题、锁定项目
+2. 通过根目录 `project-config.html` Project Studio 选 preset、微调主题、锁定项目
 3. 生成 `shared/tokens.css` 和 `shared/components.css`
 4. 每一页 HTML 只能复用项目 token 和组件类
 5. `pptx_preflight` 在导出前检查是否偏离项目契约
@@ -24,8 +24,8 @@
 ```text
 <project>/
   bgy.project.json
-  project-config.html
-  project-style-board.html
+  project-config.html      # Project Studio 主入口
+  project-style-board.html # Project Studio 兼容入口，默认打开组件面板
   presets/
   shared/
     tokens.css
@@ -81,15 +81,16 @@
 - 选择 preset
 - 调整主题色与字体
 - 调整组件圆角、阴影、边线
+- 以浅色 Photoshop/Slidev 式工作台预览画布、页面缩略条和滚动组件库
 - 预览标题、卡片、表格、指标、标签、图标
 - 导出或写回 `bgy.project.json`
 - 生成或同步 `shared/tokens.css`、`shared/components.css`
 
 `project-style-board.html` 负责：
 
-- 只读展示当前项目主题
-- 提供项目级风格对照基线
-- 作为页面生成前的视觉确认页
+- 打开同一套 Project Studio，并默认进入组件面板
+- 提供当前项目主题下的滚动组件预览
+- 作为页面生成前的视觉确认页和后续组件插入功能的数据入口
 
 ## 生成规则
 

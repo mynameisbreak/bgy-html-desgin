@@ -3,369 +3,1622 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>项目级设计契约样例 - 项目风格看板</title>
-  <link rel="stylesheet" href="shared/tokens.css">
-  <link rel="stylesheet" href="shared/components.css">
+  <title>BGY 项目工作台 - 项目级设计契约样例</title>
   <style>
-    body {
-      width: auto;
-      min-height: 100vh;
-      height: auto;
-      overflow: auto;
-      background: #eef3f6;
-      padding: 28px;
+    :root {
+      --page: #eef2f6;
+      --surface: #ffffff;
+      --tool-surface: #f8fafc;
+      --panel: #ffffff;
+      --text: #1f2933;
+      --muted: #64748b;
+      --line: #d8e3ea;
+      --brand: #006d9a;
+      --deep: #004b6b;
+      --bgy-brand: #006d9a;
+      --bgy-deep-brand: #004b6b;
+      --bgy-success: #2e7d32;
+      --bgy-success-bg: #eaf5eb;
+      --bgy-warning: #c97400;
+      --bgy-warning-bg: #fff3e3;
+      --bgy-danger: #c00000;
+      --bgy-danger-bg: #fdecec;
+      --bgy-info: #2b6cb0;
+      --bgy-info-bg: #eaf3fb;
+      --bgy-text: #1f2933;
+      --bgy-muted: #64748b;
+      --bgy-panel: #f5f8fa;
+      --bgy-surface: #ffffff;
+      --bgy-page-bg: #ffffff;
+      --bgy-line: #d8e3ea;
+      --bgy-white: #ffffff;
+      --bgy-black: #000000;
+      --bgy-font-family: "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
+      --bgy-card-radius: 8px;
+      --bgy-panel-radius: 8px;
+      --bgy-tag-radius: 4px;
+      --bgy-metric-radius: 8px;
+      --bgy-image-radius: 6px;
+      --bgy-border-width: 1px;
+      --bgy-card-shadow: 0 4px 14px rgba(0,0,0,0.08);
+      --bgy-panel-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      --bgy-table-header-bg: #f5f8fa;
+      --bgy-table-row-alt: #fafcfd;
+      --bgy-table-border: #d8e3ea;
+      --bgy-section-gap: 24px;
+      --bgy-chart-1: #006d9a;
+      --bgy-chart-2: #2e7d32;
+      --bgy-chart-3: #c00000;
+      --bgy-chart-4: #c97400;
+      --bgy-chart-5: #64748b;
+      font-family: "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
     }
-    .board {
-      width: 1120px;
-      margin: 0 auto;
-      background: var(--bgy-page-bg);
-      border: 1px solid var(--bgy-line);
-      box-shadow: 0 8px 24px rgba(15,23,42,0.12);
-      padding: 34px;
-    }
-    .board-head {
-      display: flex;
-      justify-content: space-between;
-      gap: 24px;
-      border-bottom: 1px solid var(--bgy-line);
-      padding-bottom: 22px;
-      margin-bottom: 24px;
-    }
-    h1 {
-      margin: 0 0 10px;
-      color: var(--bgy-deep-brand);
-      font-size: 30px;
-    }
-    h2 {
-      margin: 30px 0 14px;
-      color: var(--bgy-text);
-      font-size: 18px;
-    }
-    p {
+    * { box-sizing: border-box; }
+    html, body {
       margin: 0;
-      color: var(--bgy-muted);
-      line-height: 1.6;
-      font-size: 14px;
-    }
-    .meta {
-      color: var(--bgy-muted);
-      font-size: 13px;
-      text-align: right;
-      line-height: 1.7;
-    }
-    .palette {
-      display: grid;
-      grid-template-columns: repeat(8, minmax(0, 1fr));
-      gap: 10px;
-    }
-    .swatch {
-      border: 1px solid var(--bgy-line);
-      border-radius: var(--bgy-panel-radius);
+      width: 100%;
+      height: 100%;
       overflow: hidden;
-      background: var(--bgy-surface);
+      color: var(--text);
+      background: var(--page);
+      font-family: "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
+      letter-spacing: 0;
     }
-    .swatch-color {
-      height: 54px;
+    button, input, select, textarea {
+      font: inherit;
     }
-    .swatch-label {
-      padding: 8px;
-      font-size: 12px;
-      color: var(--bgy-muted);
+    button {
+      border: 0;
+      cursor: pointer;
     }
-    .grid {
+    .studio {
       display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 18px;
+      grid-template-columns: 324px minmax(560px, 1fr) 360px;
+      grid-template-rows: 52px minmax(0, 1fr);
+      height: 100vh;
     }
-    .chart-bars {
+    .topbar {
+      grid-column: 1 / -1;
       display: flex;
-      align-items: end;
-      gap: 12px;
-      height: 130px;
-      padding: 18px;
-      border: 1px solid var(--bgy-line);
-      border-radius: var(--bgy-panel-radius);
-      background: var(--bgy-surface);
-    }
-    .bar {
-      flex: 1;
-      border-radius: 4px 4px 0 0;
-    }
-    .component-nav {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin: 28px 0 12px;
-      padding: 14px 0;
-      border-top: 1px solid var(--bgy-line);
-      border-bottom: 1px solid var(--bgy-line);
-    }
-    .component-nav a {
-      display: inline-flex;
       align-items: center;
-      min-height: 30px;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 0 14px;
+      border-bottom: 1px solid var(--line);
+      background: var(--surface);
+    }
+    .brand-lockup {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      min-width: 260px;
+    }
+    .brand-lockup strong {
+      color: var(--deep);
+      font-size: 16px;
+    }
+    .brand-lockup span {
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .workspace-tabs {
+      display: inline-flex;
+      gap: 4px;
+      padding: 4px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--tool-surface);
+    }
+    .workspace-tabs button,
+    .tool-button {
+      min-height: 32px;
       padding: 6px 11px;
-      border: 1px solid var(--bgy-line);
-      border-radius: var(--bgy-tag-radius);
-      color: var(--bgy-deep-brand);
-      background: var(--bgy-surface);
-      text-decoration: none;
+      border-radius: 6px;
+      color: var(--muted);
+      background: transparent;
       font-size: 13px;
       font-weight: 600;
     }
-    .component-section {
-      margin-top: 34px;
+    body[data-panel="canvas"] [data-panel-toggle="canvas"],
+    body[data-panel="components"] [data-panel-toggle="components"],
+    body[data-panel="theme"] [data-panel-toggle="theme"] {
+      color: var(--deep);
+      background: var(--surface);
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.10);
     }
-    .component-section__head {
-      margin-bottom: 14px;
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
-    .component-section__head h2 {
-      margin: 0 0 6px;
+    .primary-button,
+    .secondary-button,
+    .ghost-button {
+      min-height: 32px;
+      padding: 7px 12px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 700;
     }
-    .component-grid {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 16px;
+    .primary-button {
+      color: #fff;
+      background: var(--brand);
     }
-    .component-card {
-      min-height: 260px;
-      border: 1px solid var(--bgy-line);
-      border-radius: var(--bgy-card-radius);
-      background: var(--bgy-surface);
-      box-shadow: var(--bgy-panel-shadow);
+    .secondary-button {
+      color: var(--deep);
+      background: #e9f2f6;
+    }
+    .ghost-button {
+      color: var(--text);
+      border: 1px solid var(--line);
+      background: var(--surface);
+    }
+    .left-panel,
+    .inspector {
+      min-height: 0;
+      background: var(--surface);
       overflow: hidden;
     }
+    .left-panel {
+      display: grid;
+      grid-template-rows: auto auto minmax(0, 1fr);
+      border-right: 1px solid var(--line);
+    }
+    .panel-head,
+    .inspector-head {
+      padding: 14px 14px 10px;
+      border-bottom: 1px solid var(--line);
+    }
+    .panel-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .panel-title h1,
+    .panel-title h2,
+    .inspector-head h2 {
+      margin: 0;
+      color: var(--deep);
+      font-size: 15px;
+    }
+    .panel-title small,
+    .inspector-head p,
+    .panel-head p {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+    .search-box {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--line);
+    }
+    .search-box input,
+    .field input,
+    .field select,
+    .field textarea {
+      width: 100%;
+      min-height: 32px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 6px 8px;
+      color: var(--text);
+      background: #fff;
+      outline: none;
+      font-size: 13px;
+    }
+    .field input[type="checkbox"] {
+      width: auto;
+      min-height: 0;
+      margin: 0 6px 0 0;
+      padding: 0;
+      box-shadow: none;
+    }
+    .field span {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+    }
+    .search-box input:focus,
+    .field input:focus,
+    .field select:focus {
+      border-color: var(--brand);
+      box-shadow: 0 0 0 2px rgba(0, 109, 154, 0.12);
+    }
+    .component-scroll {
+      min-height: 0;
+      overflow: auto;
+      padding: 10px 12px 18px;
+      background: #f8fafc;
+    }
+    .studio-component-group {
+      margin-bottom: 14px;
+    }
+    .group-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      margin-bottom: 8px;
+      padding: 7px 8px;
+      color: var(--deep);
+      background: transparent;
+      font-size: 13px;
+      font-weight: 800;
+      text-align: left;
+    }
+    .group-title small {
+      min-width: 24px;
+      border-radius: 99px;
+      color: var(--muted);
+      background: #e8eef4;
+      text-align: center;
+      font-size: 11px;
+      line-height: 18px;
+    }
+    .studio-component-list {
+      display: grid;
+      gap: 10px;
+    }
+    .component-card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+      overflow: hidden;
+    }
+    .component-card.is-selected {
+      border-color: var(--brand);
+      box-shadow: 0 0 0 2px rgba(0, 109, 154, 0.12);
+    }
     .component-card__head {
-      min-height: 96px;
-      padding: 16px 16px 12px;
-      border-bottom: 1px solid var(--bgy-line);
+      padding: 10px 11px 8px;
+      border-bottom: 1px solid var(--line);
     }
     .component-card__head h3 {
-      margin: 0 0 7px;
-      color: var(--bgy-deep-brand);
-      font-size: 17px;
+      margin: 0 0 4px;
+      color: var(--deep);
+      font-size: 13px;
+    }
+    .component-card__head p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.35;
     }
     .component-card__preview {
-      min-height: 160px;
-      padding: 16px;
+      min-height: 112px;
+      padding: 10px;
       background: var(--bgy-panel);
     }
-    .component-card__preview .bgy-table {
-      font-size: 12px;
-    }
+    /* Auto-generated by bgy-html-design. Do not edit by hand. */
+.bgy-card,
+.bgy-panel,
+.bgy-data-card,
+.bgy-project-card,
+.bgy-highlight-card,
+.bgy-risk-card,
+.bgy-problem-card,
+.bgy-bright-card,
+.bgy-conclusion-card,
+.bgy-kpi-card,
+.bgy-progress-panel,
+.bgy-ranking-card,
+.bgy-image-card,
+.bgy-case-card,
+.bgy-chart-frame {
+  position: relative;
+  background: var(--bgy-surface);
+  border: var(--bgy-border-width) solid var(--bgy-line);
+  border-radius: var(--bgy-panel-radius);
+  box-shadow: var(--bgy-panel-shadow);
+  overflow: hidden;
+}
+
+.bgy-card,
+.bgy-kpi-card,
+.bgy-data-card,
+.bgy-project-card,
+.bgy-highlight-card,
+.bgy-risk-card,
+.bgy-problem-card,
+.bgy-bright-card,
+.bgy-conclusion-card,
+.bgy-image-card,
+.bgy-case-card {
+  border-radius: var(--bgy-card-radius);
+  box-shadow: var(--bgy-card-shadow);
+}
+
+.bgy-card__hd,
+.bgy-panel__hd {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 16px 10px;
+}
+
+.bgy-card__body,
+.bgy-panel__body {
+  padding: 16px;
+}
+
+.bgy-card__title,
+.bgy-panel__title,
+.bgy-section-title {
+  margin: 0;
+  font-size: 18px;
+  line-height: 1.2;
+  color: var(--bgy-text);
+  font-weight: 600;
+}
+
+.bgy-card__text,
+.bgy-callout__text,
+.bgy-kpi-card__note,
+.bgy-project-card p,
+.bgy-risk-card p,
+.bgy-conclusion-card p,
+.bgy-image-card p,
+.bgy-case-card p {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--bgy-muted);
+}
+
+.bgy-card__eyebrow {
+  margin: 0 0 7px;
+  color: var(--bgy-brand);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.bgy-section-title {
+  font-size: 16px;
+}
+
+.bgy-metric-card,
+.bgy-kpi-card {
+  position: relative;
+  background: var(--bgy-surface);
+  border: var(--bgy-border-width) solid var(--bgy-line);
+  border-radius: var(--bgy-metric-radius);
+  box-shadow: var(--bgy-card-shadow);
+  padding: 16px;
+}
+
+.bgy-metric-value,
+.bgy-kpi-card__value {
+  margin: 0;
+  font-size: 28px;
+  line-height: 1.05;
+  color: var(--bgy-deep-brand);
+  font-weight: 700;
+}
+
+.bgy-kpi-card--hero .bgy-kpi-card__value {
+  font-size: 42px;
+}
+
+.bgy-metric-label,
+.bgy-kpi-card__label,
+.bgy-kpi-card__unit {
+  margin: 6px 0 0;
+  font-size: 16px;
+  color: var(--bgy-muted);
+}
+
+.bgy-kpi-card__unit {
+  color: var(--bgy-deep-brand);
+  font-weight: 700;
+}
+
+.bgy-kpi-card__row,
+.bgy-project-card,
+.bgy-ranking-card > div,
+.bgy-progress-list > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.bgy-kpi-card__trend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.bgy-kpi-card__trend span,
+.bgy-risk-level,
+.bgy-status-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: var(--bgy-tag-radius);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.bgy-kpi-card__trend span {
+  padding: 5px 8px;
+  color: var(--bgy-success);
+  background: var(--bgy-success-bg);
+  font-size: 13px;
+}
+
+.bgy-status-tag {
+  padding: 5px 10px;
+  border: 1px solid transparent;
+  font-size: 16px;
+  line-height: 1;
+}
+
+.bgy-status-tag.is-success {
+  color: var(--bgy-success);
+  background: var(--bgy-success-bg);
+  border-color: var(--bgy-success-bg);
+}
+
+.bgy-status-tag.is-warning {
+  color: var(--bgy-warning);
+  background: var(--bgy-warning-bg);
+  border-color: var(--bgy-warning-bg);
+}
+
+.bgy-status-tag.is-danger {
+  color: var(--bgy-danger);
+  background: var(--bgy-danger-bg);
+  border-color: var(--bgy-danger-bg);
+}
+
+.bgy-status-tag.is-info {
+  color: var(--bgy-info);
+  background: var(--bgy-info-bg);
+  border-color: var(--bgy-info-bg);
+}
+
+.bgy-data-card,
+.bgy-highlight-card,
+.bgy-risk-card,
+.bgy-problem-card,
+.bgy-bright-card,
+.bgy-conclusion-card {
+  padding: 16px;
+}
+
+.bgy-data-card strong,
+.bgy-highlight-card strong,
+.bgy-risk-card strong,
+.bgy-problem-card strong,
+.bgy-bright-card strong,
+.bgy-conclusion-card strong,
+.bgy-case-card strong {
+  display: block;
+  color: var(--bgy-deep-brand);
+  font-size: 18px;
+  line-height: 1.35;
+}
+
+.bgy-data-card span,
+.bgy-project-card span,
+.bgy-highlight-card span,
+.bgy-conclusion-card span {
+  color: var(--bgy-muted);
+  font-size: 14px;
+}
+
+.bgy-highlight-card {
+  border-left: 5px solid var(--bgy-brand);
+}
+
+.bgy-conclusion-card {
+  background: var(--bgy-panel);
+}
+
+.bgy-risk-card {
+  border-left: 5px solid var(--bgy-danger);
+}
+
+.bgy-risk-card__level {
+  display: inline-flex;
+  margin-bottom: 9px;
+  padding: 5px 8px;
+  border-radius: var(--bgy-tag-radius);
+  color: var(--bgy-danger);
+  background: var(--bgy-danger-bg);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.bgy-risk-card__level.is-medium {
+  color: var(--bgy-warning);
+  background: var(--bgy-warning-bg);
+}
+
+.bgy-divider {
+  width: 100%;
+  height: 1px;
+  background: var(--bgy-line);
+}
+
+.bgy-line {
+  height: 2px;
+  background: var(--bgy-brand);
+}
+
+.bgy-callout {
+  padding: 14px 16px;
+  background: var(--bgy-panel);
+  border-left: 4px solid var(--bgy-brand);
+  border-radius: var(--bgy-panel-radius);
+}
+
+.bgy-callout__title {
+  margin: 0 0 6px;
+  font-size: 16px;
+  color: var(--bgy-deep-brand);
+  font-weight: 600;
+}
+
+.bgy-icon-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--bgy-tag-radius);
+  border: 1px solid var(--bgy-line);
+  background: var(--bgy-panel);
+  color: var(--bgy-brand);
+}
+
+.bgy-image-frame {
+  border-radius: var(--bgy-image-radius);
+  border: 1px solid var(--bgy-line);
+  overflow: hidden;
+  background: var(--bgy-panel);
+}
+
+.bgy-image-frame > img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.bgy-image-placeholder {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  min-height: 92px;
+  color: var(--bgy-muted);
+  background: var(--bgy-panel);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.bgy-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 15px;
+  color: var(--bgy-text);
+}
+
+.bgy-table th,
+.bgy-table td {
+  padding: 9px 11px;
+  border-bottom: 1px solid var(--bgy-table-border);
+  vertical-align: middle;
+}
+
+.bgy-table thead th {
+  background: var(--bgy-table-header-bg);
+  color: var(--bgy-muted);
+  font-weight: 600;
+  text-align: left;
+}
+
+.bgy-table tbody tr:nth-child(even) td {
+  background: var(--bgy-table-row-alt);
+}
+
+.bgy-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--bgy-section-gap);
+}
+
+.bgy-grid {
+  display: grid;
+  gap: var(--bgy-section-gap);
+}
+
+.bgy-grid.cols-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.bgy-grid.cols-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.bgy-surface {
+  background: var(--bgy-surface);
+  border: var(--bgy-border-width) solid var(--bgy-line);
+  box-shadow: var(--bgy-panel-shadow);
+}
+
+.bgy-progress,
+.bgy-progress__track {
+  display: block;
+  width: 100%;
+}
+
+.bgy-progress {
+  margin-top: 10px;
+}
+
+.bgy-progress__track {
+  height: 9px;
+  overflow: hidden;
+  border-radius: var(--bgy-tag-radius);
+  background: var(--bgy-panel);
+  border: 1px solid var(--bgy-line);
+}
+
+.bgy-progress__bar {
+  display: block;
+  height: 100%;
+  border-radius: var(--bgy-tag-radius);
+  background: var(--bgy-brand);
+}
+
+.bgy-progress__bar.is-warning {
+  background: var(--bgy-warning);
+}
+
+.bgy-progress-list {
+  display: grid;
+  gap: 10px;
+}
+
+.bgy-progress-list > div {
+  display: grid;
+  grid-template-columns: 82px 44px 1fr;
+  align-items: center;
+  gap: 10px;
+  color: var(--bgy-text);
+  font-size: 14px;
+}
+
+.bgy-ring-progress {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px;
+  border: 1px solid var(--bgy-line);
+  border-radius: var(--bgy-card-radius);
+  background: var(--bgy-surface);
+}
+
+.bgy-ring-progress__svg {
+  width: 76px;
+  height: 76px;
+  color: var(--bgy-brand);
+}
+
+.bgy-ring-progress strong,
+.bgy-ring-progress__value {
+  display: block;
+  color: var(--bgy-deep-brand);
+  font-size: 24px;
+  line-height: 1.1;
+  font-weight: 700;
+}
+
+.bgy-ring-progress span {
+  color: var(--bgy-muted);
+  font-size: 14px;
+}
+
+.bgy-stage-progress,
+.bgy-milestone-list,
+.bgy-roadmap,
+.bgy-delta-grid,
+.bgy-comparison,
+.bgy-before-after,
+.bgy-chart-split,
+.bgy-advanced-chart-grid,
+.bgy-image-text,
+.bgy-image-grid {
+  display: grid;
+  gap: 12px;
+}
+
+.bgy-delta-grid,
+.bgy-comparison,
+.bgy-before-after,
+.bgy-chart-split,
+.bgy-image-text {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.bgy-advanced-chart-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.bgy-image-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.bgy-stage-progress {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.bgy-stage-progress span,
+.bgy-milestone-list > div,
+.bgy-roadmap > div,
+.bgy-compare-card,
+.bgy-before-after > div,
+.bgy-delta-card,
+.bgy-risk-action > div {
+  padding: 12px;
+  border: 1px solid var(--bgy-line);
+  border-radius: var(--bgy-panel-radius);
+  background: var(--bgy-surface);
+}
+
+.bgy-delta-card {
+  display: grid;
+  gap: 4px;
+  align-items: start;
+}
+
+.bgy-delta-card strong {
+  color: var(--bgy-text);
+  font-size: 15px;
+}
+
+.bgy-delta-card p {
+  margin: 0;
+  color: var(--bgy-muted);
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+.bgy-stage-progress span {
+  text-align: center;
+  color: var(--bgy-muted);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.bgy-stage-progress .is-done {
+  color: var(--bgy-success);
+  background: var(--bgy-success-bg);
+}
+
+.bgy-stage-progress .is-active {
+  color: var(--bgy-brand);
+  border-color: var(--bgy-brand);
+}
+
+.bgy-milestone-list,
+.bgy-roadmap {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.bgy-milestone-list strong,
+.bgy-roadmap strong,
+.bgy-compare-card strong,
+.bgy-before-after strong,
+.bgy-delta-card span,
+.bgy-target-card strong {
+  display: block;
+  color: var(--bgy-deep-brand);
+  font-size: 20px;
+  line-height: 1.2;
+}
+
+.bgy-milestone-list span,
+.bgy-roadmap span,
+.bgy-compare-card span,
+.bgy-before-after span,
+.bgy-target-card span {
+  color: var(--bgy-muted);
+  font-size: 14px;
+}
+
+.bgy-target-card {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  padding: 14px;
+  border: 1px solid var(--bgy-line);
+  border-radius: var(--bgy-card-radius);
+  background: var(--bgy-surface);
+}
+
+.bgy-target-card--wide {
+  min-height: 118px;
+}
+
+.bgy-target-card .is-success,
+.bgy-delta-card.is-up span {
+  color: var(--bgy-success);
+}
+
+.bgy-delta-card.is-down span {
+  color: var(--bgy-danger);
+}
+
+.bgy-compare-card.is-primary {
+  border-color: var(--bgy-brand);
+  background: var(--bgy-panel);
+}
+
+.bgy-chart-frame {
+  min-height: 118px;
+  padding: 14px;
+  box-shadow: var(--bgy-panel-shadow);
+}
+
+.bgy-chart-bars {
+  display: flex;
+  align-items: end;
+  gap: 10px;
+  width: 100%;
+  height: 112px;
+}
+
+.bgy-chart-bars--horizontal {
+  display: grid;
+  align-items: center;
+  height: auto;
+  gap: 9px;
+}
+
+.bgy-chart-bar {
+  display: block;
+  flex: 1;
+  min-width: 0;
+  border-radius: 4px 4px 0 0;
+  background: var(--bgy-brand);
+}
+
+.bgy-chart-bars--horizontal .bgy-chart-bar {
+  height: 18px;
+  border-radius: var(--bgy-tag-radius);
+}
+
+.bgy-chart-bar i {
+  display: block;
+  padding-left: 8px;
+  color: var(--bgy-white);
+  font-style: normal;
+  font-size: 12px;
+  line-height: 18px;
+}
+
+.bgy-chart-line-visual {
+  width: 100%;
+  height: 118px;
+  color: var(--bgy-brand);
+}
+
+.bgy-chart-area-band {
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  bottom: 16px;
+  height: 36px;
+  border-radius: var(--bgy-panel-radius);
+  background: var(--bgy-info-bg);
+}
+
+.bgy-chart-pie-legend,
+.bgy-chart-placeholder {
+  display: grid;
+  place-items: center;
+  min-height: 90px;
+  color: var(--bgy-muted);
+  text-align: center;
+}
+
+.bgy-chart-pie-legend strong {
+  color: var(--bgy-deep-brand);
+  font-size: 28px;
+}
+
+.bgy-chart-placeholder {
+  min-height: 118px;
+  border-style: dashed;
+  font-weight: 700;
+}
+
+.bgy-ranking-list {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.bgy-ranking-list li {
+  display: grid;
+  grid-template-columns: 34px 1fr auto;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 10px;
+  border: 1px solid var(--bgy-line);
+  border-radius: var(--bgy-panel-radius);
+  background: var(--bgy-surface);
+}
+
+.bgy-ranking-list strong {
+  color: var(--bgy-brand);
+  font-size: 18px;
+}
+
+.bgy-ranking-list span {
+  color: var(--bgy-text);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.bgy-ranking-list em {
+  color: var(--bgy-deep-brand);
+  font-style: normal;
+  font-weight: 700;
+}
+
+.bgy-process {
+  display: grid;
+  gap: 10px;
+  align-items: center;
+}
+
+.bgy-process--horizontal {
+  grid-template-columns: 1fr 32px 1fr 32px 1fr;
+}
+
+.bgy-process--vertical {
+  grid-template-columns: 1fr;
+}
+
+.bgy-process-step,
+.bgy-pdca > div {
+  display: grid;
+  place-items: center;
+  min-height: 56px;
+  padding: 10px;
+  border: 1px solid var(--bgy-line);
+  border-radius: var(--bgy-panel-radius);
+  background: var(--bgy-surface);
+  color: var(--bgy-text);
+  text-align: center;
+}
+
+.bgy-process-step strong,
+.bgy-pdca strong {
+  color: var(--bgy-deep-brand);
+  font-size: 16px;
+}
+
+.bgy-process-step span,
+.bgy-pdca span {
+  color: var(--bgy-muted);
+  font-size: 13px;
+}
+
+.bgy-process-line {
+  display: block;
+  width: 32px;
+  height: 2px;
+  background: var(--bgy-brand);
+}
+
+.bgy-process-loop,
+.bgy-pdca {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.bgy-timeline {
+  display: grid;
+  gap: 10px;
+}
+
+.bgy-timeline-item {
+  display: grid;
+  grid-template-columns: 20px 52px 1fr;
+  align-items: start;
+  gap: 9px;
+  padding: 10px;
+  border: 1px solid var(--bgy-line);
+  border-radius: var(--bgy-panel-radius);
+  background: var(--bgy-surface);
+}
+
+.bgy-timeline-dot {
+  width: 13px;
+  height: 13px;
+  margin-top: 4px;
+  border-radius: 50%;
+  background: var(--bgy-brand);
+}
+
+.bgy-timeline-item strong {
+  color: var(--bgy-deep-brand);
+}
+
+.bgy-timeline-item p {
+  margin: 0;
+  color: var(--bgy-muted);
+}
+
+.bgy-risk-levels {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.bgy-risk-level {
+  justify-content: center;
+  min-width: 54px;
+  padding: 8px 10px;
+  border: 1px solid var(--bgy-line);
+  background: var(--bgy-surface);
+}
+
+.bgy-risk-level.is-low {
+  color: var(--bgy-success);
+  background: var(--bgy-success-bg);
+}
+
+.bgy-risk-level.is-medium {
+  color: var(--bgy-warning);
+  background: var(--bgy-warning-bg);
+}
+
+.bgy-risk-level.is-high {
+  color: var(--bgy-danger);
+  background: var(--bgy-danger-bg);
+}
+
+.bgy-risk-matrix {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.bgy-risk-cell {
+  display: grid;
+  place-items: center;
+  min-height: 42px;
+  border-radius: var(--bgy-panel-radius);
+  border: 1px solid var(--bgy-line);
+  font-weight: 700;
+}
+
+.bgy-risk-cell.is-low {
+  color: var(--bgy-success);
+  background: var(--bgy-success-bg);
+}
+
+.bgy-risk-cell.is-medium {
+  color: var(--bgy-warning);
+  background: var(--bgy-warning-bg);
+}
+
+.bgy-risk-cell.is-high {
+  color: var(--bgy-danger);
+  background: var(--bgy-danger-bg);
+}
+
+.bgy-risk-action {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.bgy-risk-action strong {
+  color: var(--bgy-deep-brand);
+}
+
+.bgy-risk-action span {
+  display: block;
+  margin-top: 6px;
+  color: var(--bgy-muted);
+}
+
+.bgy-image-card,
+.bgy-case-card {
+  display: grid;
+  gap: 10px;
+  padding: 12px;
+}
+
+.bgy-image-card .bgy-image-frame,
+.bgy-case-card .bgy-image-frame,
+.bgy-image-grid .bgy-image-frame,
+.bgy-before-after--images .bgy-image-frame {
+  min-height: 82px;
+}
+
+.bgy-image-text {
+  grid-template-columns: 1.2fr 1fr;
+  align-items: stretch;
+}
+
+.bgy-image-text > div:last-child {
+  padding: 12px;
+  border: 1px solid var(--bgy-line);
+  border-radius: var(--bgy-panel-radius);
+  background: var(--bgy-surface);
+}
+
+.bgy-case-card > div:last-child {
+  display: grid;
+  gap: 8px;
+}
+
+    .component-card__preview .bgy-table { font-size: 11px; }
     .component-card__preview .bgy-table th,
-    .component-card__preview .bgy-table td {
-      padding: 6px 7px;
-    }
-    .component-card__preview .bgy-card,
+    .component-card__preview .bgy-table td { padding: 5px 6px; }
     .component-card__preview .bgy-kpi-card,
+    .component-card__preview .bgy-card,
     .component-card__preview .bgy-data-card,
     .component-card__preview .bgy-highlight-card,
     .component-card__preview .bgy-risk-card,
     .component-card__preview .bgy-conclusion-card,
     .component-card__preview .bgy-progress-panel,
     .component-card__preview .bgy-image-card,
-    .component-card__preview .bgy-case-card {
-      padding: 12px;
-    }
+    .component-card__preview .bgy-case-card { padding: 10px; }
+    .component-card__preview .bgy-kpi-card__value,
+    .component-card__preview .bgy-metric-value { font-size: 22px; }
+    .component-card__preview .bgy-kpi-card--hero .bgy-kpi-card__value { font-size: 30px; }
     .component-card__preview .bgy-card__title,
     .component-card__preview .bgy-data-card strong,
     .component-card__preview .bgy-highlight-card strong,
     .component-card__preview .bgy-risk-card strong,
     .component-card__preview .bgy-conclusion-card strong,
-    .component-card__preview .bgy-case-card strong {
-      font-size: 15px;
-    }
-    .component-card__preview .bgy-kpi-card__value,
-    .component-card__preview .bgy-metric-value {
-      font-size: 24px;
-    }
-    .component-card__preview .bgy-kpi-card--hero .bgy-kpi-card__value {
-      font-size: 34px;
-    }
-    .component-card__preview .bgy-status-tag {
-      font-size: 12px;
-      padding: 4px 7px;
-    }
-    .component-card__preview .bgy-chart-frame {
-      min-height: 118px;
-      padding: 10px;
-    }
-    .demo-panel {
-      padding: 14px;
-    }
-    .demo-panel__head {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      margin-bottom: 10px;
-      color: var(--bgy-deep-brand);
-    }
-    .demo-stack {
+    .component-card__preview .bgy-case-card strong { font-size: 14px; }
+    .component-card__preview .bgy-card__text,
+    .component-card__preview .bgy-kpi-card__note,
+    .component-card__preview .bgy-image-card p { font-size: 11px; }
+    .component-card__preview .bgy-status-tag { font-size: 11px; padding: 4px 7px; }
+    .component-card__preview .bgy-chart-frame { min-height: 106px; padding: 8px; }
+    .component-card__preview .bgy-ring-progress__svg { width: 58px; height: 58px; }
+    .stage {
       display: grid;
-      gap: 10px;
-    }
-    .demo-stack__item {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      padding: 11px 12px;
-      border: 1px solid var(--bgy-line);
-      border-radius: var(--bgy-panel-radius);
-      background: var(--bgy-surface);
-      color: var(--bgy-text);
-      font-size: 13px;
-    }
-    .demo-stack__item span {
-      color: var(--bgy-muted);
-    }
-    .demo-divider {
-      display: grid;
-      gap: 14px;
-      padding: 12px;
-      border: 1px solid var(--bgy-line);
-      border-radius: var(--bgy-panel-radius);
-      background: var(--bgy-surface);
-    }
-    .demo-metrics {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 12px;
-    }
-    .demo-tags,
-    .demo-icons {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 10px;
-    }
-    .demo-chart {
-      display: flex;
-      align-items: end;
-      gap: 10px;
-      height: 128px;
-      padding: 14px;
-      border: 1px solid var(--bgy-line);
-      border-radius: var(--bgy-panel-radius);
-      background: var(--bgy-surface);
-    }
-    .demo-chart span {
-      flex: 1;
+      grid-template-rows: auto minmax(0, 1fr) 92px;
       min-width: 0;
-      border-radius: 4px 4px 0 0;
+      min-height: 0;
+      overflow: hidden;
+      background: var(--page);
     }
-    .demo-image-frame {
-      height: 128px;
+    body[data-panel="components"] .stage {
+      grid-template-rows: auto minmax(0, 1fr);
     }
-    .demo-image-placeholder,
-    .demo-mini-image {
+    .stage-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(255,255,255,0.74);
+      backdrop-filter: blur(8px);
+    }
+    .stage-toolbar strong {
+      color: var(--deep);
+      font-size: 14px;
+    }
+    .stage-tools {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .canvas-wrap {
       display: grid;
       place-items: center;
-      width: 100%;
-      height: 100%;
-      color: var(--bgy-muted);
-      background: repeating-linear-gradient(135deg, #f8fafc 0, #f8fafc 8px, #eef3f6 8px, #eef3f6 16px);
-      font-size: 13px;
-      font-weight: 600;
+      min-height: 0;
+      overflow: auto;
+      padding: 28px;
+      background:
+        linear-gradient(#dfe6ed 1px, transparent 1px),
+        linear-gradient(90deg, #dfe6ed 1px, transparent 1px);
+      background-size: 24px 24px;
+      background-color: #eef3f7;
     }
-    .bgy-icon-chip svg {
-      width: 18px;
-      height: 18px;
-      fill: none;
-      stroke: currentColor;
-      stroke-width: 2;
-      stroke-linecap: round;
-      stroke-linejoin: round;
+    body[data-panel="components"] .canvas-wrap {
+      display: none;
     }
-    .demo-hero {
+    body:not([data-panel="components"]) .component-gallery {
+      display: none;
+    }
+    body[data-panel="components"] .page-strip {
+      display: none;
+    }
+    .component-gallery {
+      min-height: 0;
+      overflow: auto;
+      padding: 22px;
+      background:
+        linear-gradient(#e5edf4 1px, transparent 1px),
+        linear-gradient(90deg, #e5edf4 1px, transparent 1px);
+      background-size: 24px 24px;
+      background-color: #f5f8fb;
+    }
+    .component-gallery__inner {
+      max-width: 1120px;
+      margin: 0 auto;
+      display: grid;
+      gap: 18px;
+    }
+    .component-section {
+      display: grid;
+      gap: 10px;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(255,255,255,0.92);
+      box-shadow: 0 10px 28px rgba(15, 23, 42, 0.08);
+    }
+    .component-section__head {
       display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
       gap: 16px;
-      padding: 18px;
-      border-left: 5px solid var(--bgy-brand);
-      border-radius: var(--bgy-panel-radius);
-      background: var(--bgy-surface);
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--line);
     }
-    .demo-hero > span {
-      color: var(--bgy-brand);
-      font-size: 30px;
+    .component-section__head h2 {
+      margin: 0 0 4px;
+      color: var(--deep);
+      font-size: 15px;
+    }
+    .component-section__head p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+    .component-section__head span {
+      flex: 0 0 auto;
+      padding: 5px 8px;
+      border-radius: 999px;
+      color: var(--muted);
+      background: #edf3f7;
+      font-size: 11px;
       font-weight: 700;
     }
-    .demo-hero h3 {
-      margin: 0 0 8px;
-      color: var(--bgy-deep-brand);
-      font-size: 20px;
+    .component-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(236px, 1fr));
+      gap: 12px;
+      align-items: start;
     }
-    .demo-two-col,
-    .demo-comparison {
+    .preview {
+      width: 960px;
+      height: 540px;
+      background: #fff;
+      border: 1px solid #cfd9e3;
+      box-shadow: 0 14px 34px rgba(15, 23, 42, 0.18);
+      transform-origin: center;
+      overflow: hidden;
+      position: relative;
+    }
+    .slide {
+      position: absolute;
+      inset: 0;
+      padding: 54px 60px;
+      background: var(--bgy-page-bg);
+      color: var(--bgy-text);
+      font-family: var(--bgy-font-family);
+    }
+    .title {
+      display: flex;
+      align-items: baseline;
+      gap: 22px;
+      color: var(--bgy-brand);
+      font-weight: 700;
+      font-size: 25px;
+    }
+    .title span:first-child {
+      font-size: 35px;
+    }
+    .preview-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-top: 34px;
+    }
+    .slide-card {
+      height: 120px;
+      padding: 16px;
+      border: 1px solid var(--bgy-line);
+      border-radius: var(--bgy-card-radius);
+      background: var(--bgy-surface);
+      box-shadow: var(--bgy-card-shadow);
+    }
+    .metric {
+      color: var(--bgy-deep-brand);
+      font-size: 24px;
+      line-height: 1;
+      font-weight: 700;
+    }
+    .label {
+      margin-top: 8px;
+      color: var(--bgy-muted);
+      font-size: 12px;
+    }
+    .tag-row {
+      display: flex;
+      gap: 8px;
+      margin: 24px 0 14px;
+    }
+    .tag {
+      padding: 6px 10px;
+      border-radius: var(--bgy-tag-radius);
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .success { color: var(--bgy-success); background: var(--bgy-success-bg); }
+    .warning { color: var(--bgy-warning); background: var(--bgy-warning-bg); }
+    .danger { color: var(--bgy-danger); background: var(--bgy-danger-bg); }
+    .preview table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+    .preview th,
+    .preview td {
+      padding: 8px 10px;
+      border-bottom: 1px solid var(--bgy-line);
+      text-align: left;
+    }
+    .preview th {
+      color: var(--bgy-muted);
+      background: var(--bgy-panel);
+    }
+    .palette {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 8px;
+      margin-top: 18px;
+    }
+    .swatch {
+      height: 32px;
+      border-radius: 5px;
+      border: 1px solid rgba(0,0,0,0.08);
+    }
+    .page-strip {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 14px;
+      border-top: 1px solid var(--line);
+      background: var(--surface);
+      overflow-x: auto;
+    }
+    .page-thumb {
+      flex: 0 0 118px;
+      height: 66px;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      color: var(--deep);
+      background: #fff;
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .page-thumb.is-active {
+      border-color: var(--brand);
+      box-shadow: 0 0 0 2px rgba(0, 109, 154, 0.10);
+    }
+    .inspector {
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr) auto;
+      border-left: 1px solid var(--line);
+    }
+    .inspector-body {
+      min-height: 0;
+      overflow: auto;
+      padding: 12px 14px 18px;
+    }
+    .inspector-section {
+      margin-bottom: 16px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--line);
+    }
+    .inspector-section h3 {
+      margin: 0 0 10px;
+      color: var(--deep);
+      font-size: 13px;
+    }
+    .field {
+      display: grid;
+      gap: 5px;
+      margin-bottom: 10px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .field-row {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 12px;
+      gap: 10px;
     }
-    .demo-two-col > div,
-    .demo-comparison > div {
-      min-height: 118px;
-      padding: 13px;
-      border: 1px solid var(--bgy-line);
-      border-radius: var(--bgy-panel-radius);
-      background: var(--bgy-surface);
-    }
-    .demo-timeline {
+    .color-grid {
       display: grid;
-      gap: 12px;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
     }
-    .demo-timeline > div {
-      position: relative;
-      padding-left: 28px;
+    .color-grid .field {
+      margin: 0;
     }
-    .demo-timeline span {
-      position: absolute;
-      left: 0;
-      top: 4px;
-      width: 14px;
+    .color-grid input {
+      min-height: 30px;
+      padding: 2px;
+    }
+    .preset-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      max-height: 292px;
+      overflow: auto;
+      padding-right: 2px;
+    }
+    .preset-card {
+      display: grid;
+      gap: 6px;
+      min-height: 118px;
+      padding: 10px;
+      color: var(--text);
+      text-align: left;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+    }
+    .preset-card.is-active,
+    body[data-theme-mode="custom"] .preset-card--custom {
+      border-color: var(--brand);
+      box-shadow: 0 0 0 2px rgba(0, 109, 154, 0.12);
+    }
+    .preset-card__label {
+      color: var(--deep);
+      font-size: 13px;
+      font-weight: 800;
+    }
+    .preset-card__desc,
+    .preset-card__meta {
+      color: var(--muted);
+      font-size: 10px;
+      line-height: 1.35;
+    }
+    .preset-card__colors,
+    .color-strip {
+      display: flex;
+      gap: 3px;
       height: 14px;
-      border-radius: 50%;
-      background: var(--bgy-brand);
-      box-shadow: 0 0 0 4px var(--bgy-info-bg);
     }
-    @media (max-width: 980px) {
-      .board { width: 100%; }
-      .component-grid { grid-template-columns: 1fr; }
+    .preset-card__colors span,
+    .color-strip span {
+      flex: 1;
+      min-width: 0;
+      border-radius: 3px;
+      border: 1px solid rgba(15, 23, 42, 0.08);
+    }
+    .mode-toggle {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 6px;
+      margin-bottom: 10px;
+      padding: 4px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #f6f9fb;
+    }
+    .mode-toggle button {
+      min-height: 30px;
+      border-radius: 5px;
+      color: var(--muted);
+      background: transparent;
+      font-size: 12px;
+      font-weight: 700;
+    }
+    body[data-theme-mode="preset"] .mode-toggle [data-mode-toggle="preset"],
+    body[data-theme-mode="custom"] .mode-toggle [data-mode-toggle="custom"] {
+      background: var(--brand);
+      color: #fff;
+    }
+    body[data-theme-mode="preset"] .custom-editor {
+      display: none;
+    }
+    .selected-preview {
+      min-height: 130px;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--bgy-panel);
+    }
+    .code-box {
+      display: block;
+      min-height: 72px;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      color: #334155;
+      background: #f8fafc;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font: 12px/1.45 Consolas, "Microsoft YaHei", monospace;
+    }
+    .status {
+      padding: 10px 14px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      background: var(--tool-surface);
+      font-size: 12px;
+      line-height: 1.45;
+      white-space: pre-wrap;
+    }
+    .empty-state {
+      padding: 16px;
+      color: var(--muted);
+      text-align: center;
+      font-size: 12px;
+    }
+    @media (max-width: 1160px) {
+      .studio {
+        grid-template-columns: 300px minmax(520px, 1fr);
+      }
+      .inspector {
+        display: none;
+      }
     }
   </style>
 </head>
-<body>
-  <main class="board">
-    <section class="board-head">
-      <div>
-        <h1>项目级设计契约样例</h1>
-        <p>项目级设计契约已锁定，preset：management-report。</p>
+<body data-theme-mode="preset" data-panel="components">
+  <div class="studio">
+    <header class="topbar">
+      <div class="brand-lockup"><strong>BGY Project Studio</strong><span>项目级设计契约样例</span></div>
+      <nav class="workspace-tabs" aria-label="工作区">
+        <button type="button" data-panel-toggle="canvas">画布</button>
+        <button type="button" data-panel-toggle="components">组件</button>
+        <button type="button" data-panel-toggle="theme">主题</button>
+      </nav>
+      <div class="top-actions">
+        <button id="syncProject" class="secondary-button" type="button">同步</button>
+        <button id="downloadTop" class="ghost-button" type="button">下载 JSON</button>
+        <button id="saveTop" class="primary-button" type="button">保存</button>
       </div>
-      <div class="meta">
-        <div>项目类型：management-report</div>
-        <div>图标包：line</div>
-        <div>PPTX 可编辑优先级：high</div>
-      </div>
-    </section>
+    </header>
 
-    <h2>主题色</h2>
-    <section class="palette">
-      <div class="swatch"><div class="swatch-color" style="background:#006d9a"></div><div class="swatch-label">主色<br>#006d9a</div></div><div class="swatch"><div class="swatch-color" style="background:#004b6b"></div><div class="swatch-label">深主色<br>#004b6b</div></div><div class="swatch"><div class="swatch-color" style="background:#2e7d32"></div><div class="swatch-label">成功<br>#2e7d32</div></div><div class="swatch"><div class="swatch-color" style="background:#c97400"></div><div class="swatch-label">警示<br>#c97400</div></div><div class="swatch"><div class="swatch-color" style="background:#c00000"></div><div class="swatch-label">风险<br>#c00000</div></div><div class="swatch"><div class="swatch-color" style="background:#2b6cb0"></div><div class="swatch-label">信息<br>#2b6cb0</div></div><div class="swatch"><div class="swatch-color" style="background:#1f2933"></div><div class="swatch-label">正文<br>#1f2933</div></div><div class="swatch"><div class="swatch-color" style="background:#d8e3ea"></div><div class="swatch-label">线条<br>#d8e3ea</div></div>
-    </section>
-
-    <h2>组件库</h2>
-    <p>以下按组件类型展示当前主题下的可复用样式，生成 PPT 页面时优先复用这些结构和 class。</p>
-    <nav class="component-nav"><a href="#kpi">KPI 指标</a><a href="#card">Card 卡片</a><a href="#chart">Chart 图表</a><a href="#progress">Progress 进度</a><a href="#comparison">Comparison 对比</a><a href="#ranking">Ranking 排名</a><a href="#process">Process 流程</a><a href="#timeline">Timeline 时间轴</a><a href="#risk">Risk / Problem 风险问题</a><a href="#image">Image / Case 图片案例</a></nav>
-    <section class="component-section" id="kpi">
-    <div class="component-section__head">
-      <div>
-        <h2>KPI 指标</h2>
-        <p>经营汇报最高频组件，优先保留为文本、形状和进度条。</p>
+    <aside class="left-panel">
+      <div class="panel-head">
+        <div class="panel-title"><h1>组件库</h1><small>49 个</small></div>
+        <p>KPI、图表、进度、流程、风险、图片案例统一从这里选择。</p>
       </div>
-    </div>
-    <div class="component-grid">
-      <article class="component-card" id="component-kpi-card">
+      <div class="search-box">
+        <input id="componentSearch" type="search" placeholder="搜索组件 / class / 场景">
+      </div>
+      <div class="component-scroll" id="componentScroll"><section class="studio-component-group" data-component-group="kpi">
+    <button type="button" class="group-title" data-group-jump="kpi">
+      <span>KPI 指标</span>
+      <small>6</small>
+    </button>
+    <div class="studio-component-list">
+      <article class="component-card" id="studio-component-kpi-card" data-component-ref="kpi-card">
     <div class="component-card__head">
       <h3>KPI Card</h3>
       <p>标题、数值、说明三层信息。</p>
@@ -375,7 +1628,7 @@
         <p class="bgy-kpi-card__value">96.4%</p>
         <p class="bgy-kpi-card__note">较计划进度高 3.2pct</p>
       </div></div>
-  </article><article class="component-card" id="component-kpi-big-number">
+  </article><article class="component-card" id="studio-component-kpi-big-number" data-component-ref="kpi-big-number">
     <div class="component-card__head">
       <h3>大数字指标</h3>
       <p>用于单页核心结论或封面指标。</p>
@@ -385,7 +1638,7 @@
         <p class="bgy-kpi-card__value">128</p>
         <p class="bgy-kpi-card__unit">项</p>
       </div></div>
-  </article><article class="component-card" id="component-kpi-trend">
+  </article><article class="component-card" id="studio-component-kpi-trend" data-component-ref="kpi-trend">
     <div class="component-card__head">
       <h3>指标 + 趋势</h3>
       <p>展示同比、环比和趋势方向。</p>
@@ -395,7 +1648,7 @@
         <p class="bgy-kpi-card__value">92.8%</p>
         <div class="bgy-kpi-card__trend is-up"><span>同比 +4.6%</span><span>环比 +1.8%</span></div>
       </div></div>
-  </article><article class="component-card" id="component-kpi-cycle">
+  </article><article class="component-card" id="studio-component-kpi-cycle" data-component-ref="kpi-cycle">
     <div class="component-card__head">
       <h3>同比 / 环比</h3>
       <p>同一指标的两种变化口径。</p>
@@ -404,7 +1657,7 @@
         <div class="bgy-delta-card is-up"><strong>同比</strong><span>+6.2%</span><p>品质问题下降</p></div>
         <div class="bgy-delta-card is-down"><strong>环比</strong><span>-1.4%</span><p>能耗略有回升</p></div>
       </div></div>
-  </article><article class="component-card" id="component-kpi-target">
+  </article><article class="component-card" id="studio-component-kpi-target" data-component-ref="kpi-target">
     <div class="component-card__head">
       <h3>指标 + 目标</h3>
       <p>目标值、实际值和偏差一起展示。</p>
@@ -414,7 +1667,7 @@
         <div><span>实际</span><strong>96.4%</strong></div>
         <div><span>偏差</span><strong class="is-success">+1.4pct</strong></div>
       </div></div>
-  </article><article class="component-card" id="component-kpi-progress">
+  </article><article class="component-card" id="studio-component-kpi-progress" data-component-ref="kpi-progress">
     <div class="component-card__head">
       <h3>指标 + 完成率</h3>
       <p>用真实进度条表达达成比例。</p>
@@ -428,15 +1681,13 @@
       </div></div>
   </article>
     </div>
-  </section><section class="component-section" id="card">
-    <div class="component-section__head">
-      <div>
-        <h2>Card 卡片</h2>
-        <p>承载结论、问题、亮点、项目和风险信息。</p>
-      </div>
-    </div>
-    <div class="component-grid">
-      <article class="component-card" id="component-card-normal">
+  </section><section class="studio-component-group" data-component-group="card">
+    <button type="button" class="group-title" data-group-jump="card">
+      <span>Card 卡片</span>
+      <small>6</small>
+    </button>
+    <div class="studio-component-list">
+      <article class="component-card" id="studio-component-card-normal" data-component-ref="card-normal">
     <div class="component-card__head">
       <h3>普通 Card</h3>
       <p>正文信息承载容器。</p>
@@ -447,7 +1698,7 @@
           <p class="bgy-card__text">用于承载说明、摘要、责任项和小型信息组。</p>
         </div>
       </article></div>
-  </article><article class="component-card" id="component-card-data">
+  </article><article class="component-card" id="studio-component-card-data" data-component-ref="card-data">
     <div class="component-card__head">
       <h3>数据 Card</h3>
       <p>指标与解释组合。</p>
@@ -457,7 +1708,7 @@
         <strong>收入完成率 101.2%</strong>
         <span>重点项目贡献 42%</span>
       </article></div>
-  </article><article class="component-card" id="component-card-project">
+  </article><article class="component-card" id="studio-component-card-project" data-component-ref="card-project">
     <div class="component-card__head">
       <h3>项目 Card</h3>
       <p>项目名称、状态、责任人。</p>
@@ -466,7 +1717,7 @@
         <div><h3>凤凰城项目</h3><p>责任：工程部</p></div>
         <span class="bgy-status-tag is-warning">推进中</span>
       </article></div>
-  </article><article class="component-card" id="component-card-highlight">
+  </article><article class="component-card" id="studio-component-card-highlight" data-component-ref="card-highlight">
     <div class="component-card__head">
       <h3>重点 Card</h3>
       <p>强调结论或关键动作。</p>
@@ -475,7 +1726,7 @@
         <p class="bgy-card__eyebrow">本页重点</p>
         <strong>客户诉求平均闭环时长缩短 18%</strong>
       </article></div>
-  </article><article class="component-card" id="component-card-risk">
+  </article><article class="component-card" id="studio-component-card-risk" data-component-ref="card-risk">
     <div class="component-card__head">
       <h3>风险 Card</h3>
       <p>用于风险提示和逾期事项。</p>
@@ -485,7 +1736,7 @@
         <strong>消防整改仍有 2 项需协调</strong>
         <p>建议本周完成复核并更新台账。</p>
       </article></div>
-  </article><article class="component-card" id="component-card-conclusion">
+  </article><article class="component-card" id="studio-component-card-conclusion" data-component-ref="card-conclusion">
     <div class="component-card__head">
       <h3>结论 Card</h3>
       <p>适合页面右侧管理结论。</p>
@@ -496,15 +1747,13 @@
       </article></div>
   </article>
     </div>
-  </section><section class="component-section" id="chart">
-    <div class="component-section__head">
-      <div>
-        <h2>Chart 图表</h2>
-        <p>有数据时使用 data-ppt-chart，复杂图形先用占位契约。</p>
-      </div>
-    </div>
-    <div class="component-grid">
-      <article class="component-card" id="component-chart-bar">
+  </section><section class="studio-component-group" data-component-group="chart">
+    <button type="button" class="group-title" data-group-jump="chart">
+      <span>Chart 图表</span>
+      <small>6</small>
+    </button>
+    <div class="studio-component-list">
+      <article class="component-card" id="studio-component-chart-bar" data-component-ref="chart-bar">
     <div class="component-card__head">
       <h3>柱状图</h3>
       <p>显式数据，可转原生图表。</p>
@@ -514,7 +1763,7 @@
           <span class="bgy-chart-bar" style="height:82%;background:#006d9a"></span><span class="bgy-chart-bar" style="height:91%;background:#2e7d32"></span><span class="bgy-chart-bar" style="height:96%;background:#c00000"></span><span class="bgy-chart-bar" style="height:88%;background:#c97400"></span>
         </div>
       </div></div>
-  </article><article class="component-card" id="component-chart-horizontal">
+  </article><article class="component-card" id="studio-component-chart-horizontal" data-component-ref="chart-horizontal">
     <div class="component-card__head">
       <h3>横向柱状图</h3>
       <p>适合项目或区域对比。</p>
@@ -524,7 +1773,7 @@
           <span class="bgy-chart-bar" style="width:82%;background:#006d9a"><i>一区</i></span><span class="bgy-chart-bar" style="width:91%;background:#2e7d32"><i>二区</i></span><span class="bgy-chart-bar" style="width:96%;background:#c00000"><i>三区</i></span><span class="bgy-chart-bar" style="width:88%;background:#c97400"><i>四区</i></span>
         </div>
       </div></div>
-  </article><article class="component-card" id="component-chart-line">
+  </article><article class="component-card" id="studio-component-chart-line" data-component-ref="chart-line">
     <div class="component-card__head">
       <h3>折线图</h3>
       <p>适合月度趋势。</p>
@@ -535,7 +1784,7 @@
           <circle cx="8" cy="86" r="4"/><circle cx="72" cy="64" r="4"/><circle cx="136" cy="42" r="4"/><circle cx="212" cy="20" r="4"/>
         </svg>
       </div></div>
-  </article><article class="component-card" id="component-chart-area">
+  </article><article class="component-card" id="studio-component-chart-area" data-component-ref="chart-area">
     <div class="component-card__head">
       <h3>面积图</h3>
       <p>作为 line 数据图表的预览变体。</p>
@@ -547,7 +1796,7 @@
           <polyline points="8,86 72,64 136,42 212,20" fill="none" stroke="currentColor" stroke-width="3"/>
         </svg>
       </div></div>
-  </article><article class="component-card" id="component-chart-pie-donut">
+  </article><article class="component-card" id="studio-component-chart-pie-donut" data-component-ref="chart-pie-donut">
     <div class="component-card__head">
       <h3>饼图 / 环形图</h3>
       <p>饼图可原生；环形先保留占位。</p>
@@ -564,7 +1813,7 @@
           <span class="bgy-ring-progress__value">78%</span>
         </div>
       </div></div>
-  </article><article class="component-card" id="component-chart-advanced">
+  </article><article class="component-card" id="studio-component-chart-advanced" data-component-ref="chart-advanced">
     <div class="component-card__head">
       <h3>雷达 / 组合 / 瀑布</h3>
       <p>先占位，避免从视觉反推数据。</p>
@@ -576,15 +1825,13 @@
       </div></div>
   </article>
     </div>
-  </section><section class="component-section" id="progress">
-    <div class="component-section__head">
-      <div>
-        <h2>Progress 进度</h2>
-        <p>项目进度、目标达成率、阶段节点和里程碑。</p>
-      </div>
-    </div>
-    <div class="component-grid">
-      <article class="component-card" id="component-progress-bar">
+  </section><section class="studio-component-group" data-component-group="progress">
+    <button type="button" class="group-title" data-group-jump="progress">
+      <span>Progress 进度</span>
+      <small>6</small>
+    </button>
+    <div class="studio-component-list">
+      <article class="component-card" id="studio-component-progress-bar" data-component-ref="progress-bar">
     <div class="component-card__head">
       <h3>进度条</h3>
       <p>最稳定的 PPT 友好进度表达。</p>
@@ -593,7 +1840,7 @@
         <div class="bgy-kpi-card__row"><span>项目推进</span><strong>84%</strong></div>
         <div class="bgy-progress"><span class="bgy-progress__track"><span class="bgy-progress__bar" style="width:84%"></span></span></div>
       </div></div>
-  </article><article class="component-card" id="component-progress-ring">
+  </article><article class="component-card" id="studio-component-progress-ring" data-component-ref="progress-ring">
     <div class="component-card__head">
       <h3>环形进度</h3>
       <p>用于完成率概览，文字仍为 DOM。</p>
@@ -605,7 +1852,7 @@
         </svg>
         <div><strong>78%</strong><span>完成率</span></div>
       </div></div>
-  </article><article class="component-card" id="component-progress-completion">
+  </article><article class="component-card" id="studio-component-progress-completion" data-component-ref="progress-completion">
     <div class="component-card__head">
       <h3>完成率</h3>
       <p>状态标签加进度条组合。</p>
@@ -615,7 +1862,7 @@
         <div><span>客户闭环</span><strong>92%</strong><span class="bgy-progress__track"><span class="bgy-progress__bar" style="width:92%"></span></span></div>
         <div><span>整改复核</span><strong>76%</strong><span class="bgy-progress__track"><span class="bgy-progress__bar is-warning" style="width:76%"></span></span></div>
       </div></div>
-  </article><article class="component-card" id="component-progress-target">
+  </article><article class="component-card" id="studio-component-progress-target" data-component-ref="progress-target">
     <div class="component-card__head">
       <h3>目标达成率</h3>
       <p>目标值、实际值、达成率。</p>
@@ -625,7 +1872,7 @@
         <div><span>实际</span><strong>128项</strong></div>
         <div><span>达成率</span><strong class="is-success">106.7%</strong></div>
       </div></div>
-  </article><article class="component-card" id="component-progress-stage">
+  </article><article class="component-card" id="studio-component-progress-stage" data-component-ref="progress-stage">
     <div class="component-card__head">
       <h3>阶段进度</h3>
       <p>用于多阶段项目推进。</p>
@@ -633,7 +1880,7 @@
     <div class="component-card__preview"><div class="bgy-stage-progress">
         <span class="is-done">立项</span><span class="is-done">执行</span><span class="is-active">复核</span><span>归档</span>
       </div></div>
-  </article><article class="component-card" id="component-progress-milestone">
+  </article><article class="component-card" id="studio-component-progress-milestone" data-component-ref="progress-milestone">
     <div class="component-card__head">
       <h3>里程碑</h3>
       <p>节点、责任和日期。</p>
@@ -645,15 +1892,13 @@
       </div></div>
   </article>
     </div>
-  </section><section class="component-section" id="comparison">
-    <div class="component-section__head">
-      <div>
-        <h2>Comparison 对比</h2>
-        <p>同比、环比、目标实际、计划完成和前后对比。</p>
-      </div>
-    </div>
-    <div class="component-grid">
-      <article class="component-card" id="component-compare-yoy">
+  </section><section class="studio-component-group" data-component-group="comparison">
+    <button type="button" class="group-title" data-group-jump="comparison">
+      <span>Comparison 对比</span>
+      <small>5</small>
+    </button>
+    <div class="studio-component-list">
+      <article class="component-card" id="studio-component-compare-yoy" data-component-ref="compare-yoy">
     <div class="component-card__head">
       <h3>同比 / 环比</h3>
       <p>变化方向和幅度同屏展示。</p>
@@ -662,7 +1907,7 @@
         <div class="bgy-delta-card is-up"><strong>同比</strong><span>+8.4%</span><p>收入提升</p></div>
         <div class="bgy-delta-card is-down"><strong>环比</strong><span>-2.1%</span><p>投诉下降</p></div>
       </div></div>
-  </article><article class="component-card" id="component-compare-target">
+  </article><article class="component-card" id="studio-component-compare-target" data-component-ref="compare-target">
     <div class="component-card__head">
       <h3>目标 vs 实际</h3>
       <p>管理汇报常用结果判断。</p>
@@ -671,7 +1916,7 @@
         <div class="bgy-compare-card"><span>目标</span><strong>95%</strong></div>
         <div class="bgy-compare-card is-primary"><span>实际</span><strong>96.4%</strong></div>
       </div></div>
-  </article><article class="component-card" id="component-compare-plan">
+  </article><article class="component-card" id="studio-component-compare-plan" data-component-ref="compare-plan">
     <div class="component-card__head">
       <h3>计划 vs 完成</h3>
       <p>适合任务推进复盘。</p>
@@ -680,7 +1925,7 @@
         <thead><tr><th>事项</th><th>计划</th><th>完成</th></tr></thead>
         <tbody><tr><td>巡检</td><td>40</td><td>42</td></tr><tr><td>整改</td><td>18</td><td>16</td></tr></tbody>
       </table></div>
-  </article><article class="component-card" id="component-compare-before-after">
+  </article><article class="component-card" id="studio-component-compare-before-after" data-component-ref="compare-before-after">
     <div class="component-card__head">
       <h3>Before / After</h3>
       <p>改善前后对比。</p>
@@ -689,7 +1934,7 @@
         <div><span>Before</span><strong>流程分散</strong><p>跨部门沟通慢</p></div>
         <div><span>After</span><strong>统一闭环</strong><p>责任节点清晰</p></div>
       </div></div>
-  </article><article class="component-card" id="component-compare-ab">
+  </article><article class="component-card" id="studio-component-compare-ab" data-component-ref="compare-ab">
     <div class="component-card__head">
       <h3>A vs B</h3>
       <p>方案、项目或区域比较。</p>
@@ -700,15 +1945,13 @@
       </div></div>
   </article>
     </div>
-  </section><section class="component-section" id="ranking">
-    <div class="component-section__head">
-      <div>
-        <h2>Ranking 排名</h2>
-        <p>区域、城市、项目和指标排名。</p>
-      </div>
-    </div>
-    <div class="component-grid">
-      <article class="component-card" id="component-ranking-top3">
+  </section><section class="studio-component-group" data-component-group="ranking">
+    <button type="button" class="group-title" data-group-jump="ranking">
+      <span>Ranking 排名</span>
+      <small>3</small>
+    </button>
+    <div class="studio-component-list">
+      <article class="component-card" id="studio-component-ranking-top3" data-component-ref="ranking-top3">
     <div class="component-card__head">
       <h3>TOP 3</h3>
       <p>前三名重点突出。</p>
@@ -718,7 +1961,7 @@
         <li><strong>02</strong><span>云山府</span><em>96.8</em></li>
         <li><strong>03</strong><span>湖畔苑</span><em>95.1</em></li>
       </ol></div>
-  </article><article class="component-card" id="component-ranking-list">
+  </article><article class="component-card" id="studio-component-ranking-list" data-component-ref="ranking-list">
     <div class="component-card__head">
       <h3>TOP 5 / TOP 10</h3>
       <p>适合经营指标列表。</p>
@@ -729,7 +1972,7 @@
         <li><strong>3</strong><span>三区</span><em>94.8%</em></li>
         <li><strong>4</strong><span>四区</span><em>91.3%</em></li>
       </ol></div>
-  </article><article class="component-card" id="component-ranking-project">
+  </article><article class="component-card" id="studio-component-ranking-project" data-component-ref="ranking-project">
     <div class="component-card__head">
       <h3>项目 / 城市排名</h3>
       <p>带指标值和趋势标记。</p>
@@ -740,15 +1983,13 @@
       </div></div>
   </article>
     </div>
-  </section><section class="component-section" id="process">
-    <div class="component-section__head">
-      <div>
-        <h2>Process 流程</h2>
-        <p>管理逻辑、业务闭环、横纵流程和 PDCA。</p>
-      </div>
-    </div>
-    <div class="component-grid">
-      <article class="component-card" id="component-process-horizontal">
+  </section><section class="studio-component-group" data-component-group="process">
+    <button type="button" class="group-title" data-group-jump="process">
+      <span>Process 流程</span>
+      <small>4</small>
+    </button>
+    <div class="studio-component-list">
+      <article class="component-card" id="studio-component-process-horizontal" data-component-ref="process-horizontal">
     <div class="component-card__head">
       <h3>横向流程</h3>
       <p>用真实线条和箭头连接。</p>
@@ -758,7 +1999,7 @@
         <div class="bgy-process-step"><strong>分析</strong><span>原因</span></div><span class="bgy-process-line" data-ppt-line-end="triangle"></span>
         <div class="bgy-process-step"><strong>执行</strong><span>措施</span></div>
       </div></div>
-  </article><article class="component-card" id="component-process-vertical">
+  </article><article class="component-card" id="studio-component-process-vertical" data-component-ref="process-vertical">
     <div class="component-card__head">
       <h3>纵向流程</h3>
       <p>适合整改链路和审批链路。</p>
@@ -768,7 +2009,7 @@
         <div class="bgy-process-step"><strong>处理</strong><span>整改</span></div>
         <div class="bgy-process-step"><strong>验收</strong><span>闭环</span></div>
       </div></div>
-  </article><article class="component-card" id="component-process-loop">
+  </article><article class="component-card" id="studio-component-process-loop" data-component-ref="process-loop">
     <div class="component-card__head">
       <h3>业务闭环</h3>
       <p>问题到验收的闭环表达。</p>
@@ -777,7 +2018,7 @@
         <div class="bgy-process-step">发现问题</div><div class="bgy-process-step">制定措施</div>
         <div class="bgy-process-step">执行复核</div><div class="bgy-process-step">验收闭环</div>
       </div></div>
-  </article><article class="component-card" id="component-process-pdca">
+  </article><article class="component-card" id="studio-component-process-pdca" data-component-ref="process-pdca">
     <div class="component-card__head">
       <h3>PDCA</h3>
       <p>计划、执行、检查、处理。</p>
@@ -787,15 +2028,13 @@
       </div></div>
   </article>
     </div>
-  </section><section class="component-section" id="timeline">
-    <div class="component-section__head">
-      <div>
-        <h2>Timeline 时间轴</h2>
-        <p>项目过程、月度计划和路线图。</p>
-      </div>
-    </div>
-    <div class="component-grid">
-      <article class="component-card" id="component-timeline-project">
+  </section><section class="studio-component-group" data-component-group="timeline">
+    <button type="button" class="group-title" data-group-jump="timeline">
+      <span>Timeline 时间轴</span>
+      <small>3</small>
+    </button>
+    <div class="studio-component-list">
+      <article class="component-card" id="studio-component-timeline-project" data-component-ref="timeline-project">
     <div class="component-card__head">
       <h3>项目时间轴</h3>
       <p>展示关键节点和责任。</p>
@@ -805,7 +2044,7 @@
         <div class="bgy-timeline-item"><span class="bgy-timeline-dot"></span><strong>8月</strong><p>页面复用</p></div>
         <div class="bgy-timeline-item"><span class="bgy-timeline-dot"></span><strong>9月</strong><p>PPTX 交付</p></div>
       </div></div>
-  </article><article class="component-card" id="component-timeline-month">
+  </article><article class="component-card" id="studio-component-timeline-month" data-component-ref="timeline-month">
     <div class="component-card__head">
       <h3>月度时间轴</h3>
       <p>适合月报计划。</p>
@@ -815,7 +2054,7 @@
         <div><strong>第2周</strong><span>整改推进</span></div>
         <div><strong>第4周</strong><span>复盘归档</span></div>
       </div></div>
-  </article><article class="component-card" id="component-timeline-roadmap">
+  </article><article class="component-card" id="studio-component-timeline-roadmap" data-component-ref="timeline-roadmap">
     <div class="component-card__head">
       <h3>Roadmap</h3>
       <p>跨阶段规划。</p>
@@ -827,15 +2066,13 @@
       </div></div>
   </article>
     </div>
-  </section><section class="component-section" id="risk">
-    <div class="component-section__head">
-      <div>
-        <h2>Risk / Problem 风险问题</h2>
-        <p>风险等级、问题清单、风险矩阵和整改进度。</p>
-      </div>
-    </div>
-    <div class="component-grid">
-      <article class="component-card" id="component-risk-card">
+  </section><section class="studio-component-group" data-component-group="risk">
+    <button type="button" class="group-title" data-group-jump="risk">
+      <span>Risk / Problem 风险问题</span>
+      <small>5</small>
+    </button>
+    <div class="studio-component-list">
+      <article class="component-card" id="studio-component-risk-card" data-component-ref="risk-card">
     <div class="component-card__head">
       <h3>风险 / 问题 Card</h3>
       <p>单项风险说明。</p>
@@ -845,7 +2082,7 @@
         <strong>外包维保响应时效不足</strong>
         <p>需明确 SLA 并按周复核。</p>
       </article></div>
-  </article><article class="component-card" id="component-risk-level">
+  </article><article class="component-card" id="studio-component-risk-level" data-component-ref="risk-level">
     <div class="component-card__head">
       <h3>风险等级</h3>
       <p>低、中、高等级标签。</p>
@@ -853,7 +2090,7 @@
     <div class="component-card__preview"><div class="bgy-risk-levels">
         <span class="bgy-risk-level is-low">低</span><span class="bgy-risk-level is-medium">中</span><span class="bgy-risk-level is-high">高</span>
       </div></div>
-  </article><article class="component-card" id="component-risk-matrix">
+  </article><article class="component-card" id="studio-component-risk-matrix" data-component-ref="risk-matrix">
     <div class="component-card__head">
       <h3>风险矩阵</h3>
       <p>影响和概率二维判断。</p>
@@ -862,7 +2099,7 @@
         <span class="bgy-risk-cell is-low">低</span><span class="bgy-risk-cell is-medium">中</span><span class="bgy-risk-cell is-high">高</span>
         <span class="bgy-risk-cell is-medium">中</span><span class="bgy-risk-cell is-high">高</span><span class="bgy-risk-cell is-high">高</span>
       </div></div>
-  </article><article class="component-card" id="component-risk-list">
+  </article><article class="component-card" id="studio-component-risk-list" data-component-ref="risk-list">
     <div class="component-card__head">
       <h3>问题清单</h3>
       <p>问题、责任、期限。</p>
@@ -871,7 +2108,7 @@
         <thead><tr><th>问题</th><th>责任</th><th>期限</th></tr></thead>
         <tbody><tr><td>台账缺项</td><td>工程</td><td>7.28</td></tr><tr><td>复核滞后</td><td>品质</td><td>8.05</td></tr></tbody>
       </table></div>
-  </article><article class="component-card" id="component-risk-action">
+  </article><article class="component-card" id="studio-component-risk-action" data-component-ref="risk-action">
     <div class="component-card__head">
       <h3>风险 -&gt; 措施</h3>
       <p>风险与动作闭环。</p>
@@ -882,15 +2119,13 @@
       </div></div>
   </article>
     </div>
-  </section><section class="component-section" id="image">
-    <div class="component-section__head">
-      <div>
-        <h2>Image / Case 图片案例</h2>
-        <p>项目照片、系统截图、案例卡和前后对比。</p>
-      </div>
-    </div>
-    <div class="component-grid">
-      <article class="component-card" id="component-image-single">
+  </section><section class="studio-component-group" data-component-group="image">
+    <button type="button" class="group-title" data-group-jump="image">
+      <span>Image / Case 图片案例</span>
+      <small>5</small>
+    </button>
+    <div class="studio-component-list">
+      <article class="component-card" id="studio-component-image-single" data-component-ref="image-single">
     <div class="component-card__head">
       <h3>单图 + 文字</h3>
       <p>真实图片走 img，文字走 DOM。</p>
@@ -899,7 +2134,7 @@
         <div class="bgy-image-frame"><div class="bgy-image-placeholder">项目照片</div></div>
         <p>图片为真实 img；缺素材时使用占位。</p>
       </article></div>
-  </article><article class="component-card" id="component-image-text">
+  </article><article class="component-card" id="studio-component-image-text" data-component-ref="image-text">
     <div class="component-card__head">
       <h3>左右图文</h3>
       <p>左图右文或左文右图。</p>
@@ -908,7 +2143,7 @@
         <div class="bgy-image-frame"><div class="bgy-image-placeholder">现场图</div></div>
         <div><strong>整改完成</strong><p>现场标识、动线和台账同步更新。</p></div>
       </div></div>
-  </article><article class="component-card" id="component-image-gallery">
+  </article><article class="component-card" id="studio-component-image-gallery" data-component-ref="image-gallery">
     <div class="component-card__head">
       <h3>三图 / 四图卡片</h3>
       <p>适合现场照片墙。</p>
@@ -919,7 +2154,7 @@
         <div class="bgy-image-frame"><div class="bgy-image-placeholder">图3</div></div>
         <div class="bgy-image-frame"><div class="bgy-image-placeholder">图4</div></div>
       </div></div>
-  </article><article class="component-card" id="component-image-before-after">
+  </article><article class="component-card" id="studio-component-image-before-after" data-component-ref="image-before-after">
     <div class="component-card__head">
       <h3>Before / After</h3>
       <p>工程整改前后对比。</p>
@@ -928,7 +2163,7 @@
         <div><span>Before</span><div class="bgy-image-frame"><div class="bgy-image-placeholder">整改前</div></div></div>
         <div><span>After</span><div class="bgy-image-frame"><div class="bgy-image-placeholder">整改后</div></div></div>
       </div></div>
-  </article><article class="component-card" id="component-case-card">
+  </article><article class="component-card" id="studio-component-case-card" data-component-ref="case-card">
     <div class="component-card__head">
       <h3>案例 Card</h3>
       <p>图片、结论、标签组合。</p>
@@ -939,7 +2174,2000 @@
       </article></div>
   </article>
     </div>
-  </section>
-  </main>
+  </section></div>
+    </aside>
+
+    <main class="stage">
+      <div class="stage-toolbar">
+        <strong id="stageTitle">项目画布</strong>
+        <div class="stage-tools">
+          <button class="tool-button" type="button" data-zoom="fit">适合</button>
+          <button class="tool-button" type="button" data-panel-toggle="components">组件库</button>
+          <button class="tool-button" type="button" data-panel-toggle="theme">主题设置</button>
+        </div>
+      </div>
+      <section class="canvas-wrap">
+        <div class="preview" id="previewSlide">
+          <section class="slide">
+            <div class="title"><span>01</span><span id="previewTitle">经营指标保持稳中有进</span></div>
+            <div class="preview-grid">
+              <div class="slide-card"><div class="metric">96.4%</div><div class="label">重点任务完成率</div></div>
+              <div class="slide-card"><div class="metric">12项</div><div class="label">本月闭环事项</div></div>
+              <div class="slide-card"><div class="metric">0起</div><div class="label">重大风险事件</div></div>
+            </div>
+            <div class="tag-row">
+              <span class="tag success">已完成</span>
+              <span class="tag warning">推进中</span>
+              <span class="tag danger">需协调</span>
+            </div>
+            <table>
+              <thead><tr><th>事项</th><th>状态</th><th>责任部门</th><th>完成时间</th></tr></thead>
+              <tbody>
+                <tr><td>消防维保巡检</td><td>已完成</td><td>工程部</td><td>7月20日</td></tr>
+                <tr><td>客户诉求闭环</td><td>推进中</td><td>客服部</td><td>7月31日</td></tr>
+              </tbody>
+            </table>
+            <div class="palette" id="palette"></div>
+          </section>
+        </div>
+      </section>
+      <section class="component-gallery" id="componentGallery">
+        <div class="component-gallery__inner"><section class="component-section" data-gallery-group="kpi">
+    <div class="component-section__head">
+      <div>
+        <h2>KPI 指标</h2>
+        <p>经营汇报最高频组件，优先保留为文本、形状和进度条。</p>
+      </div>
+      <span>6 个组件</span>
+    </div>
+    <div class="component-grid">
+      <article class="component-card" id="gallery-component-kpi-card" data-component-id="kpi-card">
+    <div class="component-card__head">
+      <h3>KPI Card</h3>
+      <p>标题、数值、说明三层信息。</p>
+    </div>
+    <div class="component-card__preview"><div class="bgy-kpi-card">
+        <p class="bgy-kpi-card__label">重点任务完成率</p>
+        <p class="bgy-kpi-card__value">96.4%</p>
+        <p class="bgy-kpi-card__note">较计划进度高 3.2pct</p>
+      </div></div>
+  </article><article class="component-card" id="gallery-component-kpi-big-number" data-component-id="kpi-big-number">
+    <div class="component-card__head">
+      <h3>大数字指标</h3>
+      <p>用于单页核心结论或封面指标。</p>
+    </div>
+    <div class="component-card__preview"><div class="bgy-kpi-card bgy-kpi-card--hero">
+        <p class="bgy-kpi-card__label">本月闭环事项</p>
+        <p class="bgy-kpi-card__value">128</p>
+        <p class="bgy-kpi-card__unit">项</p>
+      </div></div>
+  </article><article class="component-card" id="gallery-component-kpi-trend" data-component-id="kpi-trend">
+    <div class="component-card__head">
+      <h3>指标 + 趋势</h3>
+      <p>展示同比、环比和趋势方向。</p>
+    </div>
+    <div class="component-card__preview"><div class="bgy-kpi-card">
+        <p class="bgy-kpi-card__label">客户诉求闭环率</p>
+        <p class="bgy-kpi-card__value">92.8%</p>
+        <div class="bgy-kpi-card__trend is-up"><span>同比 +4.6%</span><span>环比 +1.8%</span></div>
+      </div></div>
+  </article><article class="component-card" id="gallery-component-kpi-cycle" data-component-id="kpi-cycle">
+    <div class="component-card__head">
+      <h3>同比 / 环比</h3>
+      <p>同一指标的两种变化口径。</p>
+    </div>
+    <div class="component-card__preview"><div class="bgy-delta-grid">
+        <div class="bgy-delta-card is-up"><strong>同比</strong><span>+6.2%</span><p>品质问题下降</p></div>
+        <div class="bgy-delta-card is-down"><strong>环比</strong><span>-1.4%</span><p>能耗略有回升</p></div>
+      </div></div>
+  </article><article class="component-card" id="gallery-component-kpi-target" data-component-id="kpi-target">
+    <div class="component-card__head">
+      <h3>指标 + 目标</h3>
+      <p>目标值、实际值和偏差一起展示。</p>
+    </div>
+    <div class="component-card__preview"><div class="bgy-target-card">
+        <div><span>目标</span><strong>95%</strong></div>
+        <div><span>实际</span><strong>96.4%</strong></div>
+        <div><span>偏差</span><strong class="is-success">+1.4pct</strong></div>
+      </div></div>
+  </article><article class="component-card" id="gallery-component-kpi-progress" data-component-id="kpi-progress">
+    <div class="component-card__head">
+      <h3>指标 + 完成率</h3>
+      <p>用真实进度条表达达成比例。</p>
+    </div>
+    <div class="component-card__preview"><div class="bgy-kpi-card">
+        <div class="bgy-kpi-card__row"><span>年度目标达成</span><strong>78%</strong></div>
+        <div class="bgy-progress" role="img" aria-label="年度目标达成 78%">
+          <span class="bgy-progress__track"><span class="bgy-progress__bar" style="width:78%"></span></span>
+        </div>
+        <p class="bgy-kpi-card__note">剩余 22% 将在四季度完成。</p>
+      </div></div>
+  </article>
+    </div>
+  </section><section class="component-section" data-gallery-group="card">
+    <div class="component-section__head">
+      <div>
+        <h2>Card 卡片</h2>
+        <p>承载结论、问题、亮点、项目和风险信息。</p>
+      </div>
+      <span>6 个组件</span>
+    </div>
+    <div class="component-grid">
+      <article class="component-card" id="gallery-component-card-normal" data-component-id="card-normal">
+    <div class="component-card__head">
+      <h3>普通 Card</h3>
+      <p>正文信息承载容器。</p>
+    </div>
+    <div class="component-card__preview"><article class="bgy-card">
+        <div class="bgy-card__body">
+          <h3 class="bgy-card__title">普通 Card</h3>
+          <p class="bgy-card__text">用于承载说明、摘要、责任项和小型信息组。</p>
+        </div>
+      </article></div>
+  </article><article class="component-card" id="gallery-component-card-data" data-component-id="card-data">
+    <div class="component-card__head">
+      <h3>数据 Card</h3>
+      <p>指标与解释组合。</p>
+    </div>
+    <div class="component-card__preview"><article class="bgy-data-card">
+        <p class="bgy-card__eyebrow">经营数据</p>
+        <strong>收入完成率 101.2%</strong>
+        <span>重点项目贡献 42%</span>
+      </article></div>
+  </article><article class="component-card" id="gallery-component-card-project" data-component-id="card-project">
+    <div class="component-card__head">
+      <h3>项目 Card</h3>
+      <p>项目名称、状态、责任人。</p>
+    </div>
+    <div class="component-card__preview"><article class="bgy-project-card">
+        <div><h3>凤凰城项目</h3><p>责任：工程部</p></div>
+        <span class="bgy-status-tag is-warning">推进中</span>
+      </article></div>
+  </article><article class="component-card" id="gallery-component-card-highlight" data-component-id="card-highlight">
+    <div class="component-card__head">
+      <h3>重点 Card</h3>
+      <p>强调结论或关键动作。</p>
+    </div>
+    <div class="component-card__preview"><article class="bgy-highlight-card">
+        <p class="bgy-card__eyebrow">本页重点</p>
+        <strong>客户诉求平均闭环时长缩短 18%</strong>
+      </article></div>
+  </article><article class="component-card" id="gallery-component-card-risk" data-component-id="card-risk">
+    <div class="component-card__head">
+      <h3>风险 Card</h3>
+      <p>用于风险提示和逾期事项。</p>
+    </div>
+    <div class="component-card__preview"><article class="bgy-risk-card">
+        <span class="bgy-risk-card__level is-high">高风险</span>
+        <strong>消防整改仍有 2 项需协调</strong>
+        <p>建议本周完成复核并更新台账。</p>
+      </article></div>
+  </article><article class="component-card" id="gallery-component-card-conclusion" data-component-id="card-conclusion">
+    <div class="component-card__head">
+      <h3>结论 Card</h3>
+      <p>适合页面右侧管理结论。</p>
+    </div>
+    <div class="component-card__preview"><article class="bgy-conclusion-card">
+        <p class="bgy-card__eyebrow">管理结论</p>
+        <strong>总体进度可控，需压实跨部门协同动作。</strong>
+      </article></div>
+  </article>
+    </div>
+  </section><section class="component-section" data-gallery-group="chart">
+    <div class="component-section__head">
+      <div>
+        <h2>Chart 图表</h2>
+        <p>有数据时使用 data-ppt-chart，复杂图形先用占位契约。</p>
+      </div>
+      <span>6 个组件</span>
+    </div>
+    <div class="component-grid">
+      <article class="component-card" id="gallery-component-chart-bar" data-component-id="chart-bar">
+    <div class="component-card__head">
+      <h3>柱状图</h3>
+      <p>显式数据，可转原生图表。</p>
+    </div>
+    <div class="component-card__preview"><div class="bgy-chart-frame bgy-chart-frame--bar" data-ppt-chart="bar" data-ppt-chart-data="{&quot;labels&quot;:[&quot;一区&quot;,&quot;二区&quot;,&quot;三区&quot;,&quot;四区&quot;],&quot;series&quot;:[{&quot;name&quot;:&quot;完成率&quot;,&quot;values&quot;:[82,91,96,88]}],&quot;colors&quot;:[&quot;006d9a&quot;,&quot;2e7d32&quot;,&quot;c00000&quot;,&quot;c97400&quot;,&quot;64748b&quot;]}">
+        <div class="bgy-chart-bars" aria-hidden="true">
+          <span class="bgy-chart-bar" style="height:82%;background:#006d9a"></span><span class="bgy-chart-bar" style="height:91%;background:#2e7d32"></span><span class="bgy-chart-bar" style="height:96%;background:#c00000"></span><span class="bgy-chart-bar" style="height:88%;background:#c97400"></span>
+        </div>
+      </div></div>
+  </article><article class="component-card" id="gallery-component-chart-horizontal" data-component-id="chart-horizontal">
+    <div class="component-card__head">
+      <h3>横向柱状图</h3>
+      <p>适合项目或区域对比。</p>
+    </div>
+    <div class="component-card__preview"><div class="bgy-chart-frame bgy-chart-frame--bar" data-ppt-chart="bar" data-ppt-chart-data="{&quot;labels&quot;:[&quot;一区&quot;,&quot;二区&quot;,&quot;三区&quot;,&quot;四区&quot;],&quot;series&quot;:[{&quot;name&quot;:&quot;完成率&quot;,&quot;values&quot;:[82,91,96,88]}],&quot;colors&quot;:[&quot;006d9a&quot;,&quot;2e7d32&quot;,&quot;c00000&quot;,&quot;c97400&quot;,&quot;64748b&quot;]}">
+        <div class="bgy-chart-bars bgy-chart-bars--horizontal" aria-hidden="true">
+          <span class="bgy-chart-bar" style="width:82%;background:#006d9a"><i>一区</i></span><span class="bgy-chart-bar" style="width:91%;background:#2e7d32"><i>二区</i></span><span class="bgy-chart-bar" style="width:96%;background:#c00000"><i>三区</i></span><span class="bgy-chart-bar" style="width:88%;background:#c97400"><i>四区</i></span>
+        </div>
+      </div></div>
+  </article><article class="component-card" id="gallery-component-chart-line" data-component-id="chart-line">
+    <div class="component-card__head">
+      <h3>折线图</h3>
+      <p>适合月度趋势。</p>
+    </div>
+    <div class="component-card__preview"><div class="bgy-chart-frame bgy-chart-frame--line" data-ppt-chart="line" data-ppt-chart-data="{&quot;labels&quot;:[&quot;4月&quot;,&quot;5月&quot;,&quot;6月&quot;,&quot;7月&quot;],&quot;series&quot;:[{&quot;name&quot;:&quot;闭环率&quot;,&quot;values&quot;:[78,84,90,96]}],&quot;colors&quot;:[&quot;006d9a&quot;]}">
+        <svg class="bgy-chart-line-visual" viewBox="0 0 220 112" aria-hidden="true">
+          <polyline points="8,86 72,64 136,42 212,20" fill="none" stroke="currentColor" stroke-width="3"/>
+          <circle cx="8" cy="86" r="4"/><circle cx="72" cy="64" r="4"/><circle cx="136" cy="42" r="4"/><circle cx="212" cy="20" r="4"/>
+        </svg>
+      </div></div>
+  </article><article class="component-card" id="gallery-component-chart-area" data-component-id="chart-area">
+    <div class="component-card__head">
+      <h3>面积图</h3>
+      <p>作为 line 数据图表的预览变体。</p>
+    </div>
+    <div class="component-card__preview"><div class="bgy-chart-frame bgy-chart-frame--area" data-ppt-chart="line" data-ppt-chart-data="{&quot;labels&quot;:[&quot;4月&quot;,&quot;5月&quot;,&quot;6月&quot;,&quot;7月&quot;],&quot;series&quot;:[{&quot;name&quot;:&quot;闭环率&quot;,&quot;values&quot;:[78,84,90,96]}],&quot;colors&quot;:[&quot;006d9a&quot;]}">
+        <div class="bgy-chart-area-band" aria-hidden="true"></div>
+        <svg class="bgy-chart-line-visual" viewBox="0 0 220 112" aria-hidden="true">
+          <polygon points="8,86 72,64 136,42 212,20 212,104 8,104" fill="currentColor" opacity="0.14"/>
+          <polyline points="8,86 72,64 136,42 212,20" fill="none" stroke="currentColor" stroke-width="3"/>
+        </svg>
+      </div></div>
+  </article><article class="component-card" id="gallery-component-chart-pie-donut" data-component-id="chart-pie-donut">
+    <div class="component-card__head">
+      <h3>饼图 / 环形图</h3>
+      <p>饼图可原生；环形先保留占位。</p>
+    </div>
+    <div class="component-card__preview"><div class="bgy-chart-split">
+        <div class="bgy-chart-frame bgy-chart-frame--pie" data-ppt-chart="pie" data-ppt-chart-data="{&quot;labels&quot;:[&quot;已完成&quot;,&quot;推进中&quot;,&quot;待协调&quot;],&quot;series&quot;:[{&quot;name&quot;:&quot;事项&quot;,&quot;values&quot;:[62,26,12]}],&quot;colors&quot;:[&quot;006d9a&quot;,&quot;2e7d32&quot;,&quot;c97400&quot;]}">
+          <div class="bgy-chart-pie-legend"><span>已完成</span><strong>62%</strong></div>
+        </div>
+        <div class="bgy-chart-frame bgy-chart-frame--donut" data-ppt-placeholder="donut-progress">
+          <svg class="bgy-ring-progress__svg" viewBox="0 0 80 80" aria-hidden="true">
+            <circle cx="40" cy="40" r="28" fill="none" stroke="currentColor" stroke-width="8" opacity="0.18"/>
+            <path d="M40 12a28 28 0 1 1 -24.2 42" fill="none" stroke="currentColor" stroke-width="8" stroke-linecap="round"/>
+          </svg>
+          <span class="bgy-ring-progress__value">78%</span>
+        </div>
+      </div></div>
+  </article><article class="component-card" id="gallery-component-chart-advanced" data-component-id="chart-advanced">
+    <div class="component-card__head">
+      <h3>雷达 / 组合 / 瀑布</h3>
+      <p>先占位，避免从视觉反推数据。</p>
+    </div>
+    <div class="component-card__preview"><div class="bgy-advanced-chart-grid">
+        <div class="bgy-chart-frame bgy-chart-placeholder" data-ppt-placeholder="radar-chart">雷达图占位</div>
+        <div class="bgy-chart-frame bgy-chart-placeholder" data-ppt-placeholder="combo-chart">组合图占位</div>
+        <div class="bgy-chart-frame bgy-chart-placeholder" data-ppt-placeholder="waterfall-chart">瀑布图占位</div>
+      </div></div>
+  </article>
+    </div>
+  </section><section class="component-section" data-gallery-group="progress">
+    <div class="component-section__head">
+      <div>
+        <h2>Progress 进度</h2>
+        <p>项目进度、目标达成率、阶段节点和里程碑。</p>
+      </div>
+      <span>6 个组件</span>
+    </div>
+    <div class="component-grid">
+      <article class="component-card" id="gallery-component-progress-bar" data-component-id="progress-bar">
+    <div class="component-card__head">
+      <h3>进度条</h3>
+      <p>最稳定的 PPT 友好进度表达。</p>
+    </div>
+    <div class="component-card__preview"><div class="bgy-progress-panel">
+        <div class="bgy-kpi-card__row"><span>项目推进</span><strong>84%</strong></div>
+        <div class="bgy-progress"><span class="bgy-progress__track"><span class="bgy-progress__bar" style="width:84%"></span></span></div>
+      </div></div>
+  </article><article class="component-card" id="gallery-component-progress-ring" data-component-id="progress-ring">
+    <div class="component-card__head">
+      <h3>环形进度</h3>
+      <p>用于完成率概览，文字仍为 DOM。</p>
+    </div>
+    <div class="component-card__preview"><div class="bgy-ring-progress" role="img" aria-label="完成率 78%">
+        <svg class="bgy-ring-progress__svg" viewBox="0 0 80 80" aria-hidden="true">
+          <circle cx="40" cy="40" r="28" fill="none" stroke="currentColor" stroke-width="8" opacity="0.18"/>
+          <path d="M40 12a28 28 0 1 1 -24.2 42" fill="none" stroke="currentColor" stroke-width="8" stroke-linecap="round"/>
+        </svg>
+        <div><strong>78%</strong><span>完成率</span></div>
+      </div></div>
+  </article><article class="component-card" id="gallery-component-progress-completion" data-component-id="progress-completion">
+    <div class="component-card__head">
+      <h3>完成率</h3>
+      <p>状态标签加进度条组合。</p>
+    </div>
+    <div class="component-card__preview"><div class="bgy-progress-list">
+        <div><span>工程巡检</span><strong>100%</strong><span class="bgy-progress__track"><span class="bgy-progress__bar" style="width:100%"></span></span></div>
+        <div><span>客户闭环</span><strong>92%</strong><span class="bgy-progress__track"><span class="bgy-progress__bar" style="width:92%"></span></span></div>
+        <div><span>整改复核</span><strong>76%</strong><span class="bgy-progress__track"><span class="bgy-progress__bar is-warning" style="width:76%"></span></span></div>
+      </div></div>
+  </article><article class="component-card" id="gallery-component-progress-target" data-component-id="progress-target">
+    <div class="component-card__head">
+      <h3>目标达成率</h3>
+      <p>目标值、实际值、达成率。</p>
+    </div>
+    <div class="component-card__preview"><div class="bgy-target-card bgy-target-card--wide">
+        <div><span>目标</span><strong>120项</strong></div>
+        <div><span>实际</span><strong>128项</strong></div>
+        <div><span>达成率</span><strong class="is-success">106.7%</strong></div>
+      </div></div>
+  </article><article class="component-card" id="gallery-component-progress-stage" data-component-id="progress-stage">
+    <div class="component-card__head">
+      <h3>阶段进度</h3>
+      <p>用于多阶段项目推进。</p>
+    </div>
+    <div class="component-card__preview"><div class="bgy-stage-progress">
+        <span class="is-done">立项</span><span class="is-done">执行</span><span class="is-active">复核</span><span>归档</span>
+      </div></div>
+  </article><article class="component-card" id="gallery-component-progress-milestone" data-component-id="progress-milestone">
+    <div class="component-card__head">
+      <h3>里程碑</h3>
+      <p>节点、责任和日期。</p>
+    </div>
+    <div class="component-card__preview"><div class="bgy-milestone-list">
+        <div><strong>07.20</strong><span>完成巡检</span></div>
+        <div><strong>07.28</strong><span>问题复核</span></div>
+        <div><strong>08.05</strong><span>验收归档</span></div>
+      </div></div>
+  </article>
+    </div>
+  </section><section class="component-section" data-gallery-group="comparison">
+    <div class="component-section__head">
+      <div>
+        <h2>Comparison 对比</h2>
+        <p>同比、环比、目标实际、计划完成和前后对比。</p>
+      </div>
+      <span>5 个组件</span>
+    </div>
+    <div class="component-grid">
+      <article class="component-card" id="gallery-component-compare-yoy" data-component-id="compare-yoy">
+    <div class="component-card__head">
+      <h3>同比 / 环比</h3>
+      <p>变化方向和幅度同屏展示。</p>
+    </div>
+    <div class="component-card__preview"><div class="bgy-delta-grid">
+        <div class="bgy-delta-card is-up"><strong>同比</strong><span>+8.4%</span><p>收入提升</p></div>
+        <div class="bgy-delta-card is-down"><strong>环比</strong><span>-2.1%</span><p>投诉下降</p></div>
+      </div></div>
+  </article><article class="component-card" id="gallery-component-compare-target" data-component-id="compare-target">
+    <div class="component-card__head">
+      <h3>目标 vs 实际</h3>
+      <p>管理汇报常用结果判断。</p>
+    </div>
+    <div class="component-card__preview"><div class="bgy-comparison">
+        <div class="bgy-compare-card"><span>目标</span><strong>95%</strong></div>
+        <div class="bgy-compare-card is-primary"><span>实际</span><strong>96.4%</strong></div>
+      </div></div>
+  </article><article class="component-card" id="gallery-component-compare-plan" data-component-id="compare-plan">
+    <div class="component-card__head">
+      <h3>计划 vs 完成</h3>
+      <p>适合任务推进复盘。</p>
+    </div>
+    <div class="component-card__preview"><table class="bgy-table demo-table">
+        <thead><tr><th>事项</th><th>计划</th><th>完成</th></tr></thead>
+        <tbody><tr><td>巡检</td><td>40</td><td>42</td></tr><tr><td>整改</td><td>18</td><td>16</td></tr></tbody>
+      </table></div>
+  </article><article class="component-card" id="gallery-component-compare-before-after" data-component-id="compare-before-after">
+    <div class="component-card__head">
+      <h3>Before / After</h3>
+      <p>改善前后对比。</p>
+    </div>
+    <div class="component-card__preview"><div class="bgy-before-after">
+        <div><span>Before</span><strong>流程分散</strong><p>跨部门沟通慢</p></div>
+        <div><span>After</span><strong>统一闭环</strong><p>责任节点清晰</p></div>
+      </div></div>
+  </article><article class="component-card" id="gallery-component-compare-ab" data-component-id="compare-ab">
+    <div class="component-card__head">
+      <h3>A vs B</h3>
+      <p>方案、项目或区域比较。</p>
+    </div>
+    <div class="component-card__preview"><div class="bgy-comparison">
+        <div class="bgy-compare-card"><span>A 方案</span><strong>投入低</strong><p>周期较长</p></div>
+        <div class="bgy-compare-card"><span>B 方案</span><strong>见效快</strong><p>需资源协同</p></div>
+      </div></div>
+  </article>
+    </div>
+  </section><section class="component-section" data-gallery-group="ranking">
+    <div class="component-section__head">
+      <div>
+        <h2>Ranking 排名</h2>
+        <p>区域、城市、项目和指标排名。</p>
+      </div>
+      <span>3 个组件</span>
+    </div>
+    <div class="component-grid">
+      <article class="component-card" id="gallery-component-ranking-top3" data-component-id="ranking-top3">
+    <div class="component-card__head">
+      <h3>TOP 3</h3>
+      <p>前三名重点突出。</p>
+    </div>
+    <div class="component-card__preview"><ol class="bgy-ranking-list bgy-ranking-list--top3">
+        <li><strong>01</strong><span>凤凰城</span><em>98.2</em></li>
+        <li><strong>02</strong><span>云山府</span><em>96.8</em></li>
+        <li><strong>03</strong><span>湖畔苑</span><em>95.1</em></li>
+      </ol></div>
+  </article><article class="component-card" id="gallery-component-ranking-list" data-component-id="ranking-list">
+    <div class="component-card__head">
+      <h3>TOP 5 / TOP 10</h3>
+      <p>适合经营指标列表。</p>
+    </div>
+    <div class="component-card__preview"><ol class="bgy-ranking-list">
+        <li><strong>1</strong><span>一区</span><em>101.2%</em></li>
+        <li><strong>2</strong><span>二区</span><em>98.6%</em></li>
+        <li><strong>3</strong><span>三区</span><em>94.8%</em></li>
+        <li><strong>4</strong><span>四区</span><em>91.3%</em></li>
+      </ol></div>
+  </article><article class="component-card" id="gallery-component-ranking-project" data-component-id="ranking-project">
+    <div class="component-card__head">
+      <h3>项目 / 城市排名</h3>
+      <p>带指标值和趋势标记。</p>
+    </div>
+    <div class="component-card__preview"><div class="bgy-ranking-card">
+        <div><strong>TOP 项目</strong><span class="bgy-status-tag is-success">上升</span></div>
+        <ol class="bgy-ranking-list"><li><strong>1</strong><span>凤凰城</span><em>+4.2%</em></li><li><strong>2</strong><span>云山府</span><em>+2.8%</em></li></ol>
+      </div></div>
+  </article>
+    </div>
+  </section><section class="component-section" data-gallery-group="process">
+    <div class="component-section__head">
+      <div>
+        <h2>Process 流程</h2>
+        <p>管理逻辑、业务闭环、横纵流程和 PDCA。</p>
+      </div>
+      <span>4 个组件</span>
+    </div>
+    <div class="component-grid">
+      <article class="component-card" id="gallery-component-process-horizontal" data-component-id="process-horizontal">
+    <div class="component-card__head">
+      <h3>横向流程</h3>
+      <p>用真实线条和箭头连接。</p>
+    </div>
+    <div class="component-card__preview"><div class="bgy-process bgy-process--horizontal">
+        <div class="bgy-process-step"><strong>发现</strong><span>问题</span></div><span class="bgy-process-line" data-ppt-line-end="triangle"></span>
+        <div class="bgy-process-step"><strong>分析</strong><span>原因</span></div><span class="bgy-process-line" data-ppt-line-end="triangle"></span>
+        <div class="bgy-process-step"><strong>执行</strong><span>措施</span></div>
+      </div></div>
+  </article><article class="component-card" id="gallery-component-process-vertical" data-component-id="process-vertical">
+    <div class="component-card__head">
+      <h3>纵向流程</h3>
+      <p>适合整改链路和审批链路。</p>
+    </div>
+    <div class="component-card__preview"><div class="bgy-process bgy-process--vertical">
+        <div class="bgy-process-step"><strong>提交</strong><span>工单</span></div>
+        <div class="bgy-process-step"><strong>处理</strong><span>整改</span></div>
+        <div class="bgy-process-step"><strong>验收</strong><span>闭环</span></div>
+      </div></div>
+  </article><article class="component-card" id="gallery-component-process-loop" data-component-id="process-loop">
+    <div class="component-card__head">
+      <h3>业务闭环</h3>
+      <p>问题到验收的闭环表达。</p>
+    </div>
+    <div class="component-card__preview"><div class="bgy-process-loop">
+        <div class="bgy-process-step">发现问题</div><div class="bgy-process-step">制定措施</div>
+        <div class="bgy-process-step">执行复核</div><div class="bgy-process-step">验收闭环</div>
+      </div></div>
+  </article><article class="component-card" id="gallery-component-process-pdca" data-component-id="process-pdca">
+    <div class="component-card__head">
+      <h3>PDCA</h3>
+      <p>计划、执行、检查、处理。</p>
+    </div>
+    <div class="component-card__preview"><div class="bgy-pdca">
+        <div><strong>P</strong><span>计划</span></div><div><strong>D</strong><span>执行</span></div><div><strong>C</strong><span>检查</span></div><div><strong>A</strong><span>处理</span></div>
+      </div></div>
+  </article>
+    </div>
+  </section><section class="component-section" data-gallery-group="timeline">
+    <div class="component-section__head">
+      <div>
+        <h2>Timeline 时间轴</h2>
+        <p>项目过程、月度计划和路线图。</p>
+      </div>
+      <span>3 个组件</span>
+    </div>
+    <div class="component-grid">
+      <article class="component-card" id="gallery-component-timeline-project" data-component-id="timeline-project">
+    <div class="component-card__head">
+      <h3>项目时间轴</h3>
+      <p>展示关键节点和责任。</p>
+    </div>
+    <div class="component-card__preview"><div class="bgy-timeline">
+        <div class="bgy-timeline-item"><span class="bgy-timeline-dot"></span><strong>7月</strong><p>主题锁定</p></div>
+        <div class="bgy-timeline-item"><span class="bgy-timeline-dot"></span><strong>8月</strong><p>页面复用</p></div>
+        <div class="bgy-timeline-item"><span class="bgy-timeline-dot"></span><strong>9月</strong><p>PPTX 交付</p></div>
+      </div></div>
+  </article><article class="component-card" id="gallery-component-timeline-month" data-component-id="timeline-month">
+    <div class="component-card__head">
+      <h3>月度时间轴</h3>
+      <p>适合月报计划。</p>
+    </div>
+    <div class="component-card__preview"><div class="bgy-milestone-list">
+        <div><strong>第1周</strong><span>问题梳理</span></div>
+        <div><strong>第2周</strong><span>整改推进</span></div>
+        <div><strong>第4周</strong><span>复盘归档</span></div>
+      </div></div>
+  </article><article class="component-card" id="gallery-component-timeline-roadmap" data-component-id="timeline-roadmap">
+    <div class="component-card__head">
+      <h3>Roadmap</h3>
+      <p>跨阶段规划。</p>
+    </div>
+    <div class="component-card__preview"><div class="bgy-roadmap">
+        <div><strong>Q3</strong><span>标准化</span></div>
+        <div><strong>Q4</strong><span>全面复制</span></div>
+        <div><strong>Q1</strong><span>效果评估</span></div>
+      </div></div>
+  </article>
+    </div>
+  </section><section class="component-section" data-gallery-group="risk">
+    <div class="component-section__head">
+      <div>
+        <h2>Risk / Problem 风险问题</h2>
+        <p>风险等级、问题清单、风险矩阵和整改进度。</p>
+      </div>
+      <span>5 个组件</span>
+    </div>
+    <div class="component-grid">
+      <article class="component-card" id="gallery-component-risk-card" data-component-id="risk-card">
+    <div class="component-card__head">
+      <h3>风险 / 问题 Card</h3>
+      <p>单项风险说明。</p>
+    </div>
+    <div class="component-card__preview"><article class="bgy-risk-card">
+        <span class="bgy-risk-card__level is-medium">中风险</span>
+        <strong>外包维保响应时效不足</strong>
+        <p>需明确 SLA 并按周复核。</p>
+      </article></div>
+  </article><article class="component-card" id="gallery-component-risk-level" data-component-id="risk-level">
+    <div class="component-card__head">
+      <h3>风险等级</h3>
+      <p>低、中、高等级标签。</p>
+    </div>
+    <div class="component-card__preview"><div class="bgy-risk-levels">
+        <span class="bgy-risk-level is-low">低</span><span class="bgy-risk-level is-medium">中</span><span class="bgy-risk-level is-high">高</span>
+      </div></div>
+  </article><article class="component-card" id="gallery-component-risk-matrix" data-component-id="risk-matrix">
+    <div class="component-card__head">
+      <h3>风险矩阵</h3>
+      <p>影响和概率二维判断。</p>
+    </div>
+    <div class="component-card__preview"><div class="bgy-risk-matrix">
+        <span class="bgy-risk-cell is-low">低</span><span class="bgy-risk-cell is-medium">中</span><span class="bgy-risk-cell is-high">高</span>
+        <span class="bgy-risk-cell is-medium">中</span><span class="bgy-risk-cell is-high">高</span><span class="bgy-risk-cell is-high">高</span>
+      </div></div>
+  </article><article class="component-card" id="gallery-component-risk-list" data-component-id="risk-list">
+    <div class="component-card__head">
+      <h3>问题清单</h3>
+      <p>问题、责任、期限。</p>
+    </div>
+    <div class="component-card__preview"><table class="bgy-table demo-table">
+        <thead><tr><th>问题</th><th>责任</th><th>期限</th></tr></thead>
+        <tbody><tr><td>台账缺项</td><td>工程</td><td>7.28</td></tr><tr><td>复核滞后</td><td>品质</td><td>8.05</td></tr></tbody>
+      </table></div>
+  </article><article class="component-card" id="gallery-component-risk-action" data-component-id="risk-action">
+    <div class="component-card__head">
+      <h3>风险 -&gt; 措施</h3>
+      <p>风险与动作闭环。</p>
+    </div>
+    <div class="component-card__preview"><div class="bgy-risk-action">
+        <div><strong>风险</strong><span>整改时效不足</span></div>
+        <div><strong>措施</strong><span>按周复核并通报</span></div>
+      </div></div>
+  </article>
+    </div>
+  </section><section class="component-section" data-gallery-group="image">
+    <div class="component-section__head">
+      <div>
+        <h2>Image / Case 图片案例</h2>
+        <p>项目照片、系统截图、案例卡和前后对比。</p>
+      </div>
+      <span>5 个组件</span>
+    </div>
+    <div class="component-grid">
+      <article class="component-card" id="gallery-component-image-single" data-component-id="image-single">
+    <div class="component-card__head">
+      <h3>单图 + 文字</h3>
+      <p>真实图片走 img，文字走 DOM。</p>
+    </div>
+    <div class="component-card__preview"><article class="bgy-image-card">
+        <div class="bgy-image-frame"><div class="bgy-image-placeholder">项目照片</div></div>
+        <p>图片为真实 img；缺素材时使用占位。</p>
+      </article></div>
+  </article><article class="component-card" id="gallery-component-image-text" data-component-id="image-text">
+    <div class="component-card__head">
+      <h3>左右图文</h3>
+      <p>左图右文或左文右图。</p>
+    </div>
+    <div class="component-card__preview"><div class="bgy-image-text">
+        <div class="bgy-image-frame"><div class="bgy-image-placeholder">现场图</div></div>
+        <div><strong>整改完成</strong><p>现场标识、动线和台账同步更新。</p></div>
+      </div></div>
+  </article><article class="component-card" id="gallery-component-image-gallery" data-component-id="image-gallery">
+    <div class="component-card__head">
+      <h3>三图 / 四图卡片</h3>
+      <p>适合现场照片墙。</p>
+    </div>
+    <div class="component-card__preview"><div class="bgy-image-grid">
+        <div class="bgy-image-frame"><div class="bgy-image-placeholder">图1</div></div>
+        <div class="bgy-image-frame"><div class="bgy-image-placeholder">图2</div></div>
+        <div class="bgy-image-frame"><div class="bgy-image-placeholder">图3</div></div>
+        <div class="bgy-image-frame"><div class="bgy-image-placeholder">图4</div></div>
+      </div></div>
+  </article><article class="component-card" id="gallery-component-image-before-after" data-component-id="image-before-after">
+    <div class="component-card__head">
+      <h3>Before / After</h3>
+      <p>工程整改前后对比。</p>
+    </div>
+    <div class="component-card__preview"><div class="bgy-before-after bgy-before-after--images">
+        <div><span>Before</span><div class="bgy-image-frame"><div class="bgy-image-placeholder">整改前</div></div></div>
+        <div><span>After</span><div class="bgy-image-frame"><div class="bgy-image-placeholder">整改后</div></div></div>
+      </div></div>
+  </article><article class="component-card" id="gallery-component-case-card" data-component-id="case-card">
+    <div class="component-card__head">
+      <h3>案例 Card</h3>
+      <p>图片、结论、标签组合。</p>
+    </div>
+    <div class="component-card__preview"><article class="bgy-case-card">
+        <div class="bgy-image-frame"><div class="bgy-image-placeholder">案例图</div></div>
+        <div><span class="bgy-status-tag is-success">已闭环</span><strong>电梯机房隐患整改</strong></div>
+      </article></div>
+  </article>
+    </div>
+  </section></div>
+      </section>
+      <footer class="page-strip">
+        <button class="page-thumb is-active" type="button">01 主题</button>
+        <button class="page-thumb" type="button">02 组件</button>
+        <button class="page-thumb" type="button">+ 新页面</button>
+      </footer>
+    </main>
+
+    <aside class="inspector">
+      <div class="inspector-head">
+        <h2>属性</h2>
+        <p id="inspectorSubtitle">项目、主题和选中组件。</p>
+      </div>
+      <div class="inspector-body">
+        <section class="inspector-section">
+          <h3>项目</h3>
+          <label class="field">标题 <input id="projectTitle" type="text"></label>
+          <label class="field">名称 <input id="projectName" type="text"></label>
+          <label class="field">类型 <input id="projectType" type="text"></label>
+          <label class="field">Preset <select id="projectPreset"><option value="management-report">管理汇报</option><option value="monthly-review">月报季报</option><option value="proposal">项目提案</option><option value="maintenance">维保巡检</option><option value="quality-improvement">品质提升</option><option value="fire-safety">消防维保</option></select></label>
+          <label class="field"><span><input id="locked" type="checkbox"> 锁定主题</span></label>
+        </section>
+
+        <section class="inspector-section">
+          <h3>主题</h3>
+          <div class="mode-toggle">
+            <button type="button" data-mode-toggle="preset">预设主题</button>
+            <button type="button" data-mode-toggle="custom">自定义主题</button>
+          </div>
+          <div class="preset-grid"><button type="button" class="preset-card is-active" data-preset="management-report">
+    <span class="preset-card__label">管理汇报</span>
+    <span class="preset-card__desc">稳重、克制、适合经营管理与复盘汇报。</span>
+    <div class="preset-card__colors"><span style="background:#006d9a"></span><span style="background:#004b6b"></span><span style="background:#2e7d32"></span><span style="background:#c97400"></span><span style="background:#c00000"></span></div>
+    <span class="preset-card__meta">management-report · line · compact</span>
+  </button><button type="button" class="preset-card" data-preset="monthly-review">
+    <span class="preset-card__label">月报季报</span>
+    <span class="preset-card__desc">指标先行，适合复盘、趋势和结果汇报。</span>
+    <div class="preset-card__colors"><span style="background:#0f766e"></span><span style="background:#134e4a"></span><span style="background:#15803d"></span><span style="background:#b7791f"></span><span style="background:#b91c1c"></span></div>
+    <span class="preset-card__meta">management-report · line · compact</span>
+  </button><button type="button" class="preset-card" data-preset="proposal">
+    <span class="preset-card__label">项目提案</span>
+    <span class="preset-card__desc">更开放的版式，但仍保留品牌克制感。</span>
+    <div class="preset-card__colors"><span style="background:#2563eb"></span><span style="background:#1e3a8a"></span><span style="background:#059669"></span><span style="background:#d97706"></span><span style="background:#dc2626"></span></div>
+    <span class="preset-card__meta">management-report · bgy-business · comfortable</span>
+  </button><button type="button" class="preset-card" data-preset="maintenance">
+    <span class="preset-card__label">维保巡检</span>
+    <span class="preset-card__desc">表格、台账和状态分层更强，适合工程巡检类页面。</span>
+    <div class="preset-card__colors"><span style="background:#0e7490"></span><span style="background:#164e63"></span><span style="background:#2e7d32"></span><span style="background:#b45309"></span><span style="background:#b91c1c"></span></div>
+    <span class="preset-card__meta">management-report · bgy-business · dense</span>
+  </button><button type="button" class="preset-card" data-preset="quality-improvement">
+    <span class="preset-card__label">品质提升</span>
+    <span class="preset-card__desc">突出改善成效、前后对比与闭环动作。</span>
+    <div class="preset-card__colors"><span style="background:#15803d"></span><span style="background:#14532d"></span><span style="background:#16a34a"></span><span style="background:#ca8a04"></span><span style="background:#b91c1c"></span></div>
+    <span class="preset-card__meta">management-report · solid · compact</span>
+  </button><button type="button" class="preset-card" data-preset="fire-safety">
+    <span class="preset-card__label">消防维保</span>
+    <span class="preset-card__desc">风险、整改、闭环和状态标签更醒目。</span>
+    <div class="preset-card__colors"><span style="background:#b91c1c"></span><span style="background:#7f1d1d"></span><span style="background:#15803d"></span><span style="background:#c2410c"></span><span style="background:#991b1b"></span></div>
+    <span class="preset-card__meta">management-report · solid · compact</span>
+  </button>
+    <button type="button" class="preset-card preset-card--custom" data-theme-mode-card="custom">
+      <span class="preset-card__label">自定义主题</span>
+      <span class="preset-card__desc">以当前预设为底，再调整品牌色、语义色、圆角、阴影和表格密度。</span>
+      <div class="preset-card__colors"><span style="background:#0f172a"></span><span style="background:#475569"></span><span style="background:#94a3b8"></span><span style="background:#e2e8f0"></span><span style="background:#ffffff"></span></div>
+      <span class="preset-card__meta">custom · editable · project tokens</span>
+    </button></div>
+        </section>
+
+        <section id="customEditor" class="inspector-section custom-editor">
+          <h3>颜色</h3>
+          <div class="color-grid">
+            <label class="field">主色<input id="brand" type="color"></label><label class="field">深色<input id="deepBrand" type="color"></label><label class="field">成功<input id="success" type="color"></label><label class="field">成功底<input id="successBg" type="color"></label><label class="field">警示<input id="warning" type="color"></label><label class="field">警示底<input id="warningBg" type="color"></label><label class="field">风险<input id="danger" type="color"></label><label class="field">风险底<input id="dangerBg" type="color"></label><label class="field">信息<input id="info" type="color"></label><label class="field">信息底<input id="infoBg" type="color"></label><label class="field">正文<input id="text" type="color"></label><label class="field">辅助<input id="muted" type="color"></label><label class="field">浅底<input id="panel" type="color"></label><label class="field">卡片<input id="surface" type="color"></label><label class="field">页面<input id="pageBg" type="color"></label><label class="field">线条<input id="line" type="color"></label>
+          </div>
+          <h3>组件样式</h3>
+          <div class="field-row">
+            <label class="field">卡片圆角 <input id="cardRadius" type="number" min="0" max="24"></label>
+            <label class="field">面板圆角 <input id="panelRadius" type="number" min="0" max="24"></label>
+            <label class="field">标签圆角 <input id="tagRadius" type="number" min="0" max="24"></label>
+            <label class="field">指标圆角 <input id="metricRadius" type="number" min="0" max="24"></label>
+            <label class="field">图片圆角 <input id="imageRadius" type="number" min="0" max="24"></label>
+            <label class="field">边线宽度 <input id="borderWidth" type="number" min="0" max="4" step="0.5"></label>
+          </div>
+          <label class="field">卡片阴影 <input id="cardShadow" type="text"></label>
+          <label class="field">面板阴影 <input id="panelShadow" type="text"></label>
+          <label class="field">图标包
+            <select id="iconPack">
+              <option value="line">line</option>
+              <option value="solid">solid</option>
+              <option value="bgy-business">bgy-business</option>
+            </select>
+          </label>
+          <label class="field">表格密度
+            <select id="tableDensity">
+              <option value="dense">dense</option>
+              <option value="compact">compact</option>
+              <option value="comfortable">comfortable</option>
+            </select>
+          </label>
+        </section>
+
+        <section class="inspector-section">
+          <h3 id="selectedComponentTitle">KPI Card</h3>
+          <p id="selectedComponentSummary" class="bgy-card__text">标题、数值、说明三层信息。</p>
+          <div id="selectedComponentPreview" class="selected-preview"></div>
+        </section>
+        <section class="inspector-section">
+          <h3>PPTX</h3>
+          <label class="field">推荐 class <input id="selectedComponentClass" type="text" readonly value=".bgy-kpi-card"></label>
+          <code id="selectedComponentCode" class="code-box">&lt;div class=&quot;bgy-kpi-card&quot;&gt;...&lt;/div&gt;</code>
+          <div class="top-actions" style="margin-top:10px">
+            <button id="insertComponent" type="button" class="secondary-button">插入</button>
+            <button id="copyComponentCode" type="button" class="ghost-button">复制结构</button>
+          </div>
+        </section>
+      </div>
+      <div id="status" class="status">等待载入配置。</div>
+    </aside>
+  </div>
+
+  <script id="embeddedConfig" type="application/json">{
+  "version": 1,
+  "locked": true,
+  "project": {
+    "title": "项目级设计契约样例",
+    "name": "project-contract-smoke",
+    "type": "management-report",
+    "preset": "management-report",
+    "themeMode": "preset",
+    "ratio": "16:9",
+    "editablePptx": true
+  },
+  "theme": {
+    "brand": "#006d9a",
+    "deepBrand": "#004b6b",
+    "success": "#2e7d32",
+    "successBg": "#eaf5eb",
+    "warning": "#c97400",
+    "warningBg": "#fff3e3",
+    "danger": "#c00000",
+    "dangerBg": "#fdecec",
+    "info": "#2b6cb0",
+    "infoBg": "#eaf3fb",
+    "text": "#1f2933",
+    "muted": "#64748b",
+    "panel": "#f5f8fa",
+    "surface": "#ffffff",
+    "pageBg": "#ffffff",
+    "line": "#d8e3ea",
+    "white": "#ffffff",
+    "black": "#000000",
+    "chart": [
+      "#006d9a",
+      "#2e7d32",
+      "#c00000",
+      "#c97400",
+      "#64748b"
+    ]
+  },
+  "components": {
+    "cardRadius": 8,
+    "panelRadius": 8,
+    "tagRadius": 4,
+    "metricRadius": 8,
+    "imageRadius": 6,
+    "borderWidth": 1,
+    "cardShadow": "0 4px 14px rgba(0,0,0,0.08)",
+    "panelShadow": "0 2px 8px rgba(0,0,0,0.05)",
+    "tableHeaderBg": "#f5f8fa",
+    "tableRowAlt": "#fafcfd",
+    "tableBorder": "#d8e3ea",
+    "titleBarHeight": 72,
+    "sectionGap": 24,
+    "iconPack": "line",
+    "tableDensity": "compact"
+  },
+  "rules": {
+    "fontFamily": "\"Microsoft YaHei\", \"微软雅黑\", Arial, sans-serif",
+    "allowedFonts": [
+      "\"Microsoft YaHei\", \"微软雅黑\", Arial, sans-serif",
+      "Arial",
+      "sans-serif"
+    ],
+    "allowRemoteIcons": false,
+    "allowDirectHexOutsideTokens": false,
+    "preferInlineSvgIcons": true,
+    "pptxEditablePriority": "high",
+    "strictTheme": true
+  },
+  "id": "management-report",
+  "label": "管理汇报",
+  "description": "稳重、克制、适合经营管理与复盘汇报。",
+  "projectType": "management-report"
+}</script>
+  <script id="embeddedPresets" type="application/json">{
+  "fire-safety": {
+    "id": "fire-safety",
+    "label": "消防维保",
+    "description": "风险、整改、闭环和状态标签更醒目。",
+    "projectType": "fire-safety",
+    "theme": {
+      "brand": "#B91C1C",
+      "deepBrand": "#7F1D1D",
+      "success": "#15803D",
+      "successBg": "#EAF5EB",
+      "warning": "#C2410C",
+      "warningBg": "#FFF3E3",
+      "danger": "#991B1B",
+      "dangerBg": "#FDECEC",
+      "info": "#475569",
+      "infoBg": "#F1F5F9",
+      "text": "#1F2933",
+      "muted": "#64748B",
+      "panel": "#FFF7F7",
+      "surface": "#FFFFFF",
+      "pageBg": "#FFFFFF",
+      "line": "#F1D4D4",
+      "chart": [
+        "#B91C1C",
+        "#C2410C",
+        "#991B1B",
+        "#475569",
+        "#64748B"
+      ]
+    },
+    "components": {
+      "cardRadius": 6,
+      "panelRadius": 6,
+      "tagRadius": 4,
+      "metricRadius": 6,
+      "imageRadius": 4,
+      "borderWidth": 1,
+      "cardShadow": "0 3px 10px rgba(0,0,0,0.07)",
+      "panelShadow": "0 2px 8px rgba(0,0,0,0.05)",
+      "tableHeaderBg": "#F5F8FA",
+      "tableRowAlt": "#FAFCFD",
+      "tableBorder": "#D8E3EA",
+      "titleBarHeight": 72,
+      "sectionGap": 22,
+      "iconPack": "solid",
+      "tableDensity": "compact"
+    },
+    "rules": {
+      "fontFamily": "\"Microsoft YaHei\", \"微软雅黑\", Arial, sans-serif",
+      "allowRemoteIcons": false,
+      "allowDirectHexOutsideTokens": false,
+      "preferInlineSvgIcons": true,
+      "pptxEditablePriority": "high",
+      "strictTheme": true
+    }
+  },
+  "maintenance": {
+    "id": "maintenance",
+    "label": "维保巡检",
+    "description": "表格、台账和状态分层更强，适合工程巡检类页面。",
+    "projectType": "maintenance",
+    "theme": {
+      "brand": "#0E7490",
+      "deepBrand": "#164E63",
+      "success": "#2E7D32",
+      "successBg": "#EAF5EB",
+      "warning": "#B45309",
+      "warningBg": "#FFF3E3",
+      "danger": "#B91C1C",
+      "dangerBg": "#FDECEC",
+      "info": "#475569",
+      "infoBg": "#F1F5F9",
+      "text": "#1F2933",
+      "muted": "#64748B",
+      "panel": "#F1F5F9",
+      "surface": "#FFFFFF",
+      "pageBg": "#FFFFFF",
+      "line": "#CBD5E1",
+      "chart": [
+        "#0E7490",
+        "#475569",
+        "#2E7D32",
+        "#B45309",
+        "#B91C1C"
+      ]
+    },
+    "components": {
+      "cardRadius": 6,
+      "panelRadius": 6,
+      "tagRadius": 4,
+      "metricRadius": 6,
+      "imageRadius": 4,
+      "borderWidth": 1,
+      "cardShadow": "0 3px 10px rgba(0,0,0,0.07)",
+      "panelShadow": "0 2px 8px rgba(0,0,0,0.05)",
+      "tableHeaderBg": "#F5F8FA",
+      "tableRowAlt": "#FAFCFD",
+      "tableBorder": "#D8E3EA",
+      "titleBarHeight": 72,
+      "sectionGap": 20,
+      "iconPack": "bgy-business",
+      "tableDensity": "dense"
+    },
+    "rules": {
+      "fontFamily": "\"Microsoft YaHei\", \"微软雅黑\", Arial, sans-serif",
+      "allowRemoteIcons": false,
+      "allowDirectHexOutsideTokens": false,
+      "preferInlineSvgIcons": true,
+      "pptxEditablePriority": "high",
+      "strictTheme": true
+    }
+  },
+  "management-report": {
+    "id": "management-report",
+    "label": "管理汇报",
+    "description": "稳重、克制、适合经营管理与复盘汇报。",
+    "projectType": "management-report",
+    "theme": {
+      "brand": "#006D9A",
+      "deepBrand": "#004B6B",
+      "success": "#2E7D32",
+      "successBg": "#EAF5EB",
+      "warning": "#C97400",
+      "warningBg": "#FFF3E3",
+      "danger": "#C00000",
+      "dangerBg": "#FDECEC",
+      "info": "#2B6CB0",
+      "infoBg": "#EAF3FB",
+      "text": "#1F2933",
+      "muted": "#64748B",
+      "panel": "#F5F8FA",
+      "surface": "#FFFFFF",
+      "pageBg": "#FFFFFF",
+      "line": "#D8E3EA",
+      "chart": [
+        "#006D9A",
+        "#2E7D32",
+        "#C00000",
+        "#C97400",
+        "#64748B"
+      ]
+    },
+    "components": {
+      "cardRadius": 8,
+      "panelRadius": 8,
+      "tagRadius": 4,
+      "metricRadius": 8,
+      "imageRadius": 6,
+      "borderWidth": 1,
+      "cardShadow": "0 4px 14px rgba(0,0,0,0.08)",
+      "panelShadow": "0 2px 8px rgba(0,0,0,0.05)",
+      "tableHeaderBg": "#F5F8FA",
+      "tableRowAlt": "#FAFCFD",
+      "tableBorder": "#D8E3EA",
+      "titleBarHeight": 72,
+      "sectionGap": 24,
+      "iconPack": "line",
+      "tableDensity": "compact"
+    },
+    "rules": {
+      "fontFamily": "\"Microsoft YaHei\", \"微软雅黑\", Arial, sans-serif",
+      "allowedFonts": [
+        "\"Microsoft YaHei\", \"微软雅黑\", Arial, sans-serif",
+        "Arial",
+        "sans-serif"
+      ],
+      "allowRemoteIcons": false,
+      "allowDirectHexOutsideTokens": false,
+      "preferInlineSvgIcons": true,
+      "pptxEditablePriority": "high",
+      "strictTheme": true
+    }
+  },
+  "monthly-review": {
+    "id": "monthly-review",
+    "label": "月报季报",
+    "description": "指标先行，适合复盘、趋势和结果汇报。",
+    "projectType": "monthly-review",
+    "theme": {
+      "brand": "#0F766E",
+      "deepBrand": "#134E4A",
+      "success": "#15803D",
+      "successBg": "#EAF7EF",
+      "warning": "#B7791F",
+      "warningBg": "#FFF7E6",
+      "danger": "#B91C1C",
+      "dangerBg": "#FEF2F2",
+      "info": "#2563EB",
+      "infoBg": "#EFF6FF",
+      "text": "#1E293B",
+      "muted": "#64748B",
+      "panel": "#F0FDFA",
+      "surface": "#FFFFFF",
+      "pageBg": "#FFFFFF",
+      "line": "#CCE7E2",
+      "chart": [
+        "#0F766E",
+        "#2563EB",
+        "#15803D",
+        "#B7791F",
+        "#64748B"
+      ]
+    },
+    "components": {
+      "cardRadius": 8,
+      "panelRadius": 8,
+      "tagRadius": 4,
+      "metricRadius": 8,
+      "imageRadius": 6,
+      "borderWidth": 1,
+      "cardShadow": "0 4px 14px rgba(0,0,0,0.08)",
+      "panelShadow": "0 2px 8px rgba(0,0,0,0.05)",
+      "tableHeaderBg": "#F5F8FA",
+      "tableRowAlt": "#FAFCFD",
+      "tableBorder": "#D8E3EA",
+      "titleBarHeight": 72,
+      "sectionGap": 24,
+      "iconPack": "line",
+      "tableDensity": "compact"
+    },
+    "rules": {
+      "fontFamily": "\"Microsoft YaHei\", \"微软雅黑\", Arial, sans-serif",
+      "allowRemoteIcons": false,
+      "allowDirectHexOutsideTokens": false,
+      "preferInlineSvgIcons": true,
+      "pptxEditablePriority": "high",
+      "strictTheme": true
+    }
+  },
+  "proposal": {
+    "id": "proposal",
+    "label": "项目提案",
+    "description": "更开放的版式，但仍保留品牌克制感。",
+    "projectType": "proposal",
+    "theme": {
+      "brand": "#2563EB",
+      "deepBrand": "#1E3A8A",
+      "success": "#059669",
+      "successBg": "#EAF5EB",
+      "warning": "#D97706",
+      "warningBg": "#FFF3E3",
+      "danger": "#DC2626",
+      "dangerBg": "#FDECEC",
+      "info": "#7C3AED",
+      "infoBg": "#F3E8FF",
+      "text": "#1F2933",
+      "muted": "#64748B",
+      "panel": "#F8FAFF",
+      "surface": "#FFFFFF",
+      "pageBg": "#FFFFFF",
+      "line": "#D8E2F3",
+      "chart": [
+        "#2563EB",
+        "#7C3AED",
+        "#059669",
+        "#D97706",
+        "#64748B"
+      ]
+    },
+    "components": {
+      "cardRadius": 10,
+      "panelRadius": 10,
+      "tagRadius": 4,
+      "metricRadius": 8,
+      "imageRadius": 8,
+      "borderWidth": 1,
+      "cardShadow": "0 5px 16px rgba(0,0,0,0.08)",
+      "panelShadow": "0 3px 10px rgba(0,0,0,0.05)",
+      "tableHeaderBg": "#F5F8FA",
+      "tableRowAlt": "#FAFCFD",
+      "tableBorder": "#D8E3EA",
+      "titleBarHeight": 72,
+      "sectionGap": 24,
+      "iconPack": "bgy-business",
+      "tableDensity": "comfortable"
+    },
+    "rules": {
+      "fontFamily": "\"Microsoft YaHei\", \"微软雅黑\", Arial, sans-serif",
+      "allowRemoteIcons": false,
+      "allowDirectHexOutsideTokens": false,
+      "preferInlineSvgIcons": true,
+      "pptxEditablePriority": "high",
+      "strictTheme": true
+    }
+  },
+  "quality-improvement": {
+    "id": "quality-improvement",
+    "label": "品质提升",
+    "description": "突出改善成效、前后对比与闭环动作。",
+    "projectType": "quality-improvement",
+    "theme": {
+      "brand": "#15803D",
+      "deepBrand": "#14532D",
+      "success": "#16A34A",
+      "successBg": "#EAF5EB",
+      "warning": "#CA8A04",
+      "warningBg": "#FFF3E3",
+      "danger": "#B91C1C",
+      "dangerBg": "#FDECEC",
+      "info": "#0E7490",
+      "infoBg": "#EAF3FB",
+      "text": "#1F2933",
+      "muted": "#64748B",
+      "panel": "#F2FBF4",
+      "surface": "#FFFFFF",
+      "pageBg": "#FFFFFF",
+      "line": "#CFE8D5",
+      "chart": [
+        "#15803D",
+        "#16A34A",
+        "#0E7490",
+        "#CA8A04",
+        "#64748B"
+      ]
+    },
+    "components": {
+      "cardRadius": 8,
+      "panelRadius": 8,
+      "tagRadius": 4,
+      "metricRadius": 8,
+      "imageRadius": 6,
+      "borderWidth": 1,
+      "cardShadow": "0 4px 14px rgba(0,0,0,0.08)",
+      "panelShadow": "0 2px 8px rgba(0,0,0,0.05)",
+      "tableHeaderBg": "#F5F8FA",
+      "tableRowAlt": "#FAFCFD",
+      "tableBorder": "#D8E3EA",
+      "titleBarHeight": 72,
+      "sectionGap": 24,
+      "iconPack": "solid",
+      "tableDensity": "compact"
+    },
+    "rules": {
+      "fontFamily": "\"Microsoft YaHei\", \"微软雅黑\", Arial, sans-serif",
+      "allowRemoteIcons": false,
+      "allowDirectHexOutsideTokens": false,
+      "preferInlineSvgIcons": true,
+      "pptxEditablePriority": "high",
+      "strictTheme": true
+    }
+  }
+}</script>
+  <script id="componentCatalog" type="application/json">[
+  {
+    "id": "kpi-card",
+    "title": "KPI Card",
+    "summary": "标题、数值、说明三层信息。",
+    "preview": "kpi-basic",
+    "group": "kpi",
+    "groupTitle": "KPI 指标",
+    "classHint": ".bgy-kpi-card",
+    "code": "<div class=\"bgy-kpi-card\">...</div>"
+  },
+  {
+    "id": "kpi-big-number",
+    "title": "大数字指标",
+    "summary": "用于单页核心结论或封面指标。",
+    "preview": "kpi-big-number",
+    "group": "kpi",
+    "groupTitle": "KPI 指标",
+    "classHint": ".bgy-kpi-card",
+    "code": "<div class=\"bgy-kpi-card\">...</div>"
+  },
+  {
+    "id": "kpi-trend",
+    "title": "指标 + 趋势",
+    "summary": "展示同比、环比和趋势方向。",
+    "preview": "kpi-trend",
+    "group": "kpi",
+    "groupTitle": "KPI 指标",
+    "classHint": ".bgy-kpi-card",
+    "code": "<div class=\"bgy-kpi-card\">...</div>"
+  },
+  {
+    "id": "kpi-cycle",
+    "title": "同比 / 环比",
+    "summary": "同一指标的两种变化口径。",
+    "preview": "kpi-cycle",
+    "group": "kpi",
+    "groupTitle": "KPI 指标",
+    "classHint": ".bgy-kpi-card",
+    "code": "<div class=\"bgy-kpi-card\">...</div>"
+  },
+  {
+    "id": "kpi-target",
+    "title": "指标 + 目标",
+    "summary": "目标值、实际值和偏差一起展示。",
+    "preview": "kpi-target",
+    "group": "kpi",
+    "groupTitle": "KPI 指标",
+    "classHint": ".bgy-kpi-card",
+    "code": "<div class=\"bgy-kpi-card\">...</div>"
+  },
+  {
+    "id": "kpi-progress",
+    "title": "指标 + 完成率",
+    "summary": "用真实进度条表达达成比例。",
+    "preview": "kpi-progress",
+    "group": "kpi",
+    "groupTitle": "KPI 指标",
+    "classHint": ".bgy-kpi-card",
+    "code": "<div class=\"bgy-kpi-card\">...</div>"
+  },
+  {
+    "id": "card-normal",
+    "title": "普通 Card",
+    "summary": "正文信息承载容器。",
+    "preview": "card-normal",
+    "group": "card",
+    "groupTitle": "Card 卡片",
+    "classHint": ".bgy-card",
+    "code": "<div class=\"bgy-card\">...</div>"
+  },
+  {
+    "id": "card-data",
+    "title": "数据 Card",
+    "summary": "指标与解释组合。",
+    "preview": "card-data",
+    "group": "card",
+    "groupTitle": "Card 卡片",
+    "classHint": ".bgy-data-card",
+    "code": "<div class=\"bgy-data-card\">...</div>"
+  },
+  {
+    "id": "card-project",
+    "title": "项目 Card",
+    "summary": "项目名称、状态、责任人。",
+    "preview": "card-project",
+    "group": "card",
+    "groupTitle": "Card 卡片",
+    "classHint": ".bgy-project-card",
+    "code": "<div class=\"bgy-project-card\">...</div>"
+  },
+  {
+    "id": "card-highlight",
+    "title": "重点 Card",
+    "summary": "强调结论或关键动作。",
+    "preview": "card-highlight",
+    "group": "card",
+    "groupTitle": "Card 卡片",
+    "classHint": ".bgy-highlight-card",
+    "code": "<div class=\"bgy-highlight-card\">...</div>"
+  },
+  {
+    "id": "card-risk",
+    "title": "风险 Card",
+    "summary": "用于风险提示和逾期事项。",
+    "preview": "card-risk",
+    "group": "card",
+    "groupTitle": "Card 卡片",
+    "classHint": ".bgy-risk-card",
+    "code": "<div class=\"bgy-risk-card\">...</div>"
+  },
+  {
+    "id": "card-conclusion",
+    "title": "结论 Card",
+    "summary": "适合页面右侧管理结论。",
+    "preview": "card-conclusion",
+    "group": "card",
+    "groupTitle": "Card 卡片",
+    "classHint": ".bgy-conclusion-card",
+    "code": "<div class=\"bgy-conclusion-card\">...</div>"
+  },
+  {
+    "id": "chart-bar",
+    "title": "柱状图",
+    "summary": "显式数据，可转原生图表。",
+    "preview": "chart-bar",
+    "group": "chart",
+    "groupTitle": "Chart 图表",
+    "classHint": ".bgy-chart-frame",
+    "code": "<div class=\"bgy-chart-frame\" data-ppt-chart=\"bar\" data-ppt-chart-data='{\"labels\":[\"A\",\"B\"],\"series\":[{\"name\":\"完成率\",\"values\":[82,96]}]}'>...</div>"
+  },
+  {
+    "id": "chart-horizontal",
+    "title": "横向柱状图",
+    "summary": "适合项目或区域对比。",
+    "preview": "chart-horizontal-bar",
+    "group": "chart",
+    "groupTitle": "Chart 图表",
+    "classHint": ".bgy-chart-frame",
+    "code": "<div class=\"bgy-chart-frame\" data-ppt-chart=\"bar\" data-ppt-chart-data='{\"labels\":[\"A\",\"B\"],\"series\":[{\"name\":\"完成率\",\"values\":[82,96]}]}'>...</div>"
+  },
+  {
+    "id": "chart-line",
+    "title": "折线图",
+    "summary": "适合月度趋势。",
+    "preview": "chart-line",
+    "group": "chart",
+    "groupTitle": "Chart 图表",
+    "classHint": ".bgy-chart-frame",
+    "code": "<div class=\"bgy-chart-frame\" data-ppt-chart=\"bar\" data-ppt-chart-data='{\"labels\":[\"A\",\"B\"],\"series\":[{\"name\":\"完成率\",\"values\":[82,96]}]}'>...</div>"
+  },
+  {
+    "id": "chart-area",
+    "title": "面积图",
+    "summary": "作为 line 数据图表的预览变体。",
+    "preview": "chart-area",
+    "group": "chart",
+    "groupTitle": "Chart 图表",
+    "classHint": ".bgy-chart-frame",
+    "code": "<div class=\"bgy-chart-frame\" data-ppt-chart=\"bar\" data-ppt-chart-data='{\"labels\":[\"A\",\"B\"],\"series\":[{\"name\":\"完成率\",\"values\":[82,96]}]}'>...</div>"
+  },
+  {
+    "id": "chart-pie-donut",
+    "title": "饼图 / 环形图",
+    "summary": "饼图可原生；环形先保留占位。",
+    "preview": "chart-pie-donut",
+    "group": "chart",
+    "groupTitle": "Chart 图表",
+    "classHint": ".bgy-chart-frame",
+    "code": "<div class=\"bgy-chart-frame\" data-ppt-chart=\"bar\" data-ppt-chart-data='{\"labels\":[\"A\",\"B\"],\"series\":[{\"name\":\"完成率\",\"values\":[82,96]}]}'>...</div>"
+  },
+  {
+    "id": "chart-advanced",
+    "title": "雷达 / 组合 / 瀑布",
+    "summary": "先占位，避免从视觉反推数据。",
+    "preview": "chart-advanced",
+    "group": "chart",
+    "groupTitle": "Chart 图表",
+    "classHint": ".bgy-chart-frame",
+    "code": "<div class=\"bgy-chart-frame\" data-ppt-chart=\"bar\" data-ppt-chart-data='{\"labels\":[\"A\",\"B\"],\"series\":[{\"name\":\"完成率\",\"values\":[82,96]}]}'>...</div>"
+  },
+  {
+    "id": "progress-bar",
+    "title": "进度条",
+    "summary": "最稳定的 PPT 友好进度表达。",
+    "preview": "progress-bar",
+    "group": "progress",
+    "groupTitle": "Progress 进度",
+    "classHint": ".bgy-progress",
+    "code": "<div class=\"bgy-progress\">...</div>"
+  },
+  {
+    "id": "progress-ring",
+    "title": "环形进度",
+    "summary": "用于完成率概览，文字仍为 DOM。",
+    "preview": "progress-ring",
+    "group": "progress",
+    "groupTitle": "Progress 进度",
+    "classHint": ".bgy-progress",
+    "code": "<div class=\"bgy-progress\">...</div>"
+  },
+  {
+    "id": "progress-completion",
+    "title": "完成率",
+    "summary": "状态标签加进度条组合。",
+    "preview": "progress-completion",
+    "group": "progress",
+    "groupTitle": "Progress 进度",
+    "classHint": ".bgy-progress",
+    "code": "<div class=\"bgy-progress\">...</div>"
+  },
+  {
+    "id": "progress-target",
+    "title": "目标达成率",
+    "summary": "目标值、实际值、达成率。",
+    "preview": "progress-target",
+    "group": "progress",
+    "groupTitle": "Progress 进度",
+    "classHint": ".bgy-progress",
+    "code": "<div class=\"bgy-progress\">...</div>"
+  },
+  {
+    "id": "progress-stage",
+    "title": "阶段进度",
+    "summary": "用于多阶段项目推进。",
+    "preview": "progress-stage",
+    "group": "progress",
+    "groupTitle": "Progress 进度",
+    "classHint": ".bgy-progress",
+    "code": "<div class=\"bgy-progress\">...</div>"
+  },
+  {
+    "id": "progress-milestone",
+    "title": "里程碑",
+    "summary": "节点、责任和日期。",
+    "preview": "progress-milestone",
+    "group": "progress",
+    "groupTitle": "Progress 进度",
+    "classHint": ".bgy-progress",
+    "code": "<div class=\"bgy-progress\">...</div>"
+  },
+  {
+    "id": "compare-yoy",
+    "title": "同比 / 环比",
+    "summary": "变化方向和幅度同屏展示。",
+    "preview": "compare-yoy",
+    "group": "comparison",
+    "groupTitle": "Comparison 对比",
+    "classHint": ".bgy-comparison",
+    "code": "<div class=\"bgy-comparison\">...</div>"
+  },
+  {
+    "id": "compare-target",
+    "title": "目标 vs 实际",
+    "summary": "管理汇报常用结果判断。",
+    "preview": "compare-target-actual",
+    "group": "comparison",
+    "groupTitle": "Comparison 对比",
+    "classHint": ".bgy-comparison",
+    "code": "<div class=\"bgy-comparison\">...</div>"
+  },
+  {
+    "id": "compare-plan",
+    "title": "计划 vs 完成",
+    "summary": "适合任务推进复盘。",
+    "preview": "compare-plan-finish",
+    "group": "comparison",
+    "groupTitle": "Comparison 对比",
+    "classHint": ".bgy-comparison",
+    "code": "<div class=\"bgy-comparison\">...</div>"
+  },
+  {
+    "id": "compare-before-after",
+    "title": "Before / After",
+    "summary": "改善前后对比。",
+    "preview": "compare-before-after",
+    "group": "comparison",
+    "groupTitle": "Comparison 对比",
+    "classHint": ".bgy-comparison",
+    "code": "<div class=\"bgy-comparison\">...</div>"
+  },
+  {
+    "id": "compare-ab",
+    "title": "A vs B",
+    "summary": "方案、项目或区域比较。",
+    "preview": "compare-ab",
+    "group": "comparison",
+    "groupTitle": "Comparison 对比",
+    "classHint": ".bgy-comparison",
+    "code": "<div class=\"bgy-comparison\">...</div>"
+  },
+  {
+    "id": "ranking-top3",
+    "title": "TOP 3",
+    "summary": "前三名重点突出。",
+    "preview": "ranking-top3",
+    "group": "ranking",
+    "groupTitle": "Ranking 排名",
+    "classHint": ".bgy-ranking-list",
+    "code": "<ol class=\"bgy-ranking-list\"><li><strong>1</strong><span>项目</span><em>96.4%</em></li></ol>"
+  },
+  {
+    "id": "ranking-list",
+    "title": "TOP 5 / TOP 10",
+    "summary": "适合经营指标列表。",
+    "preview": "ranking-list",
+    "group": "ranking",
+    "groupTitle": "Ranking 排名",
+    "classHint": ".bgy-ranking-list",
+    "code": "<ol class=\"bgy-ranking-list\"><li><strong>1</strong><span>项目</span><em>96.4%</em></li></ol>"
+  },
+  {
+    "id": "ranking-project",
+    "title": "项目 / 城市排名",
+    "summary": "带指标值和趋势标记。",
+    "preview": "ranking-project",
+    "group": "ranking",
+    "groupTitle": "Ranking 排名",
+    "classHint": ".bgy-ranking-list",
+    "code": "<ol class=\"bgy-ranking-list\"><li><strong>1</strong><span>项目</span><em>96.4%</em></li></ol>"
+  },
+  {
+    "id": "process-horizontal",
+    "title": "横向流程",
+    "summary": "用真实线条和箭头连接。",
+    "preview": "process-horizontal",
+    "group": "process",
+    "groupTitle": "Process 流程",
+    "classHint": ".bgy-process",
+    "code": "<div class=\"bgy-process bgy-process--horizontal\"><div class=\"bgy-process-step\">发现问题</div><span class=\"bgy-process-line\" data-ppt-line-end=\"triangle\"></span></div>"
+  },
+  {
+    "id": "process-vertical",
+    "title": "纵向流程",
+    "summary": "适合整改链路和审批链路。",
+    "preview": "process-vertical",
+    "group": "process",
+    "groupTitle": "Process 流程",
+    "classHint": ".bgy-process",
+    "code": "<div class=\"bgy-process bgy-process--horizontal\"><div class=\"bgy-process-step\">发现问题</div><span class=\"bgy-process-line\" data-ppt-line-end=\"triangle\"></span></div>"
+  },
+  {
+    "id": "process-loop",
+    "title": "业务闭环",
+    "summary": "问题到验收的闭环表达。",
+    "preview": "process-loop",
+    "group": "process",
+    "groupTitle": "Process 流程",
+    "classHint": ".bgy-process",
+    "code": "<div class=\"bgy-process bgy-process--horizontal\"><div class=\"bgy-process-step\">发现问题</div><span class=\"bgy-process-line\" data-ppt-line-end=\"triangle\"></span></div>"
+  },
+  {
+    "id": "process-pdca",
+    "title": "PDCA",
+    "summary": "计划、执行、检查、处理。",
+    "preview": "process-pdca",
+    "group": "process",
+    "groupTitle": "Process 流程",
+    "classHint": ".bgy-process",
+    "code": "<div class=\"bgy-process bgy-process--horizontal\"><div class=\"bgy-process-step\">发现问题</div><span class=\"bgy-process-line\" data-ppt-line-end=\"triangle\"></span></div>"
+  },
+  {
+    "id": "timeline-project",
+    "title": "项目时间轴",
+    "summary": "展示关键节点和责任。",
+    "preview": "timeline-project",
+    "group": "timeline",
+    "groupTitle": "Timeline 时间轴",
+    "classHint": ".bgy-timeline",
+    "code": "<div class=\"bgy-timeline\">...</div>"
+  },
+  {
+    "id": "timeline-month",
+    "title": "月度时间轴",
+    "summary": "适合月报计划。",
+    "preview": "timeline-month",
+    "group": "timeline",
+    "groupTitle": "Timeline 时间轴",
+    "classHint": ".bgy-timeline",
+    "code": "<div class=\"bgy-timeline\">...</div>"
+  },
+  {
+    "id": "timeline-roadmap",
+    "title": "Roadmap",
+    "summary": "跨阶段规划。",
+    "preview": "timeline-roadmap",
+    "group": "timeline",
+    "groupTitle": "Timeline 时间轴",
+    "classHint": ".bgy-timeline",
+    "code": "<div class=\"bgy-timeline\">...</div>"
+  },
+  {
+    "id": "risk-card",
+    "title": "风险 / 问题 Card",
+    "summary": "单项风险说明。",
+    "preview": "risk-card",
+    "group": "risk",
+    "groupTitle": "Risk / Problem 风险问题",
+    "classHint": ".bgy-risk-card",
+    "code": "<div class=\"bgy-risk-card\">...</div>"
+  },
+  {
+    "id": "risk-level",
+    "title": "风险等级",
+    "summary": "低、中、高等级标签。",
+    "preview": "risk-level",
+    "group": "risk",
+    "groupTitle": "Risk / Problem 风险问题",
+    "classHint": ".bgy-risk-card",
+    "code": "<div class=\"bgy-risk-card\">...</div>"
+  },
+  {
+    "id": "risk-matrix",
+    "title": "风险矩阵",
+    "summary": "影响和概率二维判断。",
+    "preview": "risk-matrix",
+    "group": "risk",
+    "groupTitle": "Risk / Problem 风险问题",
+    "classHint": ".bgy-risk-card",
+    "code": "<div class=\"bgy-risk-card\">...</div>"
+  },
+  {
+    "id": "risk-list",
+    "title": "问题清单",
+    "summary": "问题、责任、期限。",
+    "preview": "risk-list",
+    "group": "risk",
+    "groupTitle": "Risk / Problem 风险问题",
+    "classHint": ".bgy-risk-card",
+    "code": "<div class=\"bgy-risk-card\">...</div>"
+  },
+  {
+    "id": "risk-action",
+    "title": "风险 -> 措施",
+    "summary": "风险与动作闭环。",
+    "preview": "risk-action",
+    "group": "risk",
+    "groupTitle": "Risk / Problem 风险问题",
+    "classHint": ".bgy-risk-card",
+    "code": "<div class=\"bgy-risk-card\">...</div>"
+  },
+  {
+    "id": "image-single",
+    "title": "单图 + 文字",
+    "summary": "真实图片走 img，文字走 DOM。",
+    "preview": "image-single",
+    "group": "image",
+    "groupTitle": "Image / Case 图片案例",
+    "classHint": ".bgy-image-frame",
+    "code": "<div class=\"bgy-image-frame\"><img src=\"../images/example.jpg\" alt=\"项目现场\"></div>"
+  },
+  {
+    "id": "image-text",
+    "title": "左右图文",
+    "summary": "左图右文或左文右图。",
+    "preview": "image-text",
+    "group": "image",
+    "groupTitle": "Image / Case 图片案例",
+    "classHint": ".bgy-image-frame",
+    "code": "<div class=\"bgy-image-frame\"><img src=\"../images/example.jpg\" alt=\"项目现场\"></div>"
+  },
+  {
+    "id": "image-gallery",
+    "title": "三图 / 四图卡片",
+    "summary": "适合现场照片墙。",
+    "preview": "image-gallery",
+    "group": "image",
+    "groupTitle": "Image / Case 图片案例",
+    "classHint": ".bgy-image-frame",
+    "code": "<div class=\"bgy-image-frame\"><img src=\"../images/example.jpg\" alt=\"项目现场\"></div>"
+  },
+  {
+    "id": "image-before-after",
+    "title": "Before / After",
+    "summary": "工程整改前后对比。",
+    "preview": "image-before-after",
+    "group": "image",
+    "groupTitle": "Image / Case 图片案例",
+    "classHint": ".bgy-image-frame",
+    "code": "<div class=\"bgy-image-frame\"><img src=\"../images/example.jpg\" alt=\"项目现场\"></div>"
+  },
+  {
+    "id": "case-card",
+    "title": "案例 Card",
+    "summary": "图片、结论、标签组合。",
+    "preview": "case-card",
+    "group": "image",
+    "groupTitle": "Image / Case 图片案例",
+    "classHint": ".bgy-image-frame",
+    "code": "<div class=\"bgy-image-frame\"><img src=\"../images/example.jpg\" alt=\"项目现场\"></div>"
+  }
+]</script>
+  <script>
+    const embeddedConfig = JSON.parse(document.getElementById("embeddedConfig").textContent);
+    const presets = JSON.parse(document.getElementById("embeddedPresets").textContent);
+    const componentCatalog = JSON.parse(document.getElementById("componentCatalog").textContent);
+    let config = structuredClone(embeddedConfig);
+    let apiAvailable = false;
+    let selectedComponentId = componentCatalog[0]?.id || "";
+    const fieldIds = ["brand","deepBrand","success","successBg","warning","warningBg","danger","dangerBg","info","infoBg","text","muted","panel","surface","pageBg","line"];
+
+    function clone(value) {
+      return JSON.parse(JSON.stringify(value));
+    }
+    function merge(base, patch) {
+      if (Array.isArray(base) && Array.isArray(patch)) return clone(patch);
+      if (!base || typeof base !== "object" || Array.isArray(base) || !patch || typeof patch !== "object" || Array.isArray(patch)) {
+        return patch === undefined ? clone(base) : clone(patch);
+      }
+      const result = clone(base);
+      for (const [key, value] of Object.entries(patch)) {
+        result[key] = merge(result[key], value);
+      }
+      return result;
+    }
+    function normalizeHex(value, fallback = "#000000") {
+      const raw = String(value || "").trim();
+      if (/^#[0-9a-f]{6}$/i.test(raw)) return raw.toUpperCase();
+      return fallback;
+    }
+    function normalizeConfig(value) {
+      const merged = merge(embeddedConfig, value || {});
+      merged.project = merged.project || {};
+      merged.theme = merged.theme || {};
+      merged.components = merged.components || {};
+      merged.project.themeMode = merged.project.themeMode === "custom" ? "custom" : "preset";
+      for (const key of fieldIds) merged.theme[key] = normalizeHex(merged.theme[key], embeddedConfig.theme[key] || "#000000");
+      merged.theme.white = merged.theme.white || "#FFFFFF";
+      merged.theme.black = merged.theme.black || "#000000";
+      merged.theme.chart = Array.isArray(merged.theme.chart) && merged.theme.chart.length
+        ? merged.theme.chart.map(color => normalizeHex(color, merged.theme.brand))
+        : [merged.theme.brand, merged.theme.success, merged.theme.danger, merged.theme.warning, merged.theme.muted];
+      return merged;
+    }
+    function currentThemeMode() {
+      return document.body.dataset.themeMode === "custom" ? "custom" : "preset";
+    }
+    function setThemeMode(mode) {
+      config.project.themeMode = mode === "custom" ? "custom" : "preset";
+      document.body.dataset.themeMode = config.project.themeMode;
+      updateThemeModeUI();
+      renderPreview();
+    }
+    function setPanel(panel) {
+      document.body.dataset.panel = panel || "canvas";
+      document.getElementById("stageTitle").textContent = panel === "components" ? "组件预览" : panel === "theme" ? "主题配置" : "项目画布";
+    }
+    function componentCards() {
+      return document.querySelectorAll("[data-component-id], [data-component-ref]");
+    }
+    function cardComponentId(card) {
+      return card.dataset.componentId || card.dataset.componentRef || "";
+    }
+    function updateThemeModeUI() {
+      document.body.dataset.themeMode = config.project.themeMode === "custom" ? "custom" : "preset";
+      document.querySelectorAll("[data-preset]").forEach(button => {
+        button.classList.toggle("is-active", button.dataset.preset === config.project.preset && currentThemeMode() === "preset");
+      });
+    }
+    function setThemeVars(target, theme, components) {
+      const chart = theme.chart || [];
+      target.style.setProperty("--brand", theme.brand);
+      target.style.setProperty("--deep", theme.deepBrand);
+      target.style.setProperty("--bgy-brand", theme.brand);
+      target.style.setProperty("--bgy-deep-brand", theme.deepBrand);
+      target.style.setProperty("--bgy-success", theme.success);
+      target.style.setProperty("--bgy-success-bg", theme.successBg);
+      target.style.setProperty("--bgy-warning", theme.warning);
+      target.style.setProperty("--bgy-warning-bg", theme.warningBg);
+      target.style.setProperty("--bgy-danger", theme.danger);
+      target.style.setProperty("--bgy-danger-bg", theme.dangerBg);
+      target.style.setProperty("--bgy-info", theme.info);
+      target.style.setProperty("--bgy-info-bg", theme.infoBg);
+      target.style.setProperty("--bgy-text", theme.text);
+      target.style.setProperty("--bgy-muted", theme.muted);
+      target.style.setProperty("--bgy-panel", theme.panel);
+      target.style.setProperty("--bgy-surface", theme.surface || "#FFFFFF");
+      target.style.setProperty("--bgy-page-bg", theme.pageBg || "#FFFFFF");
+      target.style.setProperty("--bgy-line", theme.line);
+      target.style.setProperty("--bgy-white", theme.white || "#FFFFFF");
+      target.style.setProperty("--bgy-black", theme.black || "#000000");
+      target.style.setProperty("--bgy-card-radius", (components.cardRadius ?? 8) + "px");
+      target.style.setProperty("--bgy-panel-radius", (components.panelRadius ?? components.cardRadius ?? 8) + "px");
+      target.style.setProperty("--bgy-tag-radius", (components.tagRadius ?? 4) + "px");
+      target.style.setProperty("--bgy-metric-radius", (components.metricRadius ?? components.cardRadius ?? 8) + "px");
+      target.style.setProperty("--bgy-image-radius", (components.imageRadius ?? 6) + "px");
+      target.style.setProperty("--bgy-border-width", (components.borderWidth ?? 1) + "px");
+      target.style.setProperty("--bgy-card-shadow", components.cardShadow || "0 4px 14px rgba(0,0,0,0.08)");
+      target.style.setProperty("--bgy-panel-shadow", components.panelShadow || "0 2px 8px rgba(0,0,0,0.05)");
+      target.style.setProperty("--bgy-table-header-bg", components.tableHeaderBg || theme.panel);
+      target.style.setProperty("--bgy-table-row-alt", components.tableRowAlt || "#FAFCFD");
+      target.style.setProperty("--bgy-table-border", components.tableBorder || theme.line);
+      target.style.setProperty("--bgy-section-gap", (components.sectionGap ?? 24) + "px");
+      target.style.setProperty("--bgy-chart-1", chart[0] || theme.brand);
+      target.style.setProperty("--bgy-chart-2", chart[1] || theme.success);
+      target.style.setProperty("--bgy-chart-3", chart[2] || theme.danger);
+      target.style.setProperty("--bgy-chart-4", chart[3] || theme.warning);
+      target.style.setProperty("--bgy-chart-5", chart[4] || theme.muted);
+    }
+    function applyToForm() {
+      config = normalizeConfig(config);
+      document.getElementById("projectTitle").value = config.project.title || "";
+      document.getElementById("projectName").value = config.project.name || "";
+      document.getElementById("projectType").value = config.project.type || "";
+      document.getElementById("projectPreset").value = config.project.preset || "management-report";
+      document.getElementById("locked").checked = Boolean(config.locked);
+      for (const key of fieldIds) document.getElementById(key).value = normalizeHex(config.theme[key], "#000000");
+      document.getElementById("cardRadius").value = config.components.cardRadius ?? 8;
+      document.getElementById("panelRadius").value = config.components.panelRadius ?? 8;
+      document.getElementById("tagRadius").value = config.components.tagRadius ?? 4;
+      document.getElementById("metricRadius").value = config.components.metricRadius ?? 8;
+      document.getElementById("imageRadius").value = config.components.imageRadius ?? 6;
+      document.getElementById("borderWidth").value = config.components.borderWidth ?? 1;
+      document.getElementById("cardShadow").value = config.components.cardShadow || "";
+      document.getElementById("panelShadow").value = config.components.panelShadow || "";
+      document.getElementById("iconPack").value = config.components.iconPack || "line";
+      document.getElementById("tableDensity").value = config.components.tableDensity || "compact";
+      updateThemeModeUI();
+      renderPreview();
+    }
+    function readForm() {
+      config.project.title = document.getElementById("projectTitle").value.trim();
+      config.project.name = document.getElementById("projectName").value.trim();
+      config.project.type = document.getElementById("projectType").value.trim();
+      config.project.preset = document.getElementById("projectPreset").value;
+      config.project.themeMode = currentThemeMode();
+      config.locked = document.getElementById("locked").checked;
+      for (const key of fieldIds) config.theme[key] = document.getElementById(key).value.toUpperCase();
+      config.components.cardRadius = Number(document.getElementById("cardRadius").value || 8);
+      config.components.panelRadius = Number(document.getElementById("panelRadius").value || 8);
+      config.components.tagRadius = Number(document.getElementById("tagRadius").value || 4);
+      config.components.metricRadius = Number(document.getElementById("metricRadius").value || 8);
+      config.components.imageRadius = Number(document.getElementById("imageRadius").value || 6);
+      config.components.borderWidth = Number(document.getElementById("borderWidth").value || 1);
+      config.components.cardShadow = document.getElementById("cardShadow").value.trim();
+      config.components.panelShadow = document.getElementById("panelShadow").value.trim();
+      config.components.iconPack = document.getElementById("iconPack").value;
+      config.components.tableDensity = document.getElementById("tableDensity").value;
+      renderPreview();
+      return config;
+    }
+    function renderPreview() {
+      const slide = document.getElementById("previewSlide");
+      const theme = config.theme || {};
+      const components = config.components || {};
+      setThemeVars(document.documentElement, theme, components);
+      setThemeVars(slide, theme, components);
+      document.getElementById("previewTitle").textContent = config.project.title || "项目风格预览";
+      const palette = document.getElementById("palette");
+      palette.innerHTML = "";
+      [theme.brand, theme.deepBrand, theme.success, theme.warning, theme.danger, theme.info].forEach(color => {
+        const swatch = document.createElement("div");
+        swatch.className = "swatch";
+        swatch.style.background = color;
+        palette.appendChild(swatch);
+      });
+    }
+    function setStatus(message) {
+      document.getElementById("status").textContent = message;
+    }
+    async function loadConfig() {
+      if (window.location.protocol === "file:") {
+        apiAvailable = false;
+        config = normalizeConfig(embeddedConfig);
+        setStatus("静态预览模式");
+        applyToForm();
+        selectComponent(selectedComponentId);
+        return;
+      }
+      try {
+        const response = await fetch("/__bgy/project-config", { cache: "no-store" });
+        if (response.ok) {
+          config = normalizeConfig(await response.json());
+          apiAvailable = true;
+          setStatus("已连接本地配置服务");
+          applyToForm();
+          selectComponent(selectedComponentId);
+          return;
+        }
+      } catch (_) {
+        apiAvailable = false;
+      }
+      try {
+        const response = await fetch("bgy.project.json", { cache: "no-store" });
+        if (response.ok) config = normalizeConfig(await response.json());
+        setStatus("静态预览模式");
+      } catch (_) {
+        setStatus("使用页面内置配置");
+      }
+      applyToForm();
+      selectComponent(selectedComponentId);
+    }
+    async function saveConfig() {
+      readForm();
+      if (!apiAvailable) {
+        downloadJson();
+        setStatus("当前不是配置服务模式，已下载 bgy.project.json。");
+        return;
+      }
+      const response = await fetch("/__bgy/project-config", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(config)
+      });
+      if (!response.ok) throw new Error(await response.text());
+      const result = await response.json();
+      setStatus("已保存并同步：" + result.files.length + " 个文件");
+    }
+    function downloadJson() {
+      readForm();
+      const blob = new Blob([JSON.stringify(config, null, 2) + "\n"], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "bgy.project.json";
+      link.click();
+      URL.revokeObjectURL(url);
+    }
+    function applyPreset() {
+      const presetId = document.getElementById("projectPreset").value;
+      const preset = presets[presetId] || presets["management-report"];
+      const currentProject = clone(config.project || {});
+      const currentLocked = Boolean(config.locked);
+      config = merge(config, preset);
+      config.project = { ...currentProject, type: preset.projectType || presetId, preset: presetId, themeMode: "preset" };
+      config.locked = currentLocked;
+      applyToForm();
+      setStatus("已应用 " + (preset.label || presetId));
+    }
+    function selectComponent(componentId) {
+      selectedComponentId = componentId || componentCatalog[0]?.id || "";
+      const item = componentCatalog.find(entry => entry.id === selectedComponentId) || componentCatalog[0];
+      if (!item) return;
+      componentCards().forEach(card => {
+        card.classList.toggle("is-selected", cardComponentId(card) === item.id);
+      });
+      document.getElementById("selectedComponentTitle").textContent = item.title;
+      document.getElementById("selectedComponentSummary").textContent = item.groupTitle + " / " + item.summary;
+      document.getElementById("selectedComponentClass").value = item.classHint;
+      document.getElementById("selectedComponentCode").textContent = item.code;
+      const source = document.querySelector('#componentGallery [data-component-id="' + CSS.escape(item.id) + '"] .component-card__preview')
+        || document.querySelector('[data-component-ref="' + CSS.escape(item.id) + '"] .component-card__preview');
+      document.getElementById("selectedComponentPreview").innerHTML = source ? source.innerHTML : "";
+    }
+    function filterComponents() {
+      const query = document.getElementById("componentSearch").value.trim().toLowerCase();
+      const visibleTypes = new Set();
+      componentCards().forEach(card => {
+        const componentId = cardComponentId(card);
+        const item = componentCatalog.find(entry => entry.id === componentId);
+        const haystack = [item?.id, item?.title, item?.summary, item?.groupTitle, item?.classHint, card.innerText].join(" ").toLowerCase();
+        const visible = !query || haystack.includes(query);
+        card.style.display = visible ? "" : "none";
+        if (visible && componentId) visibleTypes.add(componentId);
+      });
+      document.querySelectorAll(".studio-component-group").forEach(group => {
+        const hasVisible = Array.from(group.querySelectorAll("[data-component-ref]")).some(card => card.style.display !== "none");
+        group.style.display = hasVisible ? "" : "none";
+      });
+      document.querySelectorAll(".component-section").forEach(group => {
+        const hasVisible = Array.from(group.querySelectorAll("[data-component-id]")).some(card => card.style.display !== "none");
+        group.style.display = hasVisible ? "" : "none";
+      });
+      if (!visibleTypes.size) {
+        setStatus("没有匹配的组件");
+      }
+    }
+    document.querySelectorAll("[data-panel-toggle]").forEach(button => {
+      button.addEventListener("click", () => setPanel(button.dataset.panelToggle));
+    });
+    document.querySelectorAll("[data-mode-toggle]").forEach(button => {
+      button.addEventListener("click", () => {
+        readForm();
+        setThemeMode(button.dataset.modeToggle);
+        setPanel("theme");
+      });
+    });
+    document.querySelectorAll("[data-preset]").forEach(button => {
+      button.addEventListener("click", () => {
+        document.getElementById("projectPreset").value = button.dataset.preset;
+        applyPreset();
+        setPanel("theme");
+      });
+    });
+    document.querySelectorAll("[data-theme-mode-card='custom']").forEach(button => {
+      button.addEventListener("click", () => {
+        readForm();
+        setThemeMode("custom");
+        setPanel("theme");
+      });
+    });
+    componentCards().forEach(card => {
+      card.addEventListener("click", () => {
+        selectComponent(cardComponentId(card));
+        setPanel("components");
+      });
+    });
+    document.querySelectorAll("[data-group-jump]").forEach(button => {
+      button.addEventListener("click", () => {
+        setPanel("components");
+        const group = document.querySelector('[data-gallery-group="' + CSS.escape(button.dataset.groupJump) + '"]')
+          || document.querySelector('[data-component-group="' + CSS.escape(button.dataset.groupJump) + '"]');
+        if (group) group.scrollIntoView({ block: "start" });
+      });
+    });
+    document.getElementById("componentSearch").addEventListener("input", filterComponents);
+    document.querySelectorAll("input, select").forEach(el => {
+      if (el.id === "projectPreset" || el.id === "componentSearch" || el.readOnly) return;
+      el.addEventListener("input", () => { readForm(); setPanel("theme"); });
+      el.addEventListener("change", () => { readForm(); setPanel("theme"); });
+    });
+    document.getElementById("projectPreset").addEventListener("change", () => { applyPreset(); setPanel("theme"); });
+    document.getElementById("saveTop").addEventListener("click", () => saveConfig().catch(err => setStatus("保存失败：" + err.message)));
+    document.getElementById("downloadTop").addEventListener("click", downloadJson);
+    document.getElementById("syncProject").addEventListener("click", () => saveConfig().catch(err => setStatus("同步失败：" + err.message)));
+    document.getElementById("insertComponent").addEventListener("click", () => setStatus("已选中组件：" + (componentCatalog.find(item => item.id === selectedComponentId)?.title || "")));
+    document.getElementById("copyComponentCode").addEventListener("click", async () => {
+      const text = document.getElementById("selectedComponentCode").textContent;
+      try {
+        await navigator.clipboard.writeText(text);
+        setStatus("已复制组件结构");
+      } catch (_) {
+        setStatus(text);
+      }
+    });
+    setPanel("components");
+    loadConfig();
+  </script>
 </body>
 </html>

@@ -184,8 +184,9 @@ description: 碧桂园服务/碧桂园体系 PPT 专用 HTML 设计技能。适�
 项目级设计契约：
 
 - 同一项目逐页生成时，必须优先使用 `scripts/init_bgy_project.mjs` 建立项目根目录，生成 `bgy.project.json`、`project-config.html`、`project-style-board.html`、`shared/tokens.css` 和 `shared/components.css`。
-- `project-config.html` 必须作为项目主题控制台：先通过主题卡片选择 preset；只有切到“自定义主题”时，才展开完整颜色、圆角、阴影、图标包和表格密度等细项。
-- `project-style-board.html` 必须作为组件库看板：按 KPI、Card、Chart、Progress、Comparison、Ranking、Process、Timeline、Risk、Image/Case 展示组件效果；新增共享组件时必须同步加入预览。
+- `project-config.html` 必须作为 Project Studio 主入口：采用浅色 Photoshop/Slidev 式工作台，包含左侧滚动组件库、中间 16:9 项目画布/页面缩略条、右侧主题/项目/组件检查器。
+- 主题选择必须真实写入预设 token；选择 preset 时颜色、文字、组件预览要即时变化。只有切到“自定义主题”时，才展开完整颜色、圆角、阴影、图标包和表格密度等细项。
+- `project-style-board.html` 是兼容入口，打开同一套 Project Studio 并默认进入组件面板；新增共享组件时必须同步加入滚动预览和组件 metadata，方便后续页面预览、编辑和组件插入功能复用。
 - 每页 HTML 必须同时引入 `../shared/tokens.css` 和 `../shared/components.css`，并复用 `.bgy-card`、`.bgy-panel`、`.bgy-metric-card`、`.bgy-table`、`.bgy-status-tag`、`.bgy-divider` 等组件类。
 - 经营汇报页优先使用组件库中的 `.bgy-kpi-card`、`.bgy-data-card`、`.bgy-chart-frame`、`.bgy-progress`、`.bgy-comparison`、`.bgy-ranking-list`、`.bgy-process`、`.bgy-timeline`、`.bgy-risk-card`、`.bgy-image-frame` 等结构，不要在单页里重新发明卡片、进度、流程、排名或图片案例样式。
 - 不要在单页里临场发明新主题色、字体、圆角、阴影或组件风格；确实要改时，先改 `bgy.project.json`，再运行 `scripts/sync_bgy_project.mjs`。
@@ -282,8 +283,8 @@ description: 碧桂园服务/碧桂园体系 PPT 专用 HTML 设计技能。适�
 
 - `scripts/gen_deck_thumbs.mjs`：为 `slides/*.html` 生成 `thumbs/*.jpg` 缩略图，用于 `deck_index.html` 的画廊概览。
 - `scripts/serve_deck.mjs`：启动零依赖本地静态服务器预览 `index.html + slides/*.html`。
-- `scripts/init_bgy_project.mjs`：在用户项目根目录生成 `bgy.project.json`、配置页、风格看板、共享 CSS、preset 副本和首张风格验证页。
-- `scripts/sync_bgy_project.mjs`：从现有 `bgy.project.json` 重建共享 CSS、配置页、风格看板和 preset 副本。
+- `scripts/init_bgy_project.mjs`：在用户项目根目录生成 `bgy.project.json`、Project Studio、共享 CSS、preset 副本和首张风格验证页。
+- `scripts/sync_bgy_project.mjs`：从现有 `bgy.project.json` 重建共享 CSS、Project Studio 和 preset 副本。
 - `scripts/pptx_preflight.mjs`：静态检查 PPTX 转换前的常见结构风险，减少误截图和聚合页误转。
 - `scripts/export_bgy_pptx.mjs`：调用 `pptx-design` 将 BGY HTML 转为可编辑 PPTX。
 - `scripts/verify_html.mjs`：用 `pptx-design` 的 Playwright 环境打开 HTML、截图并收集控制台错误。
@@ -292,7 +293,7 @@ description: 碧桂园服务/碧桂园体系 PPT 专用 HTML 设计技能。适�
 - `assets/deck_stage.js`：1-4 页轻量单文件演示组件，不用于正式多页 deck。
 - `assets/icon-gallery.html`：本地图标与 SVG 视觉资产预览页。
 - `references/local-visual-assets.md`：本地图标、业务 SVG、流程 SVG、空状态资产的选择和 PPTX 转换约束。
-- `references/project-design-contract.md`：项目级主题、preset、配置页、共享组件和 PPTX 导出衔接规则。
+- `references/project-design-contract.md`：项目级主题、preset、Project Studio、共享组件和 PPTX 导出衔接规则。
 - `references/pptx-authoring-profile.md`：BGY HTML 与 `pptx-design` 的结构契约，规定形状、图片、文字、表格、图标、图表占位和截图例外。
 - `references/huashu-quality-gates.md`：复制兼容、品牌资产、组件纪律、反 AI slop 和交付评审门禁。
 

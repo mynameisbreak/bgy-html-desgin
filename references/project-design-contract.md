@@ -14,8 +14,8 @@
 ```text
 <project>/
   bgy.project.json
-  project-config.html
-  project-style-board.html
+  project-config.html      # Project Studio 主入口
+  project-style-board.html # Project Studio 兼容入口，默认打开组件面板
   presets/
   deck.json
   index.html
@@ -46,9 +46,9 @@ npm --prefix <bgy-skill-root>/scripts run init-project -- \
 - `quality-improvement`
 - `fire-safety`
 
-## 配置页面
+## Project Studio
 
-用服务器模式打开根目录配置页：
+用服务器模式打开根目录 Project Studio：
 
 ```bash
 npm --prefix <bgy-skill-root>/scripts run serve -- \
@@ -59,7 +59,13 @@ npm --prefix <bgy-skill-root>/scripts run serve -- \
   --open
 ```
 
-`project-config.html` 是项目主题控制台。默认先用主题卡片选择 preset；只有切到“自定义主题”时，才展开颜色、圆角、阴影、图标包和表格密度等细项。页面右侧应实时预览当前主题下的常用组件效果。使用 `--project-api` 打开时，保存会直接写回：
+`project-config.html` 是主入口，必须采用浅色 Photoshop/Slidev 式工作台：
+
+- 左侧为可搜索、可滚动的组件库；
+- 中间为 16:9 项目画布和页面缩略条，为后续页面预览/编辑预留承载区；
+- 右侧为项目属性、主题 preset/自定义主题、组件检查器和复制/插入操作区。
+
+默认先选择 preset；只有切到“自定义主题”时，才展开颜色、圆角、阴影、图标包和表格密度等细项。主题变化必须实时影响画布与组件预览。使用 `--project-api` 打开时，保存会直接写回：
 
 - `bgy.project.json`
 - `shared/tokens.css`
@@ -69,7 +75,7 @@ npm --prefix <bgy-skill-root>/scripts run serve -- \
 
 如果只是双击 HTML 或普通静态预览，页面只能下载 `bgy.project.json`，不能直接写回文件。
 
-`project-style-board.html` 是组件库看板。它必须按 KPI、Card、Chart、Progress、Comparison、Ranking、Process、Timeline、Risk、Image/Case 展示当前主题下的预览效果，新增共享组件或新的 PPT 结构样式时，也要把示例同步加入这个看板，避免后续页面临场发明样式。
+`project-style-board.html` 是兼容入口。它打开同一套 Project Studio，但默认进入组件面板，按 KPI、Card、Chart、Progress、Comparison、Ranking、Process、Timeline、Risk、Image/Case 展示当前主题下的滚动预览。新增共享组件或新的 PPT 结构样式时，也要把示例、`data-component-id` 和组件 metadata 同步加入这里，避免后续页面临场发明样式。
 
 ## 同步命令
 

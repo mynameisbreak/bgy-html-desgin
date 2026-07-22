@@ -574,8 +574,8 @@ function componentPreviewMarkup(type, normalized) {
   }
 }
 
-function renderComponentCard(item, normalized) {
-  return `<article class="component-card" id="component-${escapeHtml(item.id)}">
+function renderComponentCard(item, normalized, idPrefix = "component", componentAttr = "data-component-id") {
+  return `<article class="component-card" id="${escapeHtml(idPrefix)}-${escapeHtml(item.id)}" ${componentAttr}="${escapeHtml(item.id)}">
     <div class="component-card__head">
       <h3>${escapeHtml(item.title)}</h3>
       <p>${escapeHtml(item.summary)}</p>
@@ -584,7 +584,7 @@ function renderComponentCard(item, normalized) {
   </article>`;
 }
 
-function renderComponentSections(normalized, groups = COMPONENT_GROUPS) {
+function renderComponentSections(normalized, groups = COMPONENT_GROUPS, idPrefix = "component", componentAttr = "data-component-id") {
   return groups.map(group => `<section class="component-section" id="${escapeHtml(group.id)}">
     <div class="component-section__head">
       <div>
@@ -593,7 +593,7 @@ function renderComponentSections(normalized, groups = COMPONENT_GROUPS) {
       </div>
     </div>
     <div class="component-grid">
-      ${group.items.map(item => renderComponentCard(item, normalized)).join("")}
+      ${group.items.map(item => renderComponentCard(item, normalized, idPrefix, componentAttr)).join("")}
     </div>
   </section>`).join("");
 }
@@ -610,60 +610,99 @@ function compactComponentCards(normalized) {
   return compactItems.map(item => renderComponentCard(item, normalized)).join("");
 }
 
-export function buildDeckJson(config) {
-  const normalized = normalizeProjectConfig(config);
-  return {
-    meta: {
-      title: normalized.project.title,
-      theme: "bgy-services",
-      template: "bgy-services-base",
-      archetype: normalized.project.type,
-      preset: normalized.project.preset,
-      ratio: "16:9",
-      mode: normalized.project.editablePptx ? "html-to-pptx" : "html-preview",
-      projectConfig: "bgy.project.json",
-    },
-    slides: [
-      {
-        id: "slide-01",
-        label: "风格看板",
-        type: "style-board",
-        layoutVariant: "project-contract",
-        file: "slides/01-style-board.html",
-        components: [],
-      },
-    ],
-  };
+function componentClassHint(preview = "") {
+  if (preview.startsWith("kpi")) return ".bgy-kpi-card";
+  if (preview.startsWith("card-risk") || preview.startsWith("risk-card")) return ".bgy-risk-card";
+  if (preview.startsWith("card-highlight")) return ".bgy-highlight-card";
+  if (preview.startsWith("card-conclusion")) return ".bgy-conclusion-card";
+  if (preview.startsWith("card-data")) return ".bgy-data-card";
+  if (preview.startsWith("card-project")) return ".bgy-project-card";
+  if (preview.startsWith("chart")) return ".bgy-chart-frame";
+  if (preview.startsWith("progress")) return ".bgy-progress";
+  if (preview.startsWith("compare")) return ".bgy-comparison";
+  if (preview.startsWith("ranking")) return ".bgy-ranking-list";
+  if (preview.startsWith("process")) return ".bgy-process";
+  if (preview.startsWith("timeline")) return ".bgy-timeline";
+  if (preview.startsWith("risk")) return ".bgy-risk-card";
+  if (preview.startsWith("image") || preview === "case-card") return ".bgy-image-frame";
+  return ".bgy-card";
 }
 
-export function buildProjectConfigHtml(config, presets = loadBuiltinPresets()) {
-  const normalized = normalizeProjectConfig(config);
-  const presetList = Object.values(presets).map(preset => normalizeProjectConfig({
-    project: { preset: preset.id || preset.projectType || "management-report" },
-    ...preset,
-  }));
-  const defaultPresetOptions = presetList
+function componentCodeHint(item) {
+  const classHint = componentClassHint(item.preview);
+  if (classHint === ".bgy-chart-frame") {
+    return `<div class="bgy-chart-frame" data-ppt-chart="bar" data-ppt-chart-data='{"labels":["A","B"],"series":[{"name":"完成率","values":[82,96]}]}'>...</div>`;
+  }
+  if (classHint === ".bgy-process") {
+    return `<div class="bgy-process bgy-process--horizontal"><div class="bgy-process-step">发现问题</div><span class="bgy-process-line" data-ppt-line-end="triangle"></span></div>`;
+  }
+  if (classHint === ".bgy-image-frame") {
+    return `<div class="bgy-image-frame"><img src="../images/example.jpg" alt="项目现场"></div>`;
+  }
+  if (classHint === ".bgy-ranking-list") {
+    return `<ol class="bgy-ranking-list"><li><strong>1</strong><span>项目</span><em>96.4%</em></li></ol>`;
+  }
+  return `<div class="${classHint.slice(1)}">...</div>`;
+}
+
+function componentCatalog() {
+  return COMPONENT_GROUPS.flatMap(group => group.items.map(item => ({
+    ...item,
+    group: group.id,
+    groupTitle: group.title,
+    classHint: componentClassHint(item.preview),
+    code: componentCodeHint(item),
+  })));
+}
+
+function studioComponentSections(normalized) {
+  return COMPONENT_GROUPS.map(group => `<section class="studio-component-group" data-component-group="${escapeHtml(group.id)}">
+    <button type="button" class="group-title" data-group-jump="${escapeHtml(group.id)}">
+      <span>${escapeHtml(group.title)}</span>
+      <small>${group.items.length}</small>
+    </button>
+    <div class="studio-component-list">
+      ${group.items.map(item => renderComponentCard(item, normalized, "studio-component", "data-component-ref")).join("")}
+    </div>
+  </section>`).join("");
+}
+
+function studioComponentGallerySections(normalized) {
+  return COMPONENT_GROUPS.map(group => `<section class="component-section" data-gallery-group="${escapeHtml(group.id)}">
+    <div class="component-section__head">
+      <div>
+        <h2>${escapeHtml(group.title)}</h2>
+        <p>${escapeHtml(group.summary)}</p>
+      </div>
+      <span>${group.items.length} 个组件</span>
+    </div>
+    <div class="component-grid">
+      ${group.items.map(item => renderComponentCard(item, normalized, "gallery-component")).join("")}
+    </div>
+  </section>`).join("");
+}
+
+function studioPresetOptions(presets) {
+  return orderedPresets(presets)
+    .map(preset => normalizeProjectConfig({
+      project: { preset: preset.id || preset.projectType || "management-report" },
+      ...preset,
+    }))
     .map(item => `<option value="${escapeHtml(item.project.preset)}">${escapeHtml(item.label || item.project.preset)}</option>`)
     .join("");
-  const presetCards = renderPresetCards(presets, normalized.project.preset);
-  const quickComponents = compactComponentCards(normalized);
+}
 
-  return `<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>BGY 项目配置 - ${escapeHtml(normalized.project.title)}</title>
-  <style>
-    :root {
-      --page: #f3f6f8;
+function studioRootVars(normalized) {
+  return `
+      --page: #eef2f6;
       --surface: #ffffff;
+      --tool-surface: #f8fafc;
+      --panel: #ffffff;
       --text: #1f2933;
       --muted: #64748b;
       --line: #d8e3ea;
       --brand: ${normalized.theme.brand};
       --deep: ${normalized.theme.deepBrand};
-      --radius: 8px;
       --bgy-brand: ${normalized.theme.brand};
       --bgy-deep-brand: ${normalized.theme.deepBrand};
       --bgy-success: ${normalized.theme.success};
@@ -699,349 +738,279 @@ export function buildProjectConfigHtml(config, presets = loadBuiltinPresets()) {
       --bgy-chart-2: ${normalized.theme.chart[1]};
       --bgy-chart-3: ${normalized.theme.chart[2]};
       --bgy-chart-4: ${normalized.theme.chart[3]};
-      --bgy-chart-5: ${normalized.theme.chart[4]};
+      --bgy-chart-5: ${normalized.theme.chart[4]};`;
+}
+
+function buildProjectStudioHtml(config, presets = loadBuiltinPresets(), { initialPanel = "canvas" } = {}) {
+  const normalized = normalizeProjectConfig(config);
+  const presetCards = renderPresetCards(presets, normalized.project.preset);
+  const defaultPresetOptions = studioPresetOptions(presets);
+  const componentSections = studioComponentSections(normalized);
+  const componentGallerySections = studioComponentGallerySections(normalized);
+  const catalog = componentCatalog();
+  const firstComponent = catalog[0] || {};
+  const palette = [
+    ["主色", normalized.theme.brand],
+    ["深色", normalized.theme.deepBrand],
+    ["成功", normalized.theme.success],
+    ["警示", normalized.theme.warning],
+    ["风险", normalized.theme.danger],
+    ["信息", normalized.theme.info],
+  ];
+
+  return `<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BGY 项目工作台 - ${escapeHtml(normalized.project.title)}</title>
+  <style>
+    :root {${studioRootVars(normalized)}
       font-family: "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
     }
     * { box-sizing: border-box; }
-    body {
+    html, body {
       margin: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
       color: var(--text);
       background: var(--page);
       font-family: "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
       letter-spacing: 0;
     }
-    .app {
-      display: grid;
-      grid-template-columns: 420px minmax(0, 1fr);
-      min-height: 100vh;
-    }
-    aside {
-      background: var(--surface);
-      border-right: 1px solid var(--line);
-      padding: 22px;
-      overflow: auto;
-    }
-    main {
-      padding: 26px;
-      overflow: auto;
-    }
-    h1 {
-      margin: 0 0 6px;
-      font-size: 22px;
-      color: var(--deep);
-    }
-    h2 {
-      margin: 24px 0 12px;
-      font-size: 15px;
-      color: var(--text);
-    }
-    p {
-      margin: 0;
-      color: var(--muted);
-      line-height: 1.6;
-      font-size: 13px;
-    }
-    label {
-      display: grid;
-      gap: 7px;
-      margin: 12px 0;
-      color: var(--muted);
-      font-size: 12px;
-      font-weight: 600;
-    }
-    input,
-    select,
-    textarea {
-      width: 100%;
-      border: 1px solid var(--line);
-      border-radius: 6px;
-      padding: 9px 10px;
-      background: #fff;
-      color: var(--text);
+    button, input, select, textarea {
       font: inherit;
-      font-size: 13px;
-    }
-    input[type="color"] {
-      height: 38px;
-      padding: 4px;
-    }
-    input[type="checkbox"] {
-      width: 16px;
-      height: 16px;
-    }
-    .row {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 12px;
-    }
-    .inline {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin: 14px 0;
-      color: var(--text);
-      font-size: 13px;
-      font-weight: 600;
-    }
-    .actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 18px;
-    }
-    .actions-top {
-      position: sticky;
-      top: 0;
-      z-index: 5;
-      margin: 16px 0 0;
-      padding: 12px 0;
-      background: var(--surface);
-      border-top: 1px solid var(--line);
-      border-bottom: 1px solid var(--line);
     }
     button {
       border: 0;
-      border-radius: 6px;
-      padding: 9px 13px;
-      background: var(--brand);
-      color: #fff;
-      font: inherit;
-      font-size: 13px;
-      font-weight: 600;
       cursor: pointer;
     }
-    button.secondary {
-      background: #e9f2f6;
+    .studio {
+      display: grid;
+      grid-template-columns: 324px minmax(560px, 1fr) 360px;
+      grid-template-rows: 52px minmax(0, 1fr);
+      height: 100vh;
+    }
+    .topbar {
+      grid-column: 1 / -1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 0 14px;
+      border-bottom: 1px solid var(--line);
+      background: var(--surface);
+    }
+    .brand-lockup {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      min-width: 260px;
+    }
+    .brand-lockup strong {
       color: var(--deep);
+      font-size: 16px;
     }
-    button.ghost {
-      background: #fff;
-      color: var(--text);
-      border: 1px solid var(--line);
-    }
-    .status {
-      margin-top: 14px;
-      padding: 10px 12px;
-      border-radius: 6px;
-      background: #f5f8fa;
+    .brand-lockup span {
       color: var(--muted);
       font-size: 12px;
-      line-height: 1.5;
-      white-space: pre-wrap;
     }
-    .theme-mode {
-      margin-top: 18px;
-      padding-top: 18px;
-      border-top: 1px solid var(--line);
-    }
-    .mode-toggle {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 8px;
-      margin: 12px 0 14px;
+    .workspace-tabs {
+      display: inline-flex;
+      gap: 4px;
       padding: 4px;
       border: 1px solid var(--line);
       border-radius: 8px;
-      background: #f6f9fb;
+      background: var(--tool-surface);
     }
-    .mode-toggle button {
-      background: transparent;
+    .workspace-tabs button,
+    .tool-button {
+      min-height: 32px;
+      padding: 6px 11px;
+      border-radius: 6px;
       color: var(--muted);
-      border-radius: 5px;
-      padding: 8px 10px;
+      background: transparent;
+      font-size: 13px;
+      font-weight: 600;
     }
-    body[data-theme-mode="preset"] .mode-toggle [data-mode-toggle="preset"],
-    body[data-theme-mode="custom"] .mode-toggle [data-mode-toggle="custom"] {
-      background: var(--brand);
-      color: #fff;
-    }
-    .preset-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 10px;
-    }
-    .preset-card {
-      display: grid;
-      gap: 8px;
-      min-height: 142px;
-      padding: 12px;
-      color: var(--text);
-      text-align: left;
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      background: #fff;
-    }
-    .preset-card.is-active {
-      border-color: var(--brand);
-      box-shadow: 0 0 0 2px rgba(0, 109, 154, 0.14);
-    }
-    body[data-theme-mode="custom"] .preset-card--custom {
-      border-color: var(--brand);
-      box-shadow: 0 0 0 2px rgba(0, 109, 154, 0.14);
-    }
-    .preset-card__label {
+    body[data-panel="canvas"] [data-panel-toggle="canvas"],
+    body[data-panel="components"] [data-panel-toggle="components"],
+    body[data-panel="theme"] [data-panel-toggle="theme"] {
       color: var(--deep);
-      font-size: 14px;
+      background: var(--surface);
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.10);
+    }
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .primary-button,
+    .secondary-button,
+    .ghost-button {
+      min-height: 32px;
+      padding: 7px 12px;
+      border-radius: 6px;
+      font-size: 13px;
       font-weight: 700;
     }
-    .preset-card__desc,
-    .preset-card__meta {
+    .primary-button {
+      color: #fff;
+      background: var(--brand);
+    }
+    .secondary-button {
+      color: var(--deep);
+      background: #e9f2f6;
+    }
+    .ghost-button {
+      color: var(--text);
+      border: 1px solid var(--line);
+      background: var(--surface);
+    }
+    .left-panel,
+    .inspector {
+      min-height: 0;
+      background: var(--surface);
+      overflow: hidden;
+    }
+    .left-panel {
+      display: grid;
+      grid-template-rows: auto auto minmax(0, 1fr);
+      border-right: 1px solid var(--line);
+    }
+    .panel-head,
+    .inspector-head {
+      padding: 14px 14px 10px;
+      border-bottom: 1px solid var(--line);
+    }
+    .panel-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .panel-title h1,
+    .panel-title h2,
+    .inspector-head h2 {
+      margin: 0;
+      color: var(--deep);
+      font-size: 15px;
+    }
+    .panel-title small,
+    .inspector-head p,
+    .panel-head p {
+      margin: 6px 0 0;
       color: var(--muted);
-      font-size: 11px;
+      font-size: 12px;
       line-height: 1.45;
     }
-    .preset-card__colors,
-    .color-strip {
+    .search-box {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--line);
+    }
+    .search-box input,
+    .field input,
+    .field select,
+    .field textarea {
+      width: 100%;
+      min-height: 32px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 6px 8px;
+      color: var(--text);
+      background: #fff;
+      outline: none;
+      font-size: 13px;
+    }
+    .field input[type="checkbox"] {
+      width: auto;
+      min-height: 0;
+      margin: 0 6px 0 0;
+      padding: 0;
+      box-shadow: none;
+    }
+    .field span {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+    }
+    .search-box input:focus,
+    .field input:focus,
+    .field select:focus {
+      border-color: var(--brand);
+      box-shadow: 0 0 0 2px rgba(0, 109, 154, 0.12);
+    }
+    .component-scroll {
+      min-height: 0;
+      overflow: auto;
+      padding: 10px 12px 18px;
+      background: #f8fafc;
+    }
+    .studio-component-group {
+      margin-bottom: 14px;
+    }
+    .group-title {
       display: flex;
-      gap: 4px;
-      height: 18px;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      margin-bottom: 8px;
+      padding: 7px 8px;
+      color: var(--deep);
+      background: transparent;
+      font-size: 13px;
+      font-weight: 800;
+      text-align: left;
     }
-    .preset-card__colors span,
-    .color-strip span {
-      flex: 1;
-      min-width: 0;
-      border-radius: 3px;
-      border: 1px solid rgba(15, 23, 42, 0.08);
+    .group-title small {
+      min-width: 24px;
+      border-radius: 99px;
+      color: var(--muted);
+      background: #e8eef4;
+      text-align: center;
+      font-size: 11px;
+      line-height: 18px;
     }
-    .custom-editor {
-      margin-top: 20px;
-      padding-top: 18px;
-      border-top: 1px solid var(--line);
-    }
-    body[data-theme-mode="preset"] .custom-editor {
-      display: none;
-    }
-    .component-preview {
-      margin-top: 26px;
-    }
-    .component-grid {
+    .studio-component-list {
       display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 14px;
-      margin-top: 14px;
+      gap: 10px;
     }
     .component-card {
-      min-height: 220px;
       border: 1px solid var(--line);
       border-radius: 8px;
       background: #fff;
+      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
       overflow: hidden;
     }
+    .component-card.is-selected {
+      border-color: var(--brand);
+      box-shadow: 0 0 0 2px rgba(0, 109, 154, 0.12);
+    }
     .component-card__head {
-      padding: 12px 14px 8px;
+      padding: 10px 11px 8px;
       border-bottom: 1px solid var(--line);
     }
     .component-card__head h3 {
-      margin: 0 0 5px;
+      margin: 0 0 4px;
       color: var(--deep);
-      font-size: 14px;
+      font-size: 13px;
     }
     .component-card__head p {
-      font-size: 12px;
+      margin: 0;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.35;
     }
     .component-card__preview {
-      min-height: 135px;
-      padding: 14px;
-      background: #fbfdfe;
-    }
-    .bgy-metric-card,
-    .bgy-panel,
-    .bgy-card {
-      background: var(--cfg-surface, #fff);
-      border: 1px solid var(--cfg-line, #d8e3ea);
-      border-radius: var(--cfg-card-radius, 8px);
-      overflow: hidden;
-    }
-    .bgy-panel {
-      border-radius: var(--cfg-panel-radius, var(--cfg-card-radius, 8px));
-      box-shadow: var(--cfg-panel-shadow, 0 2px 8px rgba(0,0,0,0.05));
-    }
-    .bgy-card,
-    .bgy-metric-card {
-      box-shadow: var(--cfg-card-shadow, 0 4px 14px rgba(0,0,0,0.08));
-    }
-    .bgy-metric-card {
-      padding: 14px;
-      border-radius: var(--cfg-metric-radius, var(--cfg-card-radius, 8px));
-    }
-    .bgy-metric-value {
-      margin: 0;
-      color: var(--cfg-deep, #004b6b);
-      font-size: 24px;
-      line-height: 1;
-      font-weight: 700;
-    }
-    .bgy-metric-label {
-      margin: 6px 0 0;
-      color: var(--cfg-muted, #64748b);
-      font-size: 12px;
-    }
-    .bgy-status-tag {
-      display: inline-flex;
-      align-items: center;
-      padding: 5px 9px;
-      border-radius: var(--cfg-tag-radius, 4px);
-      font-size: 12px;
-      line-height: 1;
-      font-weight: 700;
-      white-space: nowrap;
-    }
-    .bgy-status-tag.is-success { color: var(--cfg-success, #2e7d32); background: var(--cfg-success-bg, #eaf5eb); }
-    .bgy-status-tag.is-warning { color: var(--cfg-warning, #c97400); background: var(--cfg-warning-bg, #fff3e3); }
-    .bgy-status-tag.is-danger { color: var(--cfg-danger, #c00000); background: var(--cfg-danger-bg, #fdecec); }
-    .bgy-status-tag.is-info { color: var(--cfg-info, #2b6cb0); background: var(--cfg-info-bg, #eaf3fb); }
-    .bgy-callout {
-      padding: 14px;
-      background: var(--cfg-panel, #f5f8fa);
-      border-left: 4px solid var(--cfg-brand, #006d9a);
-      border-radius: var(--cfg-card-radius, 8px);
-    }
-    .bgy-callout__title {
-      margin: 0 0 6px;
-      color: var(--cfg-deep, #004b6b);
-      font-size: 14px;
-      font-weight: 700;
-    }
-    .bgy-callout__text {
-      margin: 0;
-      color: var(--cfg-text, #1f2933);
-      font-size: 12px;
-      line-height: 1.6;
-    }
-    .bgy-table {
-      width: 100%;
-      border-collapse: collapse;
-      color: var(--cfg-text, #1f2933);
-      font-size: 12px;
-    }
-    .bgy-table th,
-    .bgy-table td {
-      padding: 7px 8px;
-      border-bottom: 1px solid var(--cfg-line, #d8e3ea);
-      text-align: left;
-    }
-    .bgy-table th {
-      color: var(--cfg-muted, #64748b);
-      background: var(--cfg-panel, #f5f8fa);
-    }
-    .demo-metrics {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 10px;
-    }
-    .demo-tags {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
+      min-height: 112px;
+      padding: 10px;
+      background: var(--bgy-panel);
     }
     ${buildComponentsCss(normalized)}
-    .component-card__preview .bgy-table {
-      font-size: 12px;
-    }
+    .component-card__preview .bgy-table { font-size: 11px; }
     .component-card__preview .bgy-table th,
-    .component-card__preview .bgy-table td {
-      padding: 6px 7px;
-    }
+    .component-card__preview .bgy-table td { padding: 5px 6px; }
     .component-card__preview .bgy-kpi-card,
     .component-card__preview .bgy-card,
     .component-card__preview .bgy-data-card,
@@ -1050,54 +1019,139 @@ export function buildProjectConfigHtml(config, presets = loadBuiltinPresets()) {
     .component-card__preview .bgy-conclusion-card,
     .component-card__preview .bgy-progress-panel,
     .component-card__preview .bgy-image-card,
-    .component-card__preview .bgy-case-card {
-      padding: 12px;
-    }
+    .component-card__preview .bgy-case-card { padding: 10px; }
     .component-card__preview .bgy-kpi-card__value,
-    .component-card__preview .bgy-metric-value {
-      font-size: 24px;
-    }
-    .component-card__preview .bgy-kpi-card--hero .bgy-kpi-card__value {
-      font-size: 34px;
-    }
+    .component-card__preview .bgy-metric-value { font-size: 22px; }
+    .component-card__preview .bgy-kpi-card--hero .bgy-kpi-card__value { font-size: 30px; }
     .component-card__preview .bgy-card__title,
     .component-card__preview .bgy-data-card strong,
     .component-card__preview .bgy-highlight-card strong,
     .component-card__preview .bgy-risk-card strong,
     .component-card__preview .bgy-conclusion-card strong,
-    .component-card__preview .bgy-case-card strong {
-      font-size: 15px;
-    }
+    .component-card__preview .bgy-case-card strong { font-size: 14px; }
     .component-card__preview .bgy-card__text,
     .component-card__preview .bgy-kpi-card__note,
-    .component-card__preview .bgy-image-card p {
-      font-size: 12px;
+    .component-card__preview .bgy-image-card p { font-size: 11px; }
+    .component-card__preview .bgy-status-tag { font-size: 11px; padding: 4px 7px; }
+    .component-card__preview .bgy-chart-frame { min-height: 106px; padding: 8px; }
+    .component-card__preview .bgy-ring-progress__svg { width: 58px; height: 58px; }
+    .stage {
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr) 92px;
+      min-width: 0;
+      min-height: 0;
+      overflow: hidden;
+      background: var(--page);
     }
-    .component-card__preview .bgy-status-tag {
-      font-size: 12px;
-      padding: 4px 7px;
+    body[data-panel="components"] .stage {
+      grid-template-rows: auto minmax(0, 1fr);
     }
-    .component-card__preview .bgy-chart-frame {
-      min-height: 120px;
-      padding: 10px;
-    }
-    .preview-shell {
-      max-width: 1120px;
-      margin: 0 auto;
-    }
-    .preview-header {
+    .stage-toolbar {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 14px;
+      gap: 12px;
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(255,255,255,0.74);
+      backdrop-filter: blur(8px);
+    }
+    .stage-toolbar strong {
+      color: var(--deep);
+      font-size: 14px;
+    }
+    .stage-tools {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .canvas-wrap {
+      display: grid;
+      place-items: center;
+      min-height: 0;
+      overflow: auto;
+      padding: 28px;
+      background:
+        linear-gradient(#dfe6ed 1px, transparent 1px),
+        linear-gradient(90deg, #dfe6ed 1px, transparent 1px);
+      background-size: 24px 24px;
+      background-color: #eef3f7;
+    }
+    body[data-panel="components"] .canvas-wrap {
+      display: none;
+    }
+    body:not([data-panel="components"]) .component-gallery {
+      display: none;
+    }
+    body[data-panel="components"] .page-strip {
+      display: none;
+    }
+    .component-gallery {
+      min-height: 0;
+      overflow: auto;
+      padding: 22px;
+      background:
+        linear-gradient(#e5edf4 1px, transparent 1px),
+        linear-gradient(90deg, #e5edf4 1px, transparent 1px);
+      background-size: 24px 24px;
+      background-color: #f5f8fb;
+    }
+    .component-gallery__inner {
+      max-width: 1120px;
+      margin: 0 auto;
+      display: grid;
+      gap: 18px;
+    }
+    .component-section {
+      display: grid;
+      gap: 10px;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(255,255,255,0.92);
+      box-shadow: 0 10px 28px rgba(15, 23, 42, 0.08);
+    }
+    .component-section__head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--line);
+    }
+    .component-section__head h2 {
+      margin: 0 0 4px;
+      color: var(--deep);
+      font-size: 15px;
+    }
+    .component-section__head p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+    .component-section__head span {
+      flex: 0 0 auto;
+      padding: 5px 8px;
+      border-radius: 999px;
+      color: var(--muted);
+      background: #edf3f7;
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .component-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(236px, 1fr));
+      gap: 12px;
+      align-items: start;
     }
     .preview {
       width: 960px;
       height: 540px;
       background: #fff;
-      border: 1px solid var(--line);
-      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.12);
-      transform-origin: top left;
+      border: 1px solid #cfd9e3;
+      box-shadow: 0 14px 34px rgba(15, 23, 42, 0.18);
+      transform-origin: center;
       overflow: hidden;
       position: relative;
     }
@@ -1105,15 +1159,15 @@ export function buildProjectConfigHtml(config, presets = loadBuiltinPresets()) {
       position: absolute;
       inset: 0;
       padding: 54px 60px;
-      background: var(--cfg-page-bg, #fff);
-      color: var(--cfg-text, #1f2933);
-      font-family: "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
+      background: var(--bgy-page-bg);
+      color: var(--bgy-text);
+      font-family: var(--bgy-font-family);
     }
     .title {
       display: flex;
       align-items: baseline;
       gap: 22px;
-      color: var(--cfg-brand, #006d9a);
+      color: var(--bgy-brand);
       font-weight: 700;
       font-size: 25px;
     }
@@ -1122,27 +1176,27 @@ export function buildProjectConfigHtml(config, presets = loadBuiltinPresets()) {
     }
     .preview-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
+      grid-template-columns: repeat(3, 1fr);
       gap: 16px;
       margin-top: 34px;
     }
-    .card {
-      border: 1px solid var(--cfg-line, #d8e3ea);
-      border-radius: var(--cfg-card-radius, 8px);
-      box-shadow: var(--cfg-card-shadow, 0 4px 14px rgba(0,0,0,0.08));
-      background: var(--cfg-surface, #fff);
-      padding: 16px;
+    .slide-card {
       height: 120px;
+      padding: 16px;
+      border: 1px solid var(--bgy-line);
+      border-radius: var(--bgy-card-radius);
+      background: var(--bgy-surface);
+      box-shadow: var(--bgy-card-shadow);
     }
     .metric {
+      color: var(--bgy-deep-brand);
       font-size: 24px;
       line-height: 1;
-      color: var(--cfg-deep, #004b6b);
       font-weight: 700;
     }
     .label {
       margin-top: 8px;
-      color: var(--cfg-muted, #64748b);
+      color: var(--bgy-muted);
       font-size: 12px;
     }
     .tag-row {
@@ -1152,27 +1206,27 @@ export function buildProjectConfigHtml(config, presets = loadBuiltinPresets()) {
     }
     .tag {
       padding: 6px 10px;
-      border-radius: var(--cfg-tag-radius, 4px);
+      border-radius: var(--bgy-tag-radius);
       font-size: 12px;
       font-weight: 700;
     }
-    .success { color: var(--cfg-success, #2e7d32); background: var(--cfg-success-bg, #eaf5eb); }
-    .warning { color: var(--cfg-warning, #c97400); background: var(--cfg-warning-bg, #fff3e3); }
-    .danger { color: var(--cfg-danger, #c00000); background: var(--cfg-danger-bg, #fdecec); }
-    table {
+    .success { color: var(--bgy-success); background: var(--bgy-success-bg); }
+    .warning { color: var(--bgy-warning); background: var(--bgy-warning-bg); }
+    .danger { color: var(--bgy-danger); background: var(--bgy-danger-bg); }
+    .preview table {
       width: 100%;
       border-collapse: collapse;
       font-size: 12px;
     }
-    th,
-    td {
+    .preview th,
+    .preview td {
       padding: 8px 10px;
-      border-bottom: 1px solid var(--cfg-line, #d8e3ea);
+      border-bottom: 1px solid var(--bgy-line);
       text-align: left;
     }
-    th {
-      color: var(--cfg-muted, #64748b);
-      background: var(--cfg-panel, #f5f8fa);
+    .preview th {
+      color: var(--bgy-muted);
+      background: var(--bgy-panel);
     }
     .palette {
       display: grid;
@@ -1185,117 +1239,238 @@ export function buildProjectConfigHtml(config, presets = loadBuiltinPresets()) {
       border-radius: 5px;
       border: 1px solid rgba(0,0,0,0.08);
     }
-    @media (max-width: 980px) {
-      .app { grid-template-columns: 1fr; }
-      aside { border-right: 0; border-bottom: 1px solid var(--line); }
-      .preview { width: 100%; height: auto; aspect-ratio: 16 / 9; }
+    .page-strip {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 14px;
+      border-top: 1px solid var(--line);
+      background: var(--surface);
+      overflow-x: auto;
+    }
+    .page-thumb {
+      flex: 0 0 118px;
+      height: 66px;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      color: var(--deep);
+      background: #fff;
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .page-thumb.is-active {
+      border-color: var(--brand);
+      box-shadow: 0 0 0 2px rgba(0, 109, 154, 0.10);
+    }
+    .inspector {
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr) auto;
+      border-left: 1px solid var(--line);
+    }
+    .inspector-body {
+      min-height: 0;
+      overflow: auto;
+      padding: 12px 14px 18px;
+    }
+    .inspector-section {
+      margin-bottom: 16px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--line);
+    }
+    .inspector-section h3 {
+      margin: 0 0 10px;
+      color: var(--deep);
+      font-size: 13px;
+    }
+    .field {
+      display: grid;
+      gap: 5px;
+      margin-bottom: 10px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .field-row {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .color-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
+    }
+    .color-grid .field {
+      margin: 0;
+    }
+    .color-grid input {
+      min-height: 30px;
+      padding: 2px;
+    }
+    .preset-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      max-height: 292px;
+      overflow: auto;
+      padding-right: 2px;
+    }
+    .preset-card {
+      display: grid;
+      gap: 6px;
+      min-height: 118px;
+      padding: 10px;
+      color: var(--text);
+      text-align: left;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+    }
+    .preset-card.is-active,
+    body[data-theme-mode="custom"] .preset-card--custom {
+      border-color: var(--brand);
+      box-shadow: 0 0 0 2px rgba(0, 109, 154, 0.12);
+    }
+    .preset-card__label {
+      color: var(--deep);
+      font-size: 13px;
+      font-weight: 800;
+    }
+    .preset-card__desc,
+    .preset-card__meta {
+      color: var(--muted);
+      font-size: 10px;
+      line-height: 1.35;
+    }
+    .preset-card__colors,
+    .color-strip {
+      display: flex;
+      gap: 3px;
+      height: 14px;
+    }
+    .preset-card__colors span,
+    .color-strip span {
+      flex: 1;
+      min-width: 0;
+      border-radius: 3px;
+      border: 1px solid rgba(15, 23, 42, 0.08);
+    }
+    .mode-toggle {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 6px;
+      margin-bottom: 10px;
+      padding: 4px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #f6f9fb;
+    }
+    .mode-toggle button {
+      min-height: 30px;
+      border-radius: 5px;
+      color: var(--muted);
+      background: transparent;
+      font-size: 12px;
+      font-weight: 700;
+    }
+    body[data-theme-mode="preset"] .mode-toggle [data-mode-toggle="preset"],
+    body[data-theme-mode="custom"] .mode-toggle [data-mode-toggle="custom"] {
+      background: var(--brand);
+      color: #fff;
+    }
+    body[data-theme-mode="preset"] .custom-editor {
+      display: none;
+    }
+    .selected-preview {
+      min-height: 130px;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--bgy-panel);
+    }
+    .code-box {
+      display: block;
+      min-height: 72px;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      color: #334155;
+      background: #f8fafc;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font: 12px/1.45 Consolas, "Microsoft YaHei", monospace;
+    }
+    .status {
+      padding: 10px 14px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      background: var(--tool-surface);
+      font-size: 12px;
+      line-height: 1.45;
+      white-space: pre-wrap;
+    }
+    .empty-state {
+      padding: 16px;
+      color: var(--muted);
+      text-align: center;
+      font-size: 12px;
+    }
+    @media (max-width: 1160px) {
+      .studio {
+        grid-template-columns: 300px minmax(520px, 1fr);
+      }
+      .inspector {
+        display: none;
+      }
     }
   </style>
 </head>
-<body data-theme-mode="${escapeHtml(normalized.project.themeMode)}">
-  <div class="app">
-    <aside>
-      <h1>项目配置</h1>
-      <p>一旦锁定，后续每页 HTML 都应读取同一份 bgy.project.json。</p>
-      <div class="actions actions-top">
-        <button id="saveTop">保存配置</button>
-        <button id="downloadTop" class="ghost">下载 JSON</button>
+<body data-theme-mode="${escapeHtml(normalized.project.themeMode)}" data-panel="${escapeHtml(initialPanel)}">
+  <div class="studio">
+    <header class="topbar">
+      <div class="brand-lockup"><strong>BGY Project Studio</strong><span>${escapeHtml(normalized.project.title)}</span></div>
+      <nav class="workspace-tabs" aria-label="工作区">
+        <button type="button" data-panel-toggle="canvas">画布</button>
+        <button type="button" data-panel-toggle="components">组件</button>
+        <button type="button" data-panel-toggle="theme">主题</button>
+      </nav>
+      <div class="top-actions">
+        <button id="syncProject" class="secondary-button" type="button">同步</button>
+        <button id="downloadTop" class="ghost-button" type="button">下载 JSON</button>
+        <button id="saveTop" class="primary-button" type="button">保存</button>
       </div>
+    </header>
 
-      <section class="theme-mode">
-        <h2>选择主题</h2>
-        <p>先选一个预设主题；只有选择自定义时，下面才展开完整颜色和组件细节。</p>
-        <div class="mode-toggle" role="group" aria-label="主题模式">
-          <button type="button" data-mode-toggle="preset">预设主题</button>
-          <button type="button" data-mode-toggle="custom">自定义主题</button>
-        </div>
-        <div class="preset-grid">${presetCards}</div>
-      </section>
-
-      <h2>基础信息</h2>
-      <label>项目标题 <input id="projectTitle" type="text"></label>
-      <label>项目名称 <input id="projectName" type="text"></label>
-      <label>项目类型 <input id="projectType" type="text"></label>
-      <label>当前预设
-        <select id="projectPreset">${defaultPresetOptions}</select>
-      </label>
-      <div class="inline"><input id="locked" type="checkbox"><span>锁定项目主题</span></div>
-
-      <div id="customEditor" class="custom-editor">
-      <h2>自定义主题</h2>
-      <p>这些设置会写入项目 token，后续每页 HTML 和 PPTX 转换都应复用它们。</p>
-
-      <h2>主题色</h2>
-      <div class="row">
-        <label>主色 <input id="brand" type="color"></label>
-        <label>深主色 <input id="deepBrand" type="color"></label>
-        <label>成功 <input id="success" type="color"></label>
-        <label>成功底 <input id="successBg" type="color"></label>
-        <label>警示 <input id="warning" type="color"></label>
-        <label>警示底 <input id="warningBg" type="color"></label>
-        <label>风险 <input id="danger" type="color"></label>
-        <label>风险底 <input id="dangerBg" type="color"></label>
-        <label>信息 <input id="info" type="color"></label>
-        <label>信息底 <input id="infoBg" type="color"></label>
-        <label>正文 <input id="text" type="color"></label>
-        <label>辅助字 <input id="muted" type="color"></label>
-        <label>浅底 <input id="panel" type="color"></label>
-        <label>卡片背景 <input id="surface" type="color"></label>
-        <label>页面背景 <input id="pageBg" type="color"></label>
-        <label>线条 <input id="line" type="color"></label>
+    <aside class="left-panel">
+      <div class="panel-head">
+        <div class="panel-title"><h1>组件库</h1><small>${catalog.length} 个</small></div>
+        <p>KPI、图表、进度、流程、风险、图片案例统一从这里选择。</p>
       </div>
-
-      <h2>组件</h2>
-      <div class="row">
-        <label>卡片圆角 <input id="cardRadius" type="number" min="0" max="24"></label>
-        <label>面板圆角 <input id="panelRadius" type="number" min="0" max="24"></label>
-        <label>标签圆角 <input id="tagRadius" type="number" min="0" max="24"></label>
-        <label>指标圆角 <input id="metricRadius" type="number" min="0" max="24"></label>
-        <label>图片圆角 <input id="imageRadius" type="number" min="0" max="24"></label>
-        <label>边线宽度 <input id="borderWidth" type="number" min="0" max="4" step="0.5"></label>
+      <div class="search-box">
+        <input id="componentSearch" type="search" placeholder="搜索组件 / class / 场景">
       </div>
-      <label>卡片阴影 <input id="cardShadow" type="text"></label>
-      <label>面板阴影 <input id="panelShadow" type="text"></label>
-      <label>图标包
-        <select id="iconPack">
-          <option value="line">line</option>
-          <option value="solid">solid</option>
-          <option value="bgy-business">bgy-business</option>
-        </select>
-      </label>
-      <label>表格密度
-        <select id="tableDensity">
-          <option value="dense">dense</option>
-          <option value="compact">compact</option>
-          <option value="comfortable">comfortable</option>
-        </select>
-      </label>
-      </div>
-
-      <div class="actions">
-        <button id="applyPreset" class="secondary">应用 preset</button>
-        <button id="save">保存配置</button>
-        <button id="download" class="ghost">下载 JSON</button>
-      </div>
-      <div id="status" class="status">等待载入配置。</div>
+      <div class="component-scroll" id="componentScroll">${componentSections}</div>
     </aside>
 
-    <main>
-      <div class="preview-shell">
-        <div class="preview-header">
-          <div>
-            <h1 id="previewTitle">项目风格预览</h1>
-            <p>这个预览只看设计契约，不参与 PPTX 转换。</p>
-          </div>
-          <button id="openBoard" class="secondary">打开风格看板</button>
+    <main class="stage">
+      <div class="stage-toolbar">
+        <strong id="stageTitle">项目画布</strong>
+        <div class="stage-tools">
+          <button class="tool-button" type="button" data-zoom="fit">适合</button>
+          <button class="tool-button" type="button" data-panel-toggle="components">组件库</button>
+          <button class="tool-button" type="button" data-panel-toggle="theme">主题设置</button>
         </div>
-        <div class="preview">
-          <section class="slide" id="previewSlide">
-            <div class="title"><span>01</span><span>经营指标保持稳中有进</span></div>
+      </div>
+      <section class="canvas-wrap">
+        <div class="preview" id="previewSlide">
+          <section class="slide">
+            <div class="title"><span>01</span><span id="previewTitle">经营指标保持稳中有进</span></div>
             <div class="preview-grid">
-              <div class="card"><div class="metric">96.4%</div><div class="label">重点任务完成率</div></div>
-              <div class="card"><div class="metric">12项</div><div class="label">本月闭环事项</div></div>
-              <div class="card"><div class="metric">0起</div><div class="label">重大风险事件</div></div>
+              <div class="slide-card"><div class="metric">96.4%</div><div class="label">重点任务完成率</div></div>
+              <div class="slide-card"><div class="metric">12项</div><div class="label">本月闭环事项</div></div>
+              <div class="slide-card"><div class="metric">0起</div><div class="label">重大风险事件</div></div>
             </div>
             <div class="tag-row">
               <span class="tag success">已完成</span>
@@ -1312,115 +1487,183 @@ export function buildProjectConfigHtml(config, presets = loadBuiltinPresets()) {
             <div class="palette" id="palette"></div>
           </section>
         </div>
-        <section class="component-preview">
-          <div class="preview-header">
-            <div>
-              <h1>组件预览</h1>
-              <p>这些组件会跟随当前主题 token 变化；完整组件库请打开风格看板。</p>
-            </div>
+      </section>
+      <section class="component-gallery" id="componentGallery">
+        <div class="component-gallery__inner">${componentGallerySections}</div>
+      </section>
+      <footer class="page-strip">
+        <button class="page-thumb is-active" type="button">01 主题</button>
+        <button class="page-thumb" type="button">02 组件</button>
+        <button class="page-thumb" type="button">+ 新页面</button>
+      </footer>
+    </main>
+
+    <aside class="inspector">
+      <div class="inspector-head">
+        <h2>属性</h2>
+        <p id="inspectorSubtitle">项目、主题和选中组件。</p>
+      </div>
+      <div class="inspector-body">
+        <section class="inspector-section">
+          <h3>项目</h3>
+          <label class="field">标题 <input id="projectTitle" type="text"></label>
+          <label class="field">名称 <input id="projectName" type="text"></label>
+          <label class="field">类型 <input id="projectType" type="text"></label>
+          <label class="field">Preset <select id="projectPreset">${defaultPresetOptions}</select></label>
+          <label class="field"><span><input id="locked" type="checkbox"> 锁定主题</span></label>
+        </section>
+
+        <section class="inspector-section">
+          <h3>主题</h3>
+          <div class="mode-toggle">
+            <button type="button" data-mode-toggle="preset">预设主题</button>
+            <button type="button" data-mode-toggle="custom">自定义主题</button>
           </div>
-          <div class="component-grid">${quickComponents}</div>
+          <div class="preset-grid">${presetCards}</div>
+        </section>
+
+        <section id="customEditor" class="inspector-section custom-editor">
+          <h3>颜色</h3>
+          <div class="color-grid">
+            ${[
+              ["brand", "主色"],
+              ["deepBrand", "深色"],
+              ["success", "成功"],
+              ["successBg", "成功底"],
+              ["warning", "警示"],
+              ["warningBg", "警示底"],
+              ["danger", "风险"],
+              ["dangerBg", "风险底"],
+              ["info", "信息"],
+              ["infoBg", "信息底"],
+              ["text", "正文"],
+              ["muted", "辅助"],
+              ["panel", "浅底"],
+              ["surface", "卡片"],
+              ["pageBg", "页面"],
+              ["line", "线条"],
+            ].map(([id, label]) => `<label class="field">${label}<input id="${id}" type="color"></label>`).join("")}
+          </div>
+          <h3>组件样式</h3>
+          <div class="field-row">
+            <label class="field">卡片圆角 <input id="cardRadius" type="number" min="0" max="24"></label>
+            <label class="field">面板圆角 <input id="panelRadius" type="number" min="0" max="24"></label>
+            <label class="field">标签圆角 <input id="tagRadius" type="number" min="0" max="24"></label>
+            <label class="field">指标圆角 <input id="metricRadius" type="number" min="0" max="24"></label>
+            <label class="field">图片圆角 <input id="imageRadius" type="number" min="0" max="24"></label>
+            <label class="field">边线宽度 <input id="borderWidth" type="number" min="0" max="4" step="0.5"></label>
+          </div>
+          <label class="field">卡片阴影 <input id="cardShadow" type="text"></label>
+          <label class="field">面板阴影 <input id="panelShadow" type="text"></label>
+          <label class="field">图标包
+            <select id="iconPack">
+              <option value="line">line</option>
+              <option value="solid">solid</option>
+              <option value="bgy-business">bgy-business</option>
+            </select>
+          </label>
+          <label class="field">表格密度
+            <select id="tableDensity">
+              <option value="dense">dense</option>
+              <option value="compact">compact</option>
+              <option value="comfortable">comfortable</option>
+            </select>
+          </label>
+        </section>
+
+        <section class="inspector-section">
+          <h3 id="selectedComponentTitle">${escapeHtml(firstComponent.title || "组件")}</h3>
+          <p id="selectedComponentSummary" class="bgy-card__text">${escapeHtml(firstComponent.summary || "")}</p>
+          <div id="selectedComponentPreview" class="selected-preview"></div>
+        </section>
+        <section class="inspector-section">
+          <h3>PPTX</h3>
+          <label class="field">推荐 class <input id="selectedComponentClass" type="text" readonly value="${escapeHtml(firstComponent.classHint || "")}"></label>
+          <code id="selectedComponentCode" class="code-box">${escapeHtml(firstComponent.code || "")}</code>
+          <div class="top-actions" style="margin-top:10px">
+            <button id="insertComponent" type="button" class="secondary-button">插入</button>
+            <button id="copyComponentCode" type="button" class="ghost-button">复制结构</button>
+          </div>
         </section>
       </div>
-    </main>
+      <div id="status" class="status">等待载入配置。</div>
+    </aside>
   </div>
 
   <script id="embeddedConfig" type="application/json">${jsonForScript(normalized)}</script>
   <script id="embeddedPresets" type="application/json">${jsonForScript(presets)}</script>
+  <script id="componentCatalog" type="application/json">${jsonForScript(catalog)}</script>
   <script>
     const embeddedConfig = JSON.parse(document.getElementById("embeddedConfig").textContent);
     const presets = JSON.parse(document.getElementById("embeddedPresets").textContent);
+    const componentCatalog = JSON.parse(document.getElementById("componentCatalog").textContent);
     let config = structuredClone(embeddedConfig);
     let apiAvailable = false;
-
-    const fieldIds = [
-      "brand", "deepBrand", "success", "successBg", "warning", "warningBg",
-      "danger", "dangerBg", "info", "infoBg", "text", "muted", "panel", "surface", "pageBg", "line"
-    ];
-
-    function setStatus(text) {
-      document.getElementById("status").textContent = text;
-    }
+    let selectedComponentId = componentCatalog[0]?.id || "";
+    const fieldIds = ["brand","deepBrand","success","successBg","warning","warningBg","danger","dangerBg","info","infoBg","text","muted","panel","surface","pageBg","line"];
 
     function clone(value) {
       return JSON.parse(JSON.stringify(value));
     }
-
-    function normalizeHex(value, fallback) {
-      const raw = String(value || "").trim();
-      return /^#[0-9a-f]{6}$/i.test(raw) ? raw.toUpperCase() : fallback;
-    }
-
     function merge(base, patch) {
-      const out = clone(base);
-      for (const [key, value] of Object.entries(patch || {})) {
-        if (value && typeof value === "object" && !Array.isArray(value) && out[key] && typeof out[key] === "object") {
-          out[key] = merge(out[key], value);
-        } else {
-          out[key] = clone(value);
-        }
+      if (Array.isArray(base) && Array.isArray(patch)) return clone(patch);
+      if (!base || typeof base !== "object" || Array.isArray(base) || !patch || typeof patch !== "object" || Array.isArray(patch)) {
+        return patch === undefined ? clone(base) : clone(patch);
       }
-      return out;
+      const result = clone(base);
+      for (const [key, value] of Object.entries(patch)) {
+        result[key] = merge(result[key], value);
+      }
+      return result;
     }
-
+    function normalizeHex(value, fallback = "#000000") {
+      const raw = String(value || "").trim();
+      if (/^#[0-9a-f]{6}$/i.test(raw)) return raw.toUpperCase();
+      return fallback;
+    }
     function normalizeConfig(value) {
       const merged = merge(embeddedConfig, value || {});
       merged.project = merged.project || {};
       merged.theme = merged.theme || {};
       merged.components = merged.components || {};
       merged.project.themeMode = merged.project.themeMode === "custom" ? "custom" : "preset";
-      merged.project.preset = merged.project.preset || "management-report";
+      for (const key of fieldIds) merged.theme[key] = normalizeHex(merged.theme[key], embeddedConfig.theme[key] || "#000000");
+      merged.theme.white = merged.theme.white || "#FFFFFF";
+      merged.theme.black = merged.theme.black || "#000000";
+      merged.theme.chart = Array.isArray(merged.theme.chart) && merged.theme.chart.length
+        ? merged.theme.chart.map(color => normalizeHex(color, merged.theme.brand))
+        : [merged.theme.brand, merged.theme.success, merged.theme.danger, merged.theme.warning, merged.theme.muted];
       return merged;
     }
-
     function currentThemeMode() {
-      return config.project?.themeMode === "custom" ? "custom" : "preset";
+      return document.body.dataset.themeMode === "custom" ? "custom" : "preset";
     }
-
     function setThemeMode(mode) {
       config.project.themeMode = mode === "custom" ? "custom" : "preset";
+      document.body.dataset.themeMode = config.project.themeMode;
       updateThemeModeUI();
       renderPreview();
     }
-
+    function setPanel(panel) {
+      document.body.dataset.panel = panel || "canvas";
+      document.getElementById("stageTitle").textContent = panel === "components" ? "组件预览" : panel === "theme" ? "主题配置" : "项目画布";
+    }
+    function componentCards() {
+      return document.querySelectorAll("[data-component-id], [data-component-ref]");
+    }
+    function cardComponentId(card) {
+      return card.dataset.componentId || card.dataset.componentRef || "";
+    }
     function updateThemeModeUI() {
-      const mode = currentThemeMode();
-      document.body.dataset.themeMode = mode;
-      document.querySelectorAll("[data-mode-toggle]").forEach(button => {
-        button.setAttribute("aria-pressed", button.dataset.modeToggle === mode ? "true" : "false");
-      });
+      document.body.dataset.themeMode = config.project.themeMode === "custom" ? "custom" : "preset";
       document.querySelectorAll("[data-preset]").forEach(button => {
-        button.classList.toggle("is-active", mode === "preset" && button.dataset.preset === config.project.preset);
-      });
-      document.querySelectorAll("[data-theme-mode-card='custom']").forEach(button => {
-        button.classList.toggle("is-active", mode === "custom");
+        button.classList.toggle("is-active", button.dataset.preset === config.project.preset && currentThemeMode() === "preset");
       });
     }
-
     function setThemeVars(target, theme, components) {
       const chart = theme.chart || [];
-      target.style.setProperty("--cfg-brand", theme.brand);
-      target.style.setProperty("--cfg-deep", theme.deepBrand);
-      target.style.setProperty("--cfg-success", theme.success);
-      target.style.setProperty("--cfg-success-bg", theme.successBg);
-      target.style.setProperty("--cfg-warning", theme.warning);
-      target.style.setProperty("--cfg-warning-bg", theme.warningBg);
-      target.style.setProperty("--cfg-danger", theme.danger);
-      target.style.setProperty("--cfg-danger-bg", theme.dangerBg);
-      target.style.setProperty("--cfg-info", theme.info);
-      target.style.setProperty("--cfg-info-bg", theme.infoBg);
-      target.style.setProperty("--cfg-text", theme.text);
-      target.style.setProperty("--cfg-muted", theme.muted);
-      target.style.setProperty("--cfg-panel", theme.panel);
-      target.style.setProperty("--cfg-surface", theme.surface || "#FFFFFF");
-      target.style.setProperty("--cfg-line", theme.line);
-      target.style.setProperty("--cfg-page-bg", theme.pageBg || "#FFFFFF");
-      target.style.setProperty("--cfg-card-radius", (components.cardRadius ?? 8) + "px");
-      target.style.setProperty("--cfg-panel-radius", (components.panelRadius ?? components.cardRadius ?? 8) + "px");
-      target.style.setProperty("--cfg-tag-radius", (components.tagRadius ?? 4) + "px");
-      target.style.setProperty("--cfg-metric-radius", (components.metricRadius ?? components.cardRadius ?? 8) + "px");
-      target.style.setProperty("--cfg-card-shadow", components.cardShadow || "0 4px 14px rgba(0,0,0,0.08)");
-      target.style.setProperty("--cfg-panel-shadow", components.panelShadow || "0 2px 8px rgba(0,0,0,0.05)");
+      target.style.setProperty("--brand", theme.brand);
+      target.style.setProperty("--deep", theme.deepBrand);
       target.style.setProperty("--bgy-brand", theme.brand);
       target.style.setProperty("--bgy-deep-brand", theme.deepBrand);
       target.style.setProperty("--bgy-success", theme.success);
@@ -1457,7 +1700,6 @@ export function buildProjectConfigHtml(config, presets = loadBuiltinPresets()) {
       target.style.setProperty("--bgy-chart-4", chart[3] || theme.warning);
       target.style.setProperty("--bgy-chart-5", chart[4] || theme.muted);
     }
-
     function applyToForm() {
       config = normalizeConfig(config);
       document.getElementById("projectTitle").value = config.project.title || "";
@@ -1479,7 +1721,6 @@ export function buildProjectConfigHtml(config, presets = loadBuiltinPresets()) {
       updateThemeModeUI();
       renderPreview();
     }
-
     function readForm() {
       config.project.title = document.getElementById("projectTitle").value.trim();
       config.project.name = document.getElementById("projectName").value.trim();
@@ -1501,15 +1742,12 @@ export function buildProjectConfigHtml(config, presets = loadBuiltinPresets()) {
       renderPreview();
       return config;
     }
-
     function renderPreview() {
       const slide = document.getElementById("previewSlide");
       const theme = config.theme || {};
       const components = config.components || {};
       setThemeVars(document.documentElement, theme, components);
       setThemeVars(slide, theme, components);
-      document.documentElement.style.setProperty("--brand", theme.brand || "#006D9A");
-      document.documentElement.style.setProperty("--deep", theme.deepBrand || "#004B6B");
       document.getElementById("previewTitle").textContent = config.project.title || "项目风格预览";
       const palette = document.getElementById("palette");
       palette.innerHTML = "";
@@ -1520,13 +1758,16 @@ export function buildProjectConfigHtml(config, presets = loadBuiltinPresets()) {
         palette.appendChild(swatch);
       });
     }
-
+    function setStatus(message) {
+      document.getElementById("status").textContent = message;
+    }
     async function loadConfig() {
       if (window.location.protocol === "file:") {
         apiAvailable = false;
         config = normalizeConfig(embeddedConfig);
-        setStatus("静态预览模式：当前使用页面内嵌配置。需要直接保存到项目文件时，请用 serve --project-api 打开。");
+        setStatus("静态预览模式");
         applyToForm();
+        selectComponent(selectedComponentId);
         return;
       }
       try {
@@ -1534,8 +1775,9 @@ export function buildProjectConfigHtml(config, presets = loadBuiltinPresets()) {
         if (response.ok) {
           config = normalizeConfig(await response.json());
           apiAvailable = true;
-          setStatus("已连接本地配置服务，可以直接保存到 bgy.project.json。");
+          setStatus("已连接本地配置服务");
           applyToForm();
+          selectComponent(selectedComponentId);
           return;
         }
       } catch (_) {
@@ -1544,18 +1786,18 @@ export function buildProjectConfigHtml(config, presets = loadBuiltinPresets()) {
       try {
         const response = await fetch("bgy.project.json", { cache: "no-store" });
         if (response.ok) config = normalizeConfig(await response.json());
-        setStatus("静态预览模式：可以编辑和下载 JSON；如需直接写回文件，请用 serve --project-api 打开。");
+        setStatus("静态预览模式");
       } catch (_) {
-        setStatus("使用页面内置初始配置。");
+        setStatus("使用页面内置配置");
       }
       applyToForm();
+      selectComponent(selectedComponentId);
     }
-
     async function saveConfig() {
       readForm();
       if (!apiAvailable) {
         downloadJson();
-        setStatus("当前不是配置服务模式，已下载 bgy.project.json。需要手动替换项目根目录文件，或用 serve --project-api 重新打开。");
+        setStatus("当前不是配置服务模式，已下载 bgy.project.json。");
         return;
       }
       const response = await fetch("/__bgy/project-config", {
@@ -1565,9 +1807,8 @@ export function buildProjectConfigHtml(config, presets = loadBuiltinPresets()) {
       });
       if (!response.ok) throw new Error(await response.text());
       const result = await response.json();
-      setStatus("已保存配置并同步共享样式：\\n" + result.files.join("\\n"));
+      setStatus("已保存并同步：" + result.files.length + " 个文件");
     }
-
     function downloadJson() {
       readForm();
       const blob = new Blob([JSON.stringify(config, null, 2) + "\\n"], { type: "application/json" });
@@ -1578,7 +1819,6 @@ export function buildProjectConfigHtml(config, presets = loadBuiltinPresets()) {
       link.click();
       URL.revokeObjectURL(url);
     }
-
     function applyPreset() {
       const presetId = document.getElementById("projectPreset").value;
       const preset = presets[presetId] || presets["management-report"];
@@ -1588,42 +1828,105 @@ export function buildProjectConfigHtml(config, presets = loadBuiltinPresets()) {
       config.project = { ...currentProject, type: preset.projectType || presetId, preset: presetId, themeMode: "preset" };
       config.locked = currentLocked;
       applyToForm();
-      setStatus("已应用 preset，保存后会同步 bgy.project.json 和 shared 样式。");
+      setStatus("已应用 " + (preset.label || presetId));
     }
-
-    document.querySelectorAll("input, select").forEach(el => {
-      el.addEventListener("input", () => { readForm(); });
-      el.addEventListener("change", () => { readForm(); });
+    function selectComponent(componentId) {
+      selectedComponentId = componentId || componentCatalog[0]?.id || "";
+      const item = componentCatalog.find(entry => entry.id === selectedComponentId) || componentCatalog[0];
+      if (!item) return;
+      componentCards().forEach(card => {
+        card.classList.toggle("is-selected", cardComponentId(card) === item.id);
+      });
+      document.getElementById("selectedComponentTitle").textContent = item.title;
+      document.getElementById("selectedComponentSummary").textContent = item.groupTitle + " / " + item.summary;
+      document.getElementById("selectedComponentClass").value = item.classHint;
+      document.getElementById("selectedComponentCode").textContent = item.code;
+      const source = document.querySelector('#componentGallery [data-component-id="' + CSS.escape(item.id) + '"] .component-card__preview')
+        || document.querySelector('[data-component-ref="' + CSS.escape(item.id) + '"] .component-card__preview');
+      document.getElementById("selectedComponentPreview").innerHTML = source ? source.innerHTML : "";
+    }
+    function filterComponents() {
+      const query = document.getElementById("componentSearch").value.trim().toLowerCase();
+      const visibleTypes = new Set();
+      componentCards().forEach(card => {
+        const componentId = cardComponentId(card);
+        const item = componentCatalog.find(entry => entry.id === componentId);
+        const haystack = [item?.id, item?.title, item?.summary, item?.groupTitle, item?.classHint, card.innerText].join(" ").toLowerCase();
+        const visible = !query || haystack.includes(query);
+        card.style.display = visible ? "" : "none";
+        if (visible && componentId) visibleTypes.add(componentId);
+      });
+      document.querySelectorAll(".studio-component-group").forEach(group => {
+        const hasVisible = Array.from(group.querySelectorAll("[data-component-ref]")).some(card => card.style.display !== "none");
+        group.style.display = hasVisible ? "" : "none";
+      });
+      document.querySelectorAll(".component-section").forEach(group => {
+        const hasVisible = Array.from(group.querySelectorAll("[data-component-id]")).some(card => card.style.display !== "none");
+        group.style.display = hasVisible ? "" : "none";
+      });
+      if (!visibleTypes.size) {
+        setStatus("没有匹配的组件");
+      }
+    }
+    document.querySelectorAll("[data-panel-toggle]").forEach(button => {
+      button.addEventListener("click", () => setPanel(button.dataset.panelToggle));
     });
     document.querySelectorAll("[data-mode-toggle]").forEach(button => {
       button.addEventListener("click", () => {
         readForm();
         setThemeMode(button.dataset.modeToggle);
-        setStatus(button.dataset.modeToggle === "custom"
-          ? "已切换到自定义主题，可以调整颜色、圆角、阴影和图标包。"
-          : "已切换到预设主题，建议通过上方主题卡片统一切换。");
+        setPanel("theme");
       });
     });
     document.querySelectorAll("[data-preset]").forEach(button => {
       button.addEventListener("click", () => {
         document.getElementById("projectPreset").value = button.dataset.preset;
         applyPreset();
+        setPanel("theme");
       });
     });
     document.querySelectorAll("[data-theme-mode-card='custom']").forEach(button => {
       button.addEventListener("click", () => {
         readForm();
         setThemeMode("custom");
-        setStatus("已切换到自定义主题，可以在下方调整项目色板和组件细节。");
+        setPanel("theme");
       });
     });
-    document.getElementById("projectPreset").addEventListener("change", applyPreset);
-    document.getElementById("applyPreset").addEventListener("click", applyPreset);
+    componentCards().forEach(card => {
+      card.addEventListener("click", () => {
+        selectComponent(cardComponentId(card));
+        setPanel("components");
+      });
+    });
+    document.querySelectorAll("[data-group-jump]").forEach(button => {
+      button.addEventListener("click", () => {
+        setPanel("components");
+        const group = document.querySelector('[data-gallery-group="' + CSS.escape(button.dataset.groupJump) + '"]')
+          || document.querySelector('[data-component-group="' + CSS.escape(button.dataset.groupJump) + '"]');
+        if (group) group.scrollIntoView({ block: "start" });
+      });
+    });
+    document.getElementById("componentSearch").addEventListener("input", filterComponents);
+    document.querySelectorAll("input, select").forEach(el => {
+      if (el.id === "projectPreset" || el.id === "componentSearch" || el.readOnly) return;
+      el.addEventListener("input", () => { readForm(); setPanel("theme"); });
+      el.addEventListener("change", () => { readForm(); setPanel("theme"); });
+    });
+    document.getElementById("projectPreset").addEventListener("change", () => { applyPreset(); setPanel("theme"); });
     document.getElementById("saveTop").addEventListener("click", () => saveConfig().catch(err => setStatus("保存失败：" + err.message)));
     document.getElementById("downloadTop").addEventListener("click", downloadJson);
-    document.getElementById("save").addEventListener("click", () => saveConfig().catch(err => setStatus("保存失败：" + err.message)));
-    document.getElementById("download").addEventListener("click", downloadJson);
-    document.getElementById("openBoard").addEventListener("click", () => window.open("project-style-board.html", "_blank"));
+    document.getElementById("syncProject").addEventListener("click", () => saveConfig().catch(err => setStatus("同步失败：" + err.message)));
+    document.getElementById("insertComponent").addEventListener("click", () => setStatus("已选中组件：" + (componentCatalog.find(item => item.id === selectedComponentId)?.title || "")));
+    document.getElementById("copyComponentCode").addEventListener("click", async () => {
+      const text = document.getElementById("selectedComponentCode").textContent;
+      try {
+        await navigator.clipboard.writeText(text);
+        setStatus("已复制组件结构");
+      } catch (_) {
+        setStatus(text);
+      }
+    });
+    setPanel("${escapeHtml(initialPanel)}");
     loadConfig();
   </script>
 </body>
@@ -1631,383 +1934,38 @@ export function buildProjectConfigHtml(config, presets = loadBuiltinPresets()) {
 `;
 }
 
-export function buildProjectStyleBoardHtml(config) {
+export function buildDeckJson(config) {
   const normalized = normalizeProjectConfig(config);
-  const componentNav = COMPONENT_GROUPS.map(group => `<a href="#${escapeHtml(group.id)}">${escapeHtml(group.title)}</a>`).join("");
-  const componentSections = renderComponentSections(normalized);
-  return `<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>${escapeHtml(normalized.project.title)} - 项目风格看板</title>
-  <link rel="stylesheet" href="shared/tokens.css">
-  <link rel="stylesheet" href="shared/components.css">
-  <style>
-    body {
-      width: auto;
-      min-height: 100vh;
-      height: auto;
-      overflow: auto;
-      background: #eef3f6;
-      padding: 28px;
-    }
-    .board {
-      width: 1120px;
-      margin: 0 auto;
-      background: var(--bgy-page-bg);
-      border: 1px solid var(--bgy-line);
-      box-shadow: 0 8px 24px rgba(15,23,42,0.12);
-      padding: 34px;
-    }
-    .board-head {
-      display: flex;
-      justify-content: space-between;
-      gap: 24px;
-      border-bottom: 1px solid var(--bgy-line);
-      padding-bottom: 22px;
-      margin-bottom: 24px;
-    }
-    h1 {
-      margin: 0 0 10px;
-      color: var(--bgy-deep-brand);
-      font-size: 30px;
-    }
-    h2 {
-      margin: 30px 0 14px;
-      color: var(--bgy-text);
-      font-size: 18px;
-    }
-    p {
-      margin: 0;
-      color: var(--bgy-muted);
-      line-height: 1.6;
-      font-size: 14px;
-    }
-    .meta {
-      color: var(--bgy-muted);
-      font-size: 13px;
-      text-align: right;
-      line-height: 1.7;
-    }
-    .palette {
-      display: grid;
-      grid-template-columns: repeat(8, minmax(0, 1fr));
-      gap: 10px;
-    }
-    .swatch {
-      border: 1px solid var(--bgy-line);
-      border-radius: var(--bgy-panel-radius);
-      overflow: hidden;
-      background: var(--bgy-surface);
-    }
-    .swatch-color {
-      height: 54px;
-    }
-    .swatch-label {
-      padding: 8px;
-      font-size: 12px;
-      color: var(--bgy-muted);
-    }
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 18px;
-    }
-    .chart-bars {
-      display: flex;
-      align-items: end;
-      gap: 12px;
-      height: 130px;
-      padding: 18px;
-      border: 1px solid var(--bgy-line);
-      border-radius: var(--bgy-panel-radius);
-      background: var(--bgy-surface);
-    }
-    .bar {
-      flex: 1;
-      border-radius: 4px 4px 0 0;
-    }
-    .component-nav {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin: 28px 0 12px;
-      padding: 14px 0;
-      border-top: 1px solid var(--bgy-line);
-      border-bottom: 1px solid var(--bgy-line);
-    }
-    .component-nav a {
-      display: inline-flex;
-      align-items: center;
-      min-height: 30px;
-      padding: 6px 11px;
-      border: 1px solid var(--bgy-line);
-      border-radius: var(--bgy-tag-radius);
-      color: var(--bgy-deep-brand);
-      background: var(--bgy-surface);
-      text-decoration: none;
-      font-size: 13px;
-      font-weight: 600;
-    }
-    .component-section {
-      margin-top: 34px;
-    }
-    .component-section__head {
-      margin-bottom: 14px;
-    }
-    .component-section__head h2 {
-      margin: 0 0 6px;
-    }
-    .component-grid {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 16px;
-    }
-    .component-card {
-      min-height: 260px;
-      border: 1px solid var(--bgy-line);
-      border-radius: var(--bgy-card-radius);
-      background: var(--bgy-surface);
-      box-shadow: var(--bgy-panel-shadow);
-      overflow: hidden;
-    }
-    .component-card__head {
-      min-height: 96px;
-      padding: 16px 16px 12px;
-      border-bottom: 1px solid var(--bgy-line);
-    }
-    .component-card__head h3 {
-      margin: 0 0 7px;
-      color: var(--bgy-deep-brand);
-      font-size: 17px;
-    }
-    .component-card__preview {
-      min-height: 160px;
-      padding: 16px;
-      background: var(--bgy-panel);
-    }
-    .component-card__preview .bgy-table {
-      font-size: 12px;
-    }
-    .component-card__preview .bgy-table th,
-    .component-card__preview .bgy-table td {
-      padding: 6px 7px;
-    }
-    .component-card__preview .bgy-card,
-    .component-card__preview .bgy-kpi-card,
-    .component-card__preview .bgy-data-card,
-    .component-card__preview .bgy-highlight-card,
-    .component-card__preview .bgy-risk-card,
-    .component-card__preview .bgy-conclusion-card,
-    .component-card__preview .bgy-progress-panel,
-    .component-card__preview .bgy-image-card,
-    .component-card__preview .bgy-case-card {
-      padding: 12px;
-    }
-    .component-card__preview .bgy-card__title,
-    .component-card__preview .bgy-data-card strong,
-    .component-card__preview .bgy-highlight-card strong,
-    .component-card__preview .bgy-risk-card strong,
-    .component-card__preview .bgy-conclusion-card strong,
-    .component-card__preview .bgy-case-card strong {
-      font-size: 15px;
-    }
-    .component-card__preview .bgy-kpi-card__value,
-    .component-card__preview .bgy-metric-value {
-      font-size: 24px;
-    }
-    .component-card__preview .bgy-kpi-card--hero .bgy-kpi-card__value {
-      font-size: 34px;
-    }
-    .component-card__preview .bgy-status-tag {
-      font-size: 12px;
-      padding: 4px 7px;
-    }
-    .component-card__preview .bgy-chart-frame {
-      min-height: 118px;
-      padding: 10px;
-    }
-    .demo-panel {
-      padding: 14px;
-    }
-    .demo-panel__head {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      margin-bottom: 10px;
-      color: var(--bgy-deep-brand);
-    }
-    .demo-stack {
-      display: grid;
-      gap: 10px;
-    }
-    .demo-stack__item {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      padding: 11px 12px;
-      border: 1px solid var(--bgy-line);
-      border-radius: var(--bgy-panel-radius);
-      background: var(--bgy-surface);
-      color: var(--bgy-text);
-      font-size: 13px;
-    }
-    .demo-stack__item span {
-      color: var(--bgy-muted);
-    }
-    .demo-divider {
-      display: grid;
-      gap: 14px;
-      padding: 12px;
-      border: 1px solid var(--bgy-line);
-      border-radius: var(--bgy-panel-radius);
-      background: var(--bgy-surface);
-    }
-    .demo-metrics {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 12px;
-    }
-    .demo-tags,
-    .demo-icons {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 10px;
-    }
-    .demo-chart {
-      display: flex;
-      align-items: end;
-      gap: 10px;
-      height: 128px;
-      padding: 14px;
-      border: 1px solid var(--bgy-line);
-      border-radius: var(--bgy-panel-radius);
-      background: var(--bgy-surface);
-    }
-    .demo-chart span {
-      flex: 1;
-      min-width: 0;
-      border-radius: 4px 4px 0 0;
-    }
-    .demo-image-frame {
-      height: 128px;
-    }
-    .demo-image-placeholder,
-    .demo-mini-image {
-      display: grid;
-      place-items: center;
-      width: 100%;
-      height: 100%;
-      color: var(--bgy-muted);
-      background: repeating-linear-gradient(135deg, #f8fafc 0, #f8fafc 8px, #eef3f6 8px, #eef3f6 16px);
-      font-size: 13px;
-      font-weight: 600;
-    }
-    .bgy-icon-chip svg {
-      width: 18px;
-      height: 18px;
-      fill: none;
-      stroke: currentColor;
-      stroke-width: 2;
-      stroke-linecap: round;
-      stroke-linejoin: round;
-    }
-    .demo-hero {
-      display: flex;
-      gap: 16px;
-      padding: 18px;
-      border-left: 5px solid var(--bgy-brand);
-      border-radius: var(--bgy-panel-radius);
-      background: var(--bgy-surface);
-    }
-    .demo-hero > span {
-      color: var(--bgy-brand);
-      font-size: 30px;
-      font-weight: 700;
-    }
-    .demo-hero h3 {
-      margin: 0 0 8px;
-      color: var(--bgy-deep-brand);
-      font-size: 20px;
-    }
-    .demo-two-col,
-    .demo-comparison {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 12px;
-    }
-    .demo-two-col > div,
-    .demo-comparison > div {
-      min-height: 118px;
-      padding: 13px;
-      border: 1px solid var(--bgy-line);
-      border-radius: var(--bgy-panel-radius);
-      background: var(--bgy-surface);
-    }
-    .demo-timeline {
-      display: grid;
-      gap: 12px;
-    }
-    .demo-timeline > div {
-      position: relative;
-      padding-left: 28px;
-    }
-    .demo-timeline span {
-      position: absolute;
-      left: 0;
-      top: 4px;
-      width: 14px;
-      height: 14px;
-      border-radius: 50%;
-      background: var(--bgy-brand);
-      box-shadow: 0 0 0 4px var(--bgy-info-bg);
-    }
-    @media (max-width: 980px) {
-      .board { width: 100%; }
-      .component-grid { grid-template-columns: 1fr; }
-    }
-  </style>
-</head>
-<body>
-  <main class="board">
-    <section class="board-head">
-      <div>
-        <h1>${escapeHtml(normalized.project.title || "BGY PPT 项目")}</h1>
-        <p>项目级设计契约已${normalized.locked ? "锁定" : "未锁定"}，preset：${escapeHtml(normalized.project.preset)}。</p>
-      </div>
-      <div class="meta">
-        <div>项目类型：${escapeHtml(normalized.project.type)}</div>
-        <div>图标包：${escapeHtml(normalized.components.iconPack)}</div>
-        <div>PPTX 可编辑优先级：${escapeHtml(normalized.rules.pptxEditablePriority)}</div>
-      </div>
-    </section>
+  return {
+    meta: {
+      title: normalized.project.title,
+      theme: "bgy-services",
+      template: "bgy-services-base",
+      archetype: normalized.project.type,
+      preset: normalized.project.preset,
+      ratio: "16:9",
+      mode: normalized.project.editablePptx ? "html-to-pptx" : "html-preview",
+      projectConfig: "bgy.project.json",
+    },
+    slides: [
+      {
+        id: "slide-01",
+        label: "风格看板",
+        type: "style-board",
+        layoutVariant: "project-contract",
+        file: "slides/01-style-board.html",
+        components: [],
+      },
+    ],
+  };
+}
 
-    <h2>主题色</h2>
-    <section class="palette">
-      ${[
-        ["主色", normalized.theme.brand],
-        ["深主色", normalized.theme.deepBrand],
-        ["成功", normalized.theme.success],
-        ["警示", normalized.theme.warning],
-        ["风险", normalized.theme.danger],
-        ["信息", normalized.theme.info],
-        ["正文", normalized.theme.text],
-        ["线条", normalized.theme.line],
-      ].map(([label, color]) => `<div class="swatch"><div class="swatch-color" style="background:${color}"></div><div class="swatch-label">${label}<br>${color}</div></div>`).join("")}
-    </section>
+export function buildProjectConfigHtml(config, presets = loadBuiltinPresets()) {
+  return buildProjectStudioHtml(config, presets, { initialPanel: "canvas" });
+}
 
-    <h2>组件库</h2>
-    <p>以下按组件类型展示当前主题下的可复用样式，生成 PPT 页面时优先复用这些结构和 class。</p>
-    <nav class="component-nav">${componentNav}</nav>
-    ${componentSections}
-  </main>
-</body>
-</html>
-`;
+export function buildProjectStyleBoardHtml(config) {
+  return buildProjectStudioHtml(config, loadBuiltinPresets(), { initialPanel: "components" });
 }
 
 export function buildStarterSlideHtml(config) {

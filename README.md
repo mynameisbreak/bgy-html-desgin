@@ -7,7 +7,7 @@
 - **品牌一致性**：内置碧桂园服务视觉规范，包含品牌主色、字体、Logo、水印等完整品牌资产
 - **16:9 固定画布**：默认 1280×720px，确保演示文稿比例统一
 - **多文件 HTML Deck**：支持 `index.html + slides/*.html + shared/` 多页聚合演示结构
-- **项目级设计契约**：可在项目根目录生成 `bgy.project.json`、配置页、风格看板和共享组件 CSS，保证逐页生成时主题色、字体、组件样式一致
+- **项目级设计契约**：可在项目根目录生成 `bgy.project.json`、Project Studio 工作台和共享组件 CSS，保证逐页生成时主题色、字体、组件样式一致
 - **汇报组件库**：内置 KPI、Card、Chart、Progress、Comparison、Ranking、Process、Timeline、Risk、Image/Case 等 PPT 友好组件
 - **服务器预览**：内置零依赖本地静态服务器，适合检查相对路径、中文路径和 iframe 聚合页
 - **本地视觉资产库**：内置 PPT 友好的线性 icon、状态 icon、物业业务 icon、流程 SVG、空状态和克制纹理，避免远程 CDN 和临场乱画
@@ -57,7 +57,7 @@ bgy-html-design/
 │   ├── init_bgy_project.mjs       # 初始化项目级配置与共享组件
 │   ├── sync_bgy_project.mjs       # 从 bgy.project.json 同步共享 CSS/配置页
 │   ├── project_config.mjs         # 项目配置读取、合并、token 生成
-│   ├── project_files.mjs          # 项目配置页/风格看板/样例页生成
+│   ├── project_files.mjs          # Project Studio/样例页生成
 │   ├── pptx_preflight.mjs         # PPTX 转换前结构检查
 │   ├── export_bgy_pptx.mjs        # 转为可编辑 PPTX
 │   ├── build_icon_assets.mjs      # 生成本地图标/SVG 资产
@@ -111,15 +111,15 @@ bgy-html-design/
 npm --prefix <bgy-html-design>/scripts run init-project -- --dir <project> --title "<项目标题>" --preset management-report --locked
 ```
 
-用服务器模式打开配置页，可以直接保存到 `bgy.project.json` 并同步共享样式：
+用服务器模式打开 Project Studio，可以直接保存到 `bgy.project.json` 并同步共享样式：
 
 ```bash
 npm --prefix <bgy-html-design>/scripts run serve -- --root <project> --entry project-config.html --project-api --port auto --open
 ```
 
-`project-config.html` 是项目主题控制台：先用主题卡片选择 preset，再按需切到“自定义主题”调整颜色、圆角、阴影、图标包和表格密度。页面右侧会实时展示当前主题下的常用组件效果。
+`project-config.html` 是主入口：采用浅色 Photoshop/Slidev 式工作台，左侧是可滚动组件库，中间是 16:9 项目画布和页面缩略条，右侧是主题/项目/组件检查器。先选择 preset，必要时切到自定义主题调整颜色、圆角、阴影、图标包和表格密度；主题变化会实时作用到组件预览。
 
-`project-style-board.html` 是组件库看板：按 KPI、Card、Chart、Progress、Comparison、Ranking、Process、Timeline、Risk、Image/Case 展示组件预览。新增组件时应同步加入这里，避免后续页面临场发明样式。
+`project-style-board.html` 是兼容入口：打开同一个 Project Studio，但默认进入组件面板。按 KPI、Card、Chart、Progress、Comparison、Ranking、Process、Timeline、Risk、Image/Case 滚动展示组件预览。新增组件时应同步加入这里，避免后续页面临场发明样式。
 
 组件库默认优先服务 HTML 转 PPTX：卡片、指标、进度、流程、时间线、风险矩阵用真实 DOM/CSS 转原生形状；表格使用真实 `<table>`；图片使用真实 `<img>`；柱状图、折线图、饼图用 `data-ppt-chart` 携带数据；雷达图、瀑布图、复杂组合图先用 `data-ppt-placeholder` 保留坐标，不从视觉反推数据。
 
