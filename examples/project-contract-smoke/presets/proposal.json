@@ -1,0 +1,50 @@
+{
+  "id": "proposal",
+  "label": "项目提案",
+  "description": "更开放的版式，但仍保留品牌克制感。",
+  "projectType": "proposal",
+  "theme": {
+    "brand": "#006D9A",
+    "deepBrand": "#004B6B",
+    "success": "#2E7D32",
+    "successBg": "#EAF5EB",
+    "warning": "#C97400",
+    "warningBg": "#FFF3E3",
+    "danger": "#C00000",
+    "dangerBg": "#FDECEC",
+    "info": "#2B6CB0",
+    "infoBg": "#EAF3FB",
+    "text": "#1F2933",
+    "muted": "#64748B",
+    "panel": "#F7FAFC",
+    "surface": "#FFFFFF",
+    "pageBg": "#FFFFFF",
+    "line": "#D8E3EA",
+    "chart": ["#006D9A", "#2B6CB0", "#2E7D32", "#C97400", "#64748B"]
+  },
+  "components": {
+    "cardRadius": 10,
+    "panelRadius": 10,
+    "tagRadius": 4,
+    "metricRadius": 8,
+    "imageRadius": 8,
+    "borderWidth": 1,
+    "cardShadow": "0 5px 16px rgba(0,0,0,0.08)",
+    "panelShadow": "0 3px 10px rgba(0,0,0,0.05)",
+    "tableHeaderBg": "#F5F8FA",
+    "tableRowAlt": "#FAFCFD",
+    "tableBorder": "#D8E3EA",
+    "titleBarHeight": 72,
+    "sectionGap": 24,
+    "iconPack": "bgy-business",
+    "tableDensity": "comfortable"
+  },
+  "rules": {
+    "fontFamily": "\"Microsoft YaHei\", \"微软雅黑\", Arial, sans-serif",
+    "allowRemoteIcons": false,
+    "allowDirectHexOutsideTokens": false,
+    "preferInlineSvgIcons": true,
+    "pptxEditablePriority": "high",
+    "strictTheme": true
+  }
+}

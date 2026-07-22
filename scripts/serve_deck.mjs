@@ -4,6 +4,8 @@ import fs from "fs";
 import path from "path";
 import { spawn } from "child_process";
 import { absolutePath } from "./runtime.mjs";
+import { loadBuiltinPresets, readProjectConfig } from "./project_config.mjs";
+import { writeProjectFiles } from "./project_files.mjs";
 
 const MIME_TYPES = {
   ".html": "text/html; charset=utf-8",
@@ -36,6 +38,7 @@ Options:
   --port <n|auto>    Port. Default: 4173. Use 0 for an OS-assigned port.
   --host <host>      Host. Default: 127.0.0.1.
   --open             Open the entry URL in the default browser.
+  --project-api      Enable local project config read/write endpoints.
   --no-cache         Send no-store headers. Default for preview.
   --cache            Allow normal browser caching.
   --smoke            Start, fetch the entry URL once, print PASS/FAIL, then exit.
@@ -49,6 +52,7 @@ function parseArgs() {
     port: "4173",
     host: "127.0.0.1",
     open: false,
+    projectApi: false,
     noCache: true,
     smoke: false,
   };
@@ -69,6 +73,8 @@ function parseArgs() {
       opts.host = next; i++;
     } else if (key === "--open") {
       opts.open = true;
+    } else if (key === "--project-api") {
+      opts.projectApi = true;
     } else if (key === "--no-cache") {
       opts.noCache = true;
     } else if (key === "--cache") {
@@ -119,10 +125,76 @@ function send(res, status, body, headers = {}) {
   res.end(body);
 }
 
+function sendJson(res, status, value, headers = {}) {
+  res.writeHead(status, {
+    "Content-Type": "application/json; charset=utf-8",
+    "Cache-Control": "no-store, max-age=0",
+    ...headers,
+  });
+  res.end(JSON.stringify(value, null, 2));
+}
+
+function readRequestJson(req, limit = 1024 * 1024) {
+  return new Promise((resolve, reject) => {
+    const chunks = [];
+    let size = 0;
+    req.on("data", chunk => {
+      size += chunk.length;
+      if (size > limit) {
+        reject(new Error("Request body too large."));
+        req.destroy();
+        return;
+      }
+      chunks.push(chunk);
+    });
+    req.on("end", () => {
+      try {
+        const raw = Buffer.concat(chunks).toString("utf8");
+        resolve(raw ? JSON.parse(raw) : {});
+      } catch (err) {
+        reject(new Error(`Invalid JSON: ${err.message}`));
+      }
+    });
+    req.on("error", reject);
+  });
+}
+
+async function handleProjectApi(req, res, opts, pathname) {
+  if (!opts.projectApi || !pathname.startsWith("/__bgy/")) return false;
+  try {
+    if (pathname === "/__bgy/project-config" && req.method === "GET") {
+      sendJson(res, 200, readProjectConfig(opts.root));
+      return true;
+    }
+    if (pathname === "/__bgy/presets" && req.method === "GET") {
+      sendJson(res, 200, loadBuiltinPresets());
+      return true;
+    }
+    if (pathname === "/__bgy/project-config" && (req.method === "PUT" || req.method === "POST")) {
+      const body = await readRequestJson(req);
+      const result = writeProjectFiles(opts.root, body, {
+        copyPresets: true,
+        copyTemplate: true,
+        writeIndex: false,
+        writeDeck: false,
+        writeStarterSlide: false,
+      });
+      sendJson(res, 200, { ok: true, files: result.files });
+      return true;
+    }
+    send(res, 404, "Unknown BGY project API endpoint");
+    return true;
+  } catch (err) {
+    send(res, 400, err.message || String(err));
+    return true;
+  }
+}
+
 function createServer(opts) {
-  return http.createServer((req, res) => {
+  return http.createServer(async (req, res) => {
     try {
       const requestUrl = new URL(req.url || "/", `http://${opts.host}`);
+      if (await handleProjectApi(req, res, opts, requestUrl.pathname)) return;
       let rel = requestUrl.pathname === "/" ? opts.entry : requestUrl.pathname;
       let filePath = safeResolve(opts.root, rel);
       if (fs.existsSync(filePath) && fs.statSync(filePath).isDirectory()) {
@@ -227,6 +299,7 @@ async function main() {
   console.log(`Root:  ${opts.root}`);
   console.log(`Entry: ${opts.entry}`);
   console.log(`URL:   ${url}`);
+  if (opts.projectApi) console.log("Project API: enabled (/__bgy/project-config)");
   console.log("Press Ctrl+C to stop.");
   if (opts.open) openBrowser(url);
 }

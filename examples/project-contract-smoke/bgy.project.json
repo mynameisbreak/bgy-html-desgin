@@ -1,0 +1,73 @@
+{
+  "version": 1,
+  "locked": true,
+  "project": {
+    "title": "?????????",
+    "name": "project-contract-smoke",
+    "type": "management-report",
+    "preset": "management-report",
+    "ratio": "16:9",
+    "editablePptx": true
+  },
+  "theme": {
+    "brand": "#006d9a",
+    "deepBrand": "#004b6b",
+    "success": "#2e7d32",
+    "successBg": "#eaf5eb",
+    "warning": "#c97400",
+    "warningBg": "#fff3e3",
+    "danger": "#c00000",
+    "dangerBg": "#fdecec",
+    "info": "#2b6cb0",
+    "infoBg": "#eaf3fb",
+    "text": "#1f2933",
+    "muted": "#64748b",
+    "panel": "#f5f8fa",
+    "surface": "#ffffff",
+    "pageBg": "#ffffff",
+    "line": "#d8e3ea",
+    "white": "#ffffff",
+    "black": "#000000",
+    "chart": [
+      "#006d9a",
+      "#2e7d32",
+      "#c00000",
+      "#c97400",
+      "#64748b"
+    ]
+  },
+  "components": {
+    "cardRadius": 8,
+    "panelRadius": 8,
+    "tagRadius": 4,
+    "metricRadius": 8,
+    "imageRadius": 6,
+    "borderWidth": 1,
+    "cardShadow": "0 4px 14px rgba(0,0,0,0.08)",
+    "panelShadow": "0 2px 8px rgba(0,0,0,0.05)",
+    "tableHeaderBg": "#f5f8fa",
+    "tableRowAlt": "#fafcfd",
+    "tableBorder": "#d8e3ea",
+    "titleBarHeight": 72,
+    "sectionGap": 24,
+    "iconPack": "line",
+    "tableDensity": "compact"
+  },
+  "rules": {
+    "fontFamily": "\"Microsoft YaHei\", \"微软雅黑\", Arial, sans-serif",
+    "allowedFonts": [
+      "\"Microsoft YaHei\", \"微软雅黑\", Arial, sans-serif",
+      "Arial",
+      "sans-serif"
+    ],
+    "allowRemoteIcons": false,
+    "allowDirectHexOutsideTokens": false,
+    "preferInlineSvgIcons": true,
+    "pptxEditablePriority": "high",
+    "strictTheme": true
+  },
+  "id": "management-report",
+  "label": "管理汇报",
+  "description": "稳重、克制、适合经营管理与复盘汇报。",
+  "projectType": "management-report"
+}

@@ -4,6 +4,7 @@
 
 ## 总原则
 
+- 同一项目必须先建立 `bgy.project.json`，并让每页 HTML 引入 `../shared/tokens.css` 和 `../shared/components.css`；项目级主题是 PPTX-bound HTML 的唯一风格来源。
 - PPTX-bound 页面固定使用 `1280 x 720` 画布，标准宽屏输出为 `13.333 x 7.5` 英寸。
 - 每页一个完整 HTML 文件，优先放在 `slides/*.html`，导出时传 `--slides-dir`，不要传 iframe 聚合页 `index.html`。
 - 文字必须保留真实 DOM 文本，不要把文字放进图片、SVG `<text>`、canvas 或背景图。
@@ -14,6 +15,8 @@
 ## 页面骨架
 
 ```html
+<link rel="stylesheet" href="../shared/tokens.css">
+<link rel="stylesheet" href="../shared/components.css">
 <section class="slide" data-slide data-bgy-slide data-slide-id="slide-02">
   <img class="brand-watermark" src="../shared/模版底图/image5.png" alt="" data-ppt-no-edit>
   <img class="brand-logo" src="../shared/模版底图/image1.png" alt="碧桂园服务" data-ppt-no-edit>
@@ -41,6 +44,24 @@
 | 图表占位 | `.chart-frame[data-ppt-placeholder]` | placeholder 坐标记录 |
 | 原生图表 | `.chart-frame[data-ppt-chart]` + JSON 数据 | native-chart |
 | 复杂视觉 | `[data-ppt-snapshot]` 或 `[data-ppt-force-snapshot]` | screenshot |
+
+这些 `.bgy-*` 类应来自 `shared/components.css`。如果某页需要新组件，优先把它抽成项目级组件并同步配置，不要只在单页 `<style>` 里临时写一套颜色、圆角或阴影。
+
+## 项目级主题约束
+
+`bgy.project.json` 会被 `export_bgy_pptx.mjs` 和 `pptx_preflight.mjs` 读取，用来约束：
+
+- 允许的颜色 token 和状态底色。
+- 允许的字体栈。
+- 允许的圆角和阴影。
+- 默认 BGY 组件 selector。
+- 是否已经锁定项目主题。
+
+逐页生成 HTML 时，优先使用 `var(--bgy-*)`、`var(--text-*)`、`var(--bgy-radius-*)` 和 `var(--bgy-shadow-*)`，不要直接写新的 hex 色、非项目字体、随意圆角或随意阴影。确需调整整套风格时，先改 `bgy.project.json`，再运行：
+
+```bash
+npm --prefix <bgy-skill-root>/scripts run sync-project -- --root <project>
+```
 
 ## 层级和堆叠
 
@@ -225,8 +246,8 @@ PPTX-bound 页面不要依赖复杂浏览器层叠上下文。普通堆叠视觉
 ## 预检命令
 
 ```bash
-npm --prefix <bgy-skill-root>/scripts run pptx-preflight -- --slides-dir <project>/slides
-npm --prefix <bgy-skill-root>/scripts run pptx-preflight -- --slides-dir <project>/slides --strict
+npm --prefix <bgy-skill-root>/scripts run pptx-preflight -- --slides-dir <project>/slides --project-root <project>
+npm --prefix <bgy-skill-root>/scripts run pptx-preflight -- --slides-dir <project>/slides --project-root <project> --strict
 ```
 
-普通模式用于提示风险；`--strict` 用于最终交付前拦截风险。常见拦截点包括 iframe/index 误转、普通卡片误标截图、背景图滥用、伪元素、viewport 单位、复杂 SVG、手打项目符号、div 模拟表格、未命名图表占位等。
+普通模式用于提示风险；`--strict` 用于最终交付前拦截风险。常见拦截点包括 iframe/index 误转、普通卡片误标截图、背景图滥用、伪元素、viewport 单位、复杂 SVG、手打项目符号、div 模拟表格、未命名图表占位、项目外颜色、项目外字体、项目外圆角和项目外阴影等。

@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>01 风格看板</title>
+  <link rel="stylesheet" href="../shared/tokens.css">
+  <link rel="stylesheet" href="../shared/components.css">
+  <style>
+    .brand-logo {
+      position: absolute;
+      left: 1059px;
+      top: 24px;
+      width: 190px;
+      height: 46px;
+      object-fit: fill;
+    }
+    .brand-watermark {
+      position: absolute;
+      left: 889px;
+      top: 341px;
+      width: 391px;
+      height: 379px;
+      object-fit: fill;
+      pointer-events: none;
+    }
+    .title-bar {
+      position: absolute;
+      left: 80px;
+      top: 70px;
+      display: flex;
+      align-items: baseline;
+      gap: 44px;
+      color: var(--bgy-brand);
+      font-weight: 600;
+    }
+    .slide-number {
+      font-size: 49px;
+    }
+    .slide-title {
+      font-size: 34px;
+    }
+    .body {
+      position: absolute;
+      left: 80px;
+      top: 150px;
+      width: 1050px;
+      height: 460px;
+    }
+    .metrics {
+      position: absolute;
+      left: 0;
+      top: 0;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 22px;
+      width: 760px;
+    }
+    .status-row {
+      position: absolute;
+      left: 0;
+      top: 150px;
+      display: flex;
+      gap: 10px;
+    }
+    .records-panel {
+      position: absolute;
+      left: 0;
+      top: 205px;
+      width: 760px;
+      height: 210px;
+    }
+    .note {
+      position: absolute;
+      right: 0;
+      top: 0;
+      width: 245px;
+      height: 415px;
+    }
+  </style>
+</head>
+<body>
+  <section class="slide" data-slide data-bgy-slide data-slide-id="slide-01">
+    <img class="brand-watermark" src="../shared/模版底图/image5.png" alt="" data-ppt-no-edit>
+    <img class="brand-logo" src="../shared/模版底图/image1.png" alt="碧桂园服务" data-ppt-no-edit>
+    <div class="title-bar"><span class="slide-number">01</span><span class="slide-title">项目风格已统一锁定</span></div>
+    <main class="body">
+      <div class="metrics">
+        <div class="bgy-metric-card"><p class="bgy-metric-value">96.4%</p><p class="bgy-metric-label">重点任务完成率</p></div>
+        <div class="bgy-metric-card"><p class="bgy-metric-value">12项</p><p class="bgy-metric-label">本月闭环事项</p></div>
+        <div class="bgy-metric-card"><p class="bgy-metric-value">0起</p><p class="bgy-metric-label">重大风险事件</p></div>
+      </div>
+      <div class="status-row">
+        <span class="bgy-status-tag is-success">已完成</span>
+        <span class="bgy-status-tag is-warning">推进中</span>
+        <span class="bgy-status-tag is-danger">需协调</span>
+        <span class="bgy-status-tag is-info">待确认</span>
+      </div>
+      <div class="records-panel bgy-panel">
+        <table class="bgy-table">
+          <thead><tr><th>事项</th><th>状态</th><th>责任部门</th><th>完成时间</th></tr></thead>
+          <tbody>
+            <tr><td>消防维保巡检</td><td>已完成</td><td>工程部</td><td>7月20日</td></tr>
+            <tr><td>客户诉求闭环</td><td>推进中</td><td>客服部</td><td>7月31日</td></tr>
+            <tr><td>品质问题复查</td><td>需协调</td><td>品质部</td><td>8月05日</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <aside class="note bgy-card">
+        <div class="bgy-card__body">
+          <h3 class="bgy-card__title">项目级设计契约样例</h3>
+          <p class="bgy-callout__text">此页用于验证同一项目内颜色、文字、组件、表格和状态标签是否继承同一套 bgy.project.json。</p>
+        </div>
+      </aside>
+    </main>
+  </section>
+</body>
+</html>

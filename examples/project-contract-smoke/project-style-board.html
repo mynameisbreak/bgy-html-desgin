@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>????????? - 项目风格看板</title>
+  <link rel="stylesheet" href="shared/tokens.css">
+  <link rel="stylesheet" href="shared/components.css">
+  <style>
+    body {
+      width: auto;
+      min-height: 100vh;
+      height: auto;
+      overflow: auto;
+      background: #eef3f6;
+      padding: 28px;
+    }
+    .board {
+      width: 1120px;
+      margin: 0 auto;
+      background: var(--bgy-page-bg);
+      border: 1px solid var(--bgy-line);
+      box-shadow: 0 8px 24px rgba(15,23,42,0.12);
+      padding: 34px;
+    }
+    .board-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 24px;
+      border-bottom: 1px solid var(--bgy-line);
+      padding-bottom: 22px;
+      margin-bottom: 24px;
+    }
+    h1 {
+      margin: 0 0 10px;
+      color: var(--bgy-deep-brand);
+      font-size: 30px;
+    }
+    h2 {
+      margin: 30px 0 14px;
+      color: var(--bgy-text);
+      font-size: 18px;
+    }
+    p {
+      margin: 0;
+      color: var(--bgy-muted);
+      line-height: 1.6;
+      font-size: 14px;
+    }
+    .meta {
+      color: var(--bgy-muted);
+      font-size: 13px;
+      text-align: right;
+      line-height: 1.7;
+    }
+    .palette {
+      display: grid;
+      grid-template-columns: repeat(8, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .swatch {
+      border: 1px solid var(--bgy-line);
+      border-radius: var(--bgy-panel-radius);
+      overflow: hidden;
+      background: var(--bgy-surface);
+    }
+    .swatch-color {
+      height: 54px;
+    }
+    .swatch-label {
+      padding: 8px;
+      font-size: 12px;
+      color: var(--bgy-muted);
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+    }
+    .chart-bars {
+      display: flex;
+      align-items: end;
+      gap: 12px;
+      height: 130px;
+      padding: 18px;
+      border: 1px solid var(--bgy-line);
+      border-radius: var(--bgy-panel-radius);
+      background: var(--bgy-surface);
+    }
+    .bar {
+      flex: 1;
+      border-radius: 4px 4px 0 0;
+    }
+  </style>
+</head>
+<body>
+  <main class="board">
+    <section class="board-head">
+      <div>
+        <h1>?????????</h1>
+        <p>项目级设计契约已锁定，preset：management-report。</p>
+      </div>
+      <div class="meta">
+        <div>项目类型：management-report</div>
+        <div>图标包：line</div>
+        <div>PPTX 可编辑优先级：high</div>
+      </div>
+    </section>
+
+    <h2>主题色</h2>
+    <section class="palette">
+      <div class="swatch"><div class="swatch-color" style="background:#006d9a"></div><div class="swatch-label">主色<br>#006d9a</div></div><div class="swatch"><div class="swatch-color" style="background:#004b6b"></div><div class="swatch-label">深主色<br>#004b6b</div></div><div class="swatch"><div class="swatch-color" style="background:#2e7d32"></div><div class="swatch-label">成功<br>#2e7d32</div></div><div class="swatch"><div class="swatch-color" style="background:#c97400"></div><div class="swatch-label">警示<br>#c97400</div></div><div class="swatch"><div class="swatch-color" style="background:#c00000"></div><div class="swatch-label">风险<br>#c00000</div></div><div class="swatch"><div class="swatch-color" style="background:#2b6cb0"></div><div class="swatch-label">信息<br>#2b6cb0</div></div><div class="swatch"><div class="swatch-color" style="background:#1f2933"></div><div class="swatch-label">正文<br>#1f2933</div></div><div class="swatch"><div class="swatch-color" style="background:#d8e3ea"></div><div class="swatch-label">线条<br>#d8e3ea</div></div>
+    </section>
+
+    <h2>组件</h2>
+    <section class="grid">
+      <div class="bgy-metric-card">
+        <p class="bgy-metric-value">96.4%</p>
+        <p class="bgy-metric-label">重点任务完成率</p>
+      </div>
+      <div class="bgy-metric-card">
+        <p class="bgy-metric-value">12项</p>
+        <p class="bgy-metric-label">本月闭环事项</p>
+      </div>
+      <div class="bgy-metric-card">
+        <p class="bgy-metric-value">0起</p>
+        <p class="bgy-metric-label">重大风险事件</p>
+      </div>
+    </section>
+
+    <h2>状态标签</h2>
+    <p>
+      <span class="bgy-status-tag is-success">已完成</span>
+      <span class="bgy-status-tag is-warning">推进中</span>
+      <span class="bgy-status-tag is-danger">需协调</span>
+      <span class="bgy-status-tag is-info">待确认</span>
+    </p>
+
+    <h2>表格</h2>
+    <table class="bgy-table">
+      <thead><tr><th>事项</th><th>状态</th><th>责任部门</th><th>完成时间</th></tr></thead>
+      <tbody>
+        <tr><td>消防维保巡检</td><td>已完成</td><td>工程部</td><td>7月20日</td></tr>
+        <tr><td>客户诉求闭环</td><td>推进中</td><td>客服部</td><td>7月31日</td></tr>
+        <tr><td>品质问题复查</td><td>需协调</td><td>品质部</td><td>8月05日</td></tr>
+      </tbody>
+    </table>
+
+    <h2>图表配色</h2>
+    <div class="chart-bars">
+      <div class="bar" style="height:45px;background:#006d9a"></div><div class="bar" style="height:61px;background:#2e7d32"></div><div class="bar" style="height:77px;background:#c00000"></div><div class="bar" style="height:93px;background:#c97400"></div><div class="bar" style="height:109px;background:#64748b"></div>
+    </div>
+  </main>
+</body>
+</html>

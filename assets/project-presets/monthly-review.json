@@ -1,0 +1,50 @@
+{
+  "id": "monthly-review",
+  "label": "月报季报",
+  "description": "指标先行，适合复盘、趋势和结果汇报。",
+  "projectType": "monthly-review",
+  "theme": {
+    "brand": "#006D9A",
+    "deepBrand": "#003E57",
+    "success": "#2E7D32",
+    "successBg": "#EAF5EB",
+    "warning": "#B86A00",
+    "warningBg": "#FFF3E3",
+    "danger": "#C00000",
+    "dangerBg": "#FDECEC",
+    "info": "#2B6CB0",
+    "infoBg": "#EAF3FB",
+    "text": "#1F2933",
+    "muted": "#64748B",
+    "panel": "#F5F8FA",
+    "surface": "#FFFFFF",
+    "pageBg": "#FFFFFF",
+    "line": "#D8E3EA",
+    "chart": ["#006D9A", "#2E7D32", "#C00000", "#B86A00", "#5F6D7A"]
+  },
+  "components": {
+    "cardRadius": 8,
+    "panelRadius": 8,
+    "tagRadius": 4,
+    "metricRadius": 8,
+    "imageRadius": 6,
+    "borderWidth": 1,
+    "cardShadow": "0 4px 14px rgba(0,0,0,0.08)",
+    "panelShadow": "0 2px 8px rgba(0,0,0,0.05)",
+    "tableHeaderBg": "#F5F8FA",
+    "tableRowAlt": "#FAFCFD",
+    "tableBorder": "#D8E3EA",
+    "titleBarHeight": 72,
+    "sectionGap": 24,
+    "iconPack": "line",
+    "tableDensity": "compact"
+  },
+  "rules": {
+    "fontFamily": "\"Microsoft YaHei\", \"微软雅黑\", Arial, sans-serif",
+    "allowRemoteIcons": false,
+    "allowDirectHexOutsideTokens": false,
+    "preferInlineSvgIcons": true,
+    "pptxEditablePriority": "high",
+    "strictTheme": true
+  }
+}

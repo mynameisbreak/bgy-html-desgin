@@ -1,0 +1,50 @@
+{
+  "id": "maintenance",
+  "label": "维保巡检",
+  "description": "表格、台账和状态分层更强，适合工程巡检类页面。",
+  "projectType": "maintenance",
+  "theme": {
+    "brand": "#006D9A",
+    "deepBrand": "#00405A",
+    "success": "#2E7D32",
+    "successBg": "#EAF5EB",
+    "warning": "#C97400",
+    "warningBg": "#FFF3E3",
+    "danger": "#C00000",
+    "dangerBg": "#FDECEC",
+    "info": "#2B6CB0",
+    "infoBg": "#EAF3FB",
+    "text": "#1F2933",
+    "muted": "#64748B",
+    "panel": "#F5F8FA",
+    "surface": "#FFFFFF",
+    "pageBg": "#FFFFFF",
+    "line": "#D8E3EA",
+    "chart": ["#006D9A", "#2E7D32", "#C00000", "#5F6D7A", "#C97400"]
+  },
+  "components": {
+    "cardRadius": 6,
+    "panelRadius": 6,
+    "tagRadius": 4,
+    "metricRadius": 6,
+    "imageRadius": 4,
+    "borderWidth": 1,
+    "cardShadow": "0 3px 10px rgba(0,0,0,0.07)",
+    "panelShadow": "0 2px 8px rgba(0,0,0,0.05)",
+    "tableHeaderBg": "#F5F8FA",
+    "tableRowAlt": "#FAFCFD",
+    "tableBorder": "#D8E3EA",
+    "titleBarHeight": 72,
+    "sectionGap": 20,
+    "iconPack": "bgy-business",
+    "tableDensity": "dense"
+  },
+  "rules": {
+    "fontFamily": "\"Microsoft YaHei\", \"微软雅黑\", Arial, sans-serif",
+    "allowRemoteIcons": false,
+    "allowDirectHexOutsideTokens": false,
+    "preferInlineSvgIcons": true,
+    "pptxEditablePriority": "high",
+    "strictTheme": true
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "meta": {
+    "title": "项目级设计契约样例",
+    "theme": "bgy-services",
+    "template": "bgy-services-base",
+    "archetype": "management-report",
+    "preset": "management-report",
+    "ratio": "16:9",
+    "mode": "html-to-pptx",
+    "projectConfig": "bgy.project.json"
+  },
+  "slides": [
+    {
+      "id": "slide-01",
+      "label": "风格看板",
+      "type": "style-board",
+      "layoutVariant": "project-contract",
+      "file": "slides/01-style-board.html",
+      "components": []
+    }
+  ]
+}

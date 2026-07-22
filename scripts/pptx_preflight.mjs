@@ -2,17 +2,25 @@
 import fs from "fs";
 import path from "path";
 import { absolutePath } from "./runtime.mjs";
+import {
+  collectProjectStyleExpectations,
+  inferProjectRootFromInput,
+  readProjectConfig,
+} from "./project_config.mjs";
 
 function usage() {
   console.log(`
 Usage:
   node pptx_preflight.mjs --slides-dir <slides/> [--strict]
   node pptx_preflight.mjs --html <slide.html> [--strict]
+
+Options:
+  --project-root <dir>   BGY project root with bgy.project.json. Default: auto-detect.
 `);
 }
 
 function parseArgs() {
-  const opts = { html: "", slidesDir: "", strict: false };
+  const opts = { html: "", slidesDir: "", projectRoot: "", strict: false };
   const args = process.argv.slice(2);
   for (let i = 0; i < args.length; i++) {
     const key = args[i];
@@ -24,6 +32,8 @@ function parseArgs() {
       opts.html = next; i++;
     } else if ((key === "--slides-dir" || key === "--slides") && next) {
       opts.slidesDir = next; i++;
+    } else if (key === "--project-root" && next) {
+      opts.projectRoot = next; i++;
     } else if (key === "--strict") {
       opts.strict = true;
     } else {
@@ -223,6 +233,135 @@ function checkIconLibraries(html, warnings) {
     if (/\biconfont\b|\biconfont-[\w-]+\b/.test(cls)) classLibs.add("iconfont");
   }
   classLibs.forEach(lib => warnings.push(`Icon-font class pattern detected (${lib}); use local inline SVG instead of font icons.`));
+}
+
+function normalizeHexColor(value) {
+  const raw = String(value || "").trim();
+  const match = /^#([0-9a-f]{3}|[0-9a-f]{6}|[0-9a-f]{8})$/i.exec(raw);
+  if (!match) return "";
+  let hex = match[1].toLowerCase();
+  if (hex.length === 3) hex = hex.split("").map(ch => ch + ch).join("");
+  if (hex.length === 8) hex = hex.slice(0, 6);
+  return `#${hex}`;
+}
+
+function normalizeCssValue(value) {
+  return String(value || "").trim().replace(/\s+/g, " ").toLowerCase();
+}
+
+function hasStylesheetLink(html, name) {
+  const re = /<link\b([^>]*)>/gi;
+  let match;
+  while ((match = re.exec(html))) {
+    const attrs = match[1] || "";
+    const rel = attrValue(attrs, "rel").toLowerCase();
+    const href = attrValue(attrs, "href").replace(/\\/g, "/").toLowerCase();
+    if (/\bstylesheet\b/.test(rel) && href.endsWith(name.toLowerCase())) return true;
+  }
+  return false;
+}
+
+function directHexColors(source) {
+  const found = new Set();
+  const re = /#[0-9a-f]{3,8}\b/gi;
+  let match;
+  while ((match = re.exec(source))) {
+    const color = normalizeHexColor(match[0]);
+    if (color) found.add(color);
+  }
+  return Array.from(found);
+}
+
+function cssFontFamilies(css) {
+  const values = [];
+  const re = /\bfont-family\s*:\s*([^;{}]+)/gi;
+  let match;
+  while ((match = re.exec(css))) values.push(match[1].trim());
+  return values;
+}
+
+function cssRadiusValues(css) {
+  const values = [];
+  const re = /\bborder-radius\s*:\s*([^;{}]+)/gi;
+  let match;
+  while ((match = re.exec(css))) values.push(match[1].trim());
+  return values;
+}
+
+function cssShadowValues(css) {
+  const values = [];
+  const re = /\bbox-shadow\s*:\s*([^;{}]+)/gi;
+  let match;
+  while ((match = re.exec(css))) values.push(match[1].trim());
+  return values;
+}
+
+function projectCss(html, file) {
+  return [...styleBlocks(html), ...linkedStyleBlocks(html, file, [])].join("\n");
+}
+
+function checkProjectContract(html, file, project, warnings) {
+  if (!project) return;
+  const expectations = collectProjectStyleExpectations(project.config);
+  const css = projectCss(html, file);
+  const fullSource = `${html}\n${css}`;
+  const relFile = path.relative(project.root, file).replace(/\\/g, "/");
+
+  if (project.missingConfig) {
+    warnings.push(`Project root has no bgy.project.json; initialize or sync the project before generating PPT pages.`);
+  }
+  if (!project.config.locked) {
+    warnings.push(`Project theme is not locked in bgy.project.json; lock it before batch-generating or final exporting slides.`);
+  }
+  if (/^slides\//i.test(relFile)) {
+    if (!hasStylesheetLink(html, "shared/tokens.css") && !hasStylesheetLink(html, "../shared/tokens.css")) {
+      warnings.push(`Slide does not link shared/tokens.css; project-level colors and font rules may drift.`);
+    }
+    if (!hasStylesheetLink(html, "shared/components.css") && !hasStylesheetLink(html, "../shared/components.css")) {
+      warnings.push(`Slide does not link shared/components.css; component styles may drift across pages.`);
+    }
+  }
+
+  if (!project.config.rules.allowDirectHexOutsideTokens) {
+    const allowedColors = new Set(expectations.colors.map(normalizeHexColor).filter(Boolean));
+    const badColors = directHexColors(fullSource)
+      .filter(color => !allowedColors.has(color))
+      .filter(color => color !== "#000000" || expectations.colors.some(item => normalizeHexColor(item) === "#000000"));
+    if (badColors.length > 0) {
+      warnings.push(`Project theme drift: direct color(s) not declared in bgy.project.json: ${badColors.slice(0, 8).join(", ")}.`);
+    }
+  }
+
+  const allowedFonts = expectations.fonts.map(font => font.toLowerCase());
+  cssFontFamilies(css).forEach(value => {
+    const normalized = value.toLowerCase();
+    if (/var\(--bgy-font-family\)/.test(normalized)) return;
+    const candidates = normalized.split(",").map(item => item.trim().replace(/^['"]|['"]$/g, ""));
+    const firstRealFont = candidates.find(font => !["arial", "sans-serif", "serif", "monospace"].includes(font)) || candidates[0] || "";
+    const ok = allowedFonts.includes(firstRealFont);
+    if (!ok) warnings.push(`Project theme drift: font-family "${value}" is not allowed by bgy.project.json.`);
+  });
+
+  const allowedRadii = new Set(expectations.radii.map(value => Number(value)));
+  cssRadiusValues(css).forEach(value => {
+    if (/var\(--bgy-[\w-]+radius\)/i.test(value)) return;
+    const numbers = value.match(/-?\d+(?:\.\d+)?px/g) || [];
+    const bad = numbers
+      .map(item => Number(item.replace(/px/i, "")))
+      .filter(number => number !== 0 && !allowedRadii.has(number));
+    if (bad.length > 0) {
+      warnings.push(`Project theme drift: border-radius "${value}" is outside configured component radii.`);
+    }
+  });
+
+  const allowedShadows = new Set(expectations.shadows.map(normalizeCssValue));
+  cssShadowValues(css).forEach(value => {
+    const normalized = normalizeCssValue(value);
+    if (/var\(--bgy-(?:card|panel)-shadow\)/i.test(value) || normalized === "none") return;
+    if (!allowedShadows.has(normalized)) {
+      warnings.push(`Project theme drift: box-shadow "${value}" is not declared in bgy.project.json.`);
+    }
+  });
 }
 
 function splitCssList(value) {
@@ -505,6 +644,7 @@ function scanFile(file, opts) {
   checkSnapshotMarkers(cleanHtml, warnings);
   checkGlobalCss(cleanHtml, file, warnings);
   checkIconLibraries(cleanHtml, warnings);
+  checkProjectContract(cleanHtml, file, opts.project, warnings);
   checkTags(cleanHtml, warnings);
   checkSvg(cleanHtml, warnings);
   checkTables(cleanHtml, warnings);
@@ -519,12 +659,28 @@ function scanFile(file, opts) {
 
 function main() {
   const opts = parseArgs();
+  const projectRoot = absolutePath(opts.projectRoot) ||
+    inferProjectRootFromInput(opts.slidesDir || opts.html);
+  if (projectRoot) {
+    const configFile = path.join(projectRoot, "bgy.project.json");
+    opts.project = {
+      root: projectRoot,
+      config: readProjectConfig(projectRoot),
+      missingConfig: !fs.existsSync(configFile),
+    };
+  } else {
+    opts.project = null;
+  }
   const results = htmlInputs(opts).map(file => scanFile(file, opts));
   const errors = results.flatMap(result => result.errors.map(text => ({ file: result.file, text })));
   const warnings = results.flatMap(result => result.warnings.map(text => ({ file: result.file, text })));
 
   console.log("BGY PPTX preflight");
   console.log(`Files: ${results.length}`);
+  if (opts.project) {
+    console.log(`Project: ${opts.project.root}`);
+    console.log(`Preset: ${opts.project.config.project.preset}; locked=${opts.project.config.locked ? "yes" : "no"}`);
+  }
   warnings.forEach(item => console.warn(`Warning: ${item.file}: ${item.text}`));
   errors.forEach(item => console.error(`Error: ${item.file}: ${item.text}`));
   if (errors.length > 0 || (opts.strict && warnings.length > 0)) {

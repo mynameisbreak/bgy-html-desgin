@@ -7,6 +7,7 @@
 - **品牌一致性**：内置碧桂园服务视觉规范，包含品牌主色、字体、Logo、水印等完整品牌资产
 - **16:9 固定画布**：默认 1280×720px，确保演示文稿比例统一
 - **多文件 HTML Deck**：支持 `index.html + slides/*.html + shared/` 多页聚合演示结构
+- **项目级设计契约**：可在项目根目录生成 `bgy.project.json`、配置页、风格看板和共享组件 CSS，保证逐页生成时主题色、字体、组件样式一致
 - **服务器预览**：内置零依赖本地静态服务器，适合检查相对路径、中文路径和 iframe 聚合页
 - **本地视觉资产库**：内置 PPT 友好的线性 icon、状态 icon、物业业务 icon、流程 SVG、空状态和克制纹理，避免远程 CDN 和临场乱画
 - **场景模板丰富**：覆盖管理汇报、经营分析、节能降本、维修/公维资金、社区运营等常见场景
@@ -33,6 +34,7 @@ bgy-html-design/
 │   ├── deck_stage.js              # 1-4 页轻量单文件演示组件
 │   ├── design_canvas.jsx          # 封面/重点页多方案对比组件
 │   ├── icon-gallery.html          # 本地图标/SVG 资产预览页
+│   ├── project-presets/           # 项目级主题 preset
 │   ├── icons/                     # 本地 PPT 友好图标库
 │   ├── svg/                       # 本地 SVG 视觉组件库
 │   └── ppt-base-template/         # 内置 PPT 基础模板及底图
@@ -41,6 +43,7 @@ bgy-html-design/
 │   ├── layouts.md                 # 扩展版式目录
 │   ├── components.md              # deck.json 组件规范
 │   ├── html-deck-workflow.md      # 多文件 HTML Deck 工作流程
+│   ├── project-design-contract.md # 项目级设计契约
 │   ├── pptx-authoring-profile.md  # PPTX 友好 HTML 作者规范
 │   ├── local-visual-assets.md     # 本地 icon/SVG 资产使用规范
 │   ├── animations.md              # HTML 动画效果目录
@@ -50,6 +53,10 @@ bgy-html-design/
 ├── scripts/
 │   ├── gen_deck_thumbs.mjs        # 幻灯片缩略图生成
 │   ├── serve_deck.mjs             # 本地 HTML 预览服务器
+│   ├── init_bgy_project.mjs       # 初始化项目级配置与共享组件
+│   ├── sync_bgy_project.mjs       # 从 bgy.project.json 同步共享 CSS/配置页
+│   ├── project_config.mjs         # 项目配置读取、合并、token 生成
+│   ├── project_files.mjs          # 项目配置页/风格看板/样例页生成
 │   ├── pptx_preflight.mjs         # PPTX 转换前结构检查
 │   ├── export_bgy_pptx.mjs        # 转为可编辑 PPTX
 │   ├── build_icon_assets.mjs      # 生成本地图标/SVG 资产
@@ -62,11 +69,12 @@ bgy-html-design/
 ## 工作流程
 
 1. **判断场景**：管理汇报、月度/季度复盘、项目提案、经营分析等
-2. **整理大纲**：将用户素材整理成页面大纲，每页标题优先表达结论
-3. **选择版式**：为每页选择页面类型（cover、agenda、title-bullets 等）和布局变体
-4. **创建 deck.json**：作为内容事实来源
-5. **生成 HTML**：基于固定 16:9 画布和内置模板资产生成 HTML 幻灯片
-6. **交付校验**：检查品牌一致性、视觉层级、内容完整性
+2. **锁定项目主题**：项目型任务先生成或同步 `bgy.project.json`，确认 preset、颜色、字体、圆角、阴影和组件样式
+3. **整理大纲**：将用户素材整理成页面大纲，每页标题优先表达结论
+4. **选择版式**：为每页选择页面类型（cover、agenda、title-bullets 等）和布局变体
+5. **创建 deck.json**：作为内容事实来源
+6. **生成 HTML**：基于固定 16:9 画布、项目级 shared CSS 和内置模板资产生成 HTML 幻灯片
+7. **交付校验**：检查品牌一致性、视觉层级、内容完整性
 
 ## 页面类型
 
@@ -93,6 +101,28 @@ bgy-html-design/
 - 🔧 维修、公维资金、消防维保台账
 - 🏘️ 社区运营与客户服务汇报
 - 📈 品质提升与经营分析
+
+## 项目级配置
+
+新建或规范一个项目时，优先使用内置脚本生成项目根目录：
+
+```bash
+npm --prefix <bgy-html-design>/scripts run init-project -- --dir <project> --title "<项目标题>" --preset management-report --locked
+```
+
+用服务器模式打开配置页，可以直接保存到 `bgy.project.json` 并同步共享样式：
+
+```bash
+npm --prefix <bgy-html-design>/scripts run serve -- --root <project> --entry project-config.html --project-api --port auto --open
+```
+
+修改配置后可重新同步：
+
+```bash
+npm --prefix <bgy-html-design>/scripts run sync-project -- --root <project>
+```
+
+可用 preset：`management-report`、`monthly-review`、`proposal`、`maintenance`、`quality-improvement`、`fire-safety`。
 
 ## 使用要求
 

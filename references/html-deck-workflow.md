@@ -21,6 +21,8 @@
 
 如果用户没有指定格式，默认先做 HTML 聚合演示版；需要可编辑文件时再追加 PPTX。
 
+同一项目如果会分多次、逐页或批量生成，开工前还必须先建立项目级设计契约，具体见 [project-design-contract.md](project-design-contract.md)。主题、字体、组件圆角、阴影、状态色和文字颜色应由 `bgy.project.json` 决定，不要每页临场发挥。
+
 开工时可以这样确认：
 
 ```text
@@ -66,10 +68,15 @@ showcase 通过后，后续页面只复用已确认的标题栏、字号、色�
 
 ```text
 <project-name>/
+  bgy.project.json
+  project-config.html
+  project-style-board.html
   deck.json
   index.html
+  presets/
   shared/
     tokens.css
+    components.css
     模版底图/
       image1.png
       image5.png
@@ -86,15 +93,39 @@ showcase 通过后，后续页面只复用已确认的标题栏、字号、色�
 
 说明：
 
+- `bgy.project.json` 是项目级设计契约，锁定主题色、字体、组件、图标包、圆角和阴影。
+- `project-config.html` 是可视化配置页；用 `serve --project-api` 打开时可以直接写回配置。
+- `project-style-board.html` 是只读风格看板，用于确认本项目组件效果。
 - `deck.json` 是内容事实来源。
 - `index.html` 从 `assets/deck_index.html` 复制而来，只需要改 `window.DECK_MANIFEST`。
 - `shared/tokens.css` 放跨页共用的品牌色、字号、画布和标题栏样式。
+- `shared/components.css` 放跨页共用的 PPTX 友好组件样式，如 `.bgy-card`、`.bgy-table`、`.bgy-status-tag`。
 - `shared/模版底图/` 复制内置模板图片，供每页 HTML 相对引用。
 - `slides/` 每页一个完整 HTML 文件，天然隔离 CSS。
 - `thumbs/` 只在需要画廊概览时生成。
 - `output/` 放最终 PPTX 或其他交付文件。
 
 ## 初始化步骤
+
+优先使用脚本一次性初始化项目结构：
+
+```bash
+npm --prefix <bgy-skill-root>/scripts run init-project -- \
+  --dir <project-name> \
+  --title "<项目标题>" \
+  --preset management-report \
+  --locked
+```
+
+脚本会生成 `bgy.project.json`、`project-config.html`、`project-style-board.html`、`shared/tokens.css`、`shared/components.css`、`index.html`、`deck.json` 和一张 `slides/01-style-board.html` 风格验证页。之后逐页生成时，只新增或替换 `slides/*.html`，不要改散落的颜色和组件样式。
+
+如果 `bgy.project.json` 已经存在，修改配置后用：
+
+```bash
+npm --prefix <bgy-skill-root>/scripts run sync-project -- --root <project-name>
+```
+
+手工初始化只在脚本不可用时使用：
 
 1. 复制聚合器：
 
@@ -138,6 +169,7 @@ body {
 
 ```html
 <link rel="stylesheet" href="../shared/tokens.css">
+<link rel="stylesheet" href="../shared/components.css">
 ```
 
 ## 单页 HTML 基础骨架
@@ -151,6 +183,7 @@ body {
   <meta charset="UTF-8">
   <title>02 经营摘要</title>
   <link rel="stylesheet" href="../shared/tokens.css">
+  <link rel="stylesheet" href="../shared/components.css">
   <style>
     .brand-logo {
       position: absolute;
@@ -243,6 +276,13 @@ npm --prefix <bgy-skill-root>/scripts run serve -- --root <project-name> --entry
 - `--port auto`：从 4173 开始自动寻找可用端口。
 - `--open`：启动后打开默认浏览器。
 - `--smoke`：启动后自检入口 URL，成功后退出，适合自动验证脚本。
+- `--project-api`：启用本地配置读写接口，打开 `project-config.html` 时可直接保存 `bgy.project.json` 并同步共享样式。
+
+编辑项目主题时使用：
+
+```bash
+npm --prefix <bgy-skill-root>/scripts run serve -- --root <project-name> --entry project-config.html --project-api --port auto --open
+```
 
 ## 导出可编辑 PPTX
 
@@ -252,12 +292,13 @@ npm --prefix <bgy-skill-root>/scripts run serve -- --root <project-name> --entry
 ```bash
 npm --prefix <bgy-skill-root>/scripts run export-bgy-pptx -- \
   --slides-dir <project-name>/slides \
+  --project-root <project-name> \
   --out <project-name>/output/<project-name>.pptx \
   --mode normal
 ```
 
 `export_bgy_pptx.mjs` 会先运行 `pptx_preflight.mjs`，用静态规则检查常见误转风险。
-BGY 脚本不需要单独安装 npm 依赖；PPTX 转换所需依赖由 `pptx-design` 提供。
+项目根目录有 `bgy.project.json` 时，导出脚本会读取项目字体、主题锁定状态和 BGY 组件 selector，并把 `--project-root` 传给 preflight；这会拦截项目外颜色、字体、圆角和阴影漂移。BGY 脚本不需要单独安装 npm 依赖；PPTX 转换所需依赖由 `pptx-design` 提供。
 开始写 PPTX-bound HTML 前先读取 [pptx-authoring-profile.md](pptx-authoring-profile.md)，该文件定义了 `bgy-card`、`bgy-table`、`data-ppt-line-end`、`data-ppt-placeholder` 等可由转换器稳定识别的结构契约。
 
 模式选择：

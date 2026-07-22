@@ -2,8 +2,22 @@
 import { spawnSync } from "child_process";
 import path from "path";
 import { absolutePath, resolvePptxRoot, scriptDir } from "./runtime.mjs";
+import { inferProjectRootFromInput, readProjectConfig } from "./project_config.mjs";
 
 const RUN_CWD = process.cwd();
+const BGY_NATIVE_SHAPE_SELECTOR = [
+  "[data-ppt-shape]",
+  ".ppt-shape",
+  ".bgy-card",
+  ".bgy-panel",
+  ".bgy-metric-card",
+  ".bgy-status-tag",
+  ".bgy-divider",
+  ".bgy-line",
+  ".bgy-surface",
+  ".bgy-icon-chip",
+  ".bgy-callout",
+].join(", ");
 
 function usage() {
   console.log(`
@@ -18,6 +32,7 @@ Modes:
 
 Options:
   --pptx-root <dir>          Path to pptx-design root. Default: sibling ../pptx-design.
+  --project-root <dir>       BGY project root with bgy.project.json. Default: auto-detect.
   --template-pptx <file>     Match a target PPTX slide size.
   --browser-channel <name>   Playwright browser channel, e.g. msedge.
   --audit                    Run audit-pptx after conversion.
@@ -38,6 +53,7 @@ function parseArgs() {
     width: "1280",
     height: "720",
     pptxRoot: "",
+    projectRoot: "",
     templatePptx: "",
     browserChannel: "",
     forceFontFace: "",
@@ -76,6 +92,8 @@ function parseArgs() {
       opts.height = next; i++;
     } else if (key === "--pptx-root" && next) {
       opts.pptxRoot = next; i++;
+    } else if (key === "--project-root" && next) {
+      opts.projectRoot = next; i++;
     } else if (key === "--template-pptx" && next) {
       opts.templatePptx = next; i++;
     } else if (key === "--browser-channel" && next) {
@@ -165,6 +183,14 @@ function runStep(label, scriptPath, args, cwd) {
   if (result.status !== 0) process.exit(result.status || 1);
 }
 
+function firstFontFace(fontFamily) {
+  const first = String(fontFamily || "")
+    .split(",")[0]
+    .trim()
+    .replace(/^['"]|['"]$/g, "");
+  return first || "Microsoft YaHei";
+}
+
 const opts = parseArgs();
 const pptxRoot = resolvePptxRoot(opts.pptxRoot, RUN_CWD);
 const pptxScripts = path.join(pptxRoot, "scripts");
@@ -175,6 +201,12 @@ opts.html = absolutePath(opts.html, RUN_CWD);
 opts.slidesDir = absolutePath(opts.slidesDir, RUN_CWD);
 opts.out = absolutePath(opts.out, RUN_CWD);
 opts.templatePptx = absolutePath(opts.templatePptx, RUN_CWD);
+opts.projectRoot = absolutePath(opts.projectRoot, RUN_CWD) ||
+  inferProjectRootFromInput(opts.slidesDir || opts.html);
+const projectConfig = opts.projectRoot ? readProjectConfig(opts.projectRoot) : null;
+if (projectConfig && !opts.forceFontFace) {
+  opts.forceFontFace = firstFontFace(projectConfig.rules.fontFamily);
+}
 
 const convertArgs = [];
 if (opts.slidesDir) pushPair(convertArgs, "--slides-dir", opts.slidesDir);
@@ -189,6 +221,7 @@ pushPair(convertArgs, "--screenshot-scale", opts.screenshotScale);
 pushPair(convertArgs, "--template-pptx", opts.templatePptx);
 pushPair(convertArgs, "--browser-channel", opts.browserChannel);
 pushPair(convertArgs, "--force-font-face", opts.forceFontFace);
+pushPair(convertArgs, "--shape-selector", BGY_NATIVE_SHAPE_SELECTOR);
 if (opts.strictAuthoring) convertArgs.push("--strict-authoring");
 if (opts.debugOverlay) convertArgs.push("--debug-overlay");
 if (opts.keepAssets) convertArgs.push("--keep-assets");
@@ -198,12 +231,19 @@ if (opts.noValidate) convertArgs.push("--no-validate");
 
 console.log(`BGY PPTX export mode: ${opts.mode}`);
 console.log(`pptx-design: ${pptxRoot}`);
+if (opts.projectRoot) {
+  console.log(`BGY project: ${opts.projectRoot}`);
+  if (projectConfig) {
+    console.log(`Project preset: ${projectConfig.project.preset}; locked=${projectConfig.locked ? "yes" : "no"}`);
+  }
+}
 const totalStarted = Date.now();
 
 if (opts.preflight) {
   const preflightArgs = [];
   if (opts.slidesDir) pushPair(preflightArgs, "--slides-dir", opts.slidesDir);
   else pushPair(preflightArgs, "--html", opts.html);
+  pushPair(preflightArgs, "--project-root", opts.projectRoot);
   if (opts.mode === "final" || opts.strictAuthoring) preflightArgs.push("--strict");
   runStep("Preflight BGY PPTX HTML", preflightScript, preflightArgs, scriptDir);
 }

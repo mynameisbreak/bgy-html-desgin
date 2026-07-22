@@ -27,17 +27,19 @@ description: 碧桂园服务/碧桂园体系 PPT 专用 HTML 设计技能。适�
 涉及 HTML deck 交付、后续 PPTX 转换、或需要按 huashu-design 标准做反 AI slop 审查时，读取 [references/huashu-quality-gates.md](references/huashu-quality-gates.md)。
 凡是后续需要导出可编辑 PPTX，必须先读取 [references/pptx-authoring-profile.md](references/pptx-authoring-profile.md)，按其中的 DOM、类名和 `data-ppt-*` 契约生成 HTML。
 凡是页面需要图标、流程箭头、空状态、框架图或轻量装饰 SVG，必须先读取 [references/local-visual-assets.md](references/local-visual-assets.md)，优先复用本地资产，不要默认加载远程 icon CDN。
+凡是同一项目需要分多次、逐页或批量生成 HTML/PPTX，必须先读取 [references/project-design-contract.md](references/project-design-contract.md)，在项目根目录建立并锁定 `bgy.project.json`，后续页面只复用同一套 `shared/tokens.css`、`shared/components.css` 和组件类，避免主题色、字体、圆角、阴影和文字颜色漂移。
 
 ## 工作流程
 
 1. 判断文稿场景：管理汇报、月度/季度复盘、项目提案、经营分析、品质服务、节能降本、维修/公维资金、培训课件或客户沟通。
-2. 将用户素材整理成页面大纲，每页标题必须优先表达结论。
-3. 为每页选择一个 `slide type` 和一个 `layoutVariant`。
-4. 创建或更新 `deck.json`，作为内容事实来源。
-5. 页数大于 1 页时，优先按 [references/html-deck-workflow.md](references/html-deck-workflow.md) 创建多文件 HTML deck。
-6. 如果要导出 PPTX，按 [references/pptx-authoring-profile.md](references/pptx-authoring-profile.md) 控制 HTML 结构，减少 AI 判断和截图兜底。
-7. 基于固定 16:9 画布和内置模板资产生成 HTML。
-8. 交付前检查页面边界、文字密度、品牌一致性和本地资源路径。
+2. 如果是项目型任务，先按 [references/project-design-contract.md](references/project-design-contract.md) 初始化或同步 `bgy.project.json`，并让用户确认一次项目主题；确认后默认锁定。
+3. 将用户素材整理成页面大纲，每页标题必须优先表达结论。
+4. 为每页选择一个 `slide type` 和一个 `layoutVariant`。
+5. 创建或更新 `deck.json`，作为内容事实来源。
+6. 页数大于 1 页时，优先按 [references/html-deck-workflow.md](references/html-deck-workflow.md) 创建多文件 HTML deck。
+7. 如果要导出 PPTX，按 [references/pptx-authoring-profile.md](references/pptx-authoring-profile.md) 控制 HTML 结构，减少 AI 判断和截图兜底。
+8. 基于固定 16:9 画布、项目级 tokens/components 和内置模板资产生成 HTML。
+9. 交付前检查页面边界、文字密度、品牌一致性和本地资源路径。
 
 只有在缺失信息会阻塞输出时才追问，例如受众未知、页数要求未知、关键数据缺失等。
 
@@ -179,6 +181,12 @@ description: 碧桂园服务/碧桂园体系 PPT 专用 HTML 设计技能。适�
 
 默认输出可直接预览的 HTML 文件。多页项目优先使用 `index.html + slides/*.html + shared/` 结构；单页任务可输出单个 HTML。本地图片资源应复制到相对路径可访问的位置，或保持与 HTML 文件匹配的相对引用。
 
+项目级设计契约：
+
+- 同一项目逐页生成时，必须优先使用 `scripts/init_bgy_project.mjs` 建立项目根目录，生成 `bgy.project.json`、`project-config.html`、`project-style-board.html`、`shared/tokens.css` 和 `shared/components.css`。
+- 每页 HTML 必须同时引入 `../shared/tokens.css` 和 `../shared/components.css`，并复用 `.bgy-card`、`.bgy-panel`、`.bgy-metric-card`、`.bgy-table`、`.bgy-status-tag`、`.bgy-divider` 等组件类。
+- 不要在单页里临场发明新主题色、字体、圆角、阴影或组件风格；确实要改时，先改 `bgy.project.json`，再运行 `scripts/sync_bgy_project.mjs`。
+
 多页 HTML deck 规则：
 
 - 先读取 [references/html-deck-workflow.md](references/html-deck-workflow.md)。
@@ -271,6 +279,8 @@ description: 碧桂园服务/碧桂园体系 PPT 专用 HTML 设计技能。适�
 
 - `scripts/gen_deck_thumbs.mjs`：为 `slides/*.html` 生成 `thumbs/*.jpg` 缩略图，用于 `deck_index.html` 的画廊概览。
 - `scripts/serve_deck.mjs`：启动零依赖本地静态服务器预览 `index.html + slides/*.html`。
+- `scripts/init_bgy_project.mjs`：在用户项目根目录生成 `bgy.project.json`、配置页、风格看板、共享 CSS、preset 副本和首张风格验证页。
+- `scripts/sync_bgy_project.mjs`：从现有 `bgy.project.json` 重建共享 CSS、配置页、风格看板和 preset 副本。
 - `scripts/pptx_preflight.mjs`：静态检查 PPTX 转换前的常见结构风险，减少误截图和聚合页误转。
 - `scripts/export_bgy_pptx.mjs`：调用 `pptx-design` 将 BGY HTML 转为可编辑 PPTX。
 - `scripts/verify_html.mjs`：用 `pptx-design` 的 Playwright 环境打开 HTML、截图并收集控制台错误。
@@ -279,6 +289,7 @@ description: 碧桂园服务/碧桂园体系 PPT 专用 HTML 设计技能。适�
 - `assets/deck_stage.js`：1-4 页轻量单文件演示组件，不用于正式多页 deck。
 - `assets/icon-gallery.html`：本地图标与 SVG 视觉资产预览页。
 - `references/local-visual-assets.md`：本地图标、业务 SVG、流程 SVG、空状态资产的选择和 PPTX 转换约束。
+- `references/project-design-contract.md`：项目级主题、preset、配置页、共享组件和 PPTX 导出衔接规则。
 - `references/pptx-authoring-profile.md`：BGY HTML 与 `pptx-design` 的结构契约，规定形状、图片、文字、表格、图标、图表占位和截图例外。
 - `references/huashu-quality-gates.md`：复制兼容、品牌资产、组件纪律、反 AI slop 和交付评审门禁。
 
@@ -303,6 +314,7 @@ BGY 脚本自身不声明 npm 依赖；需要浏览器时复用 `pptx-design` �
 开始写 HTML 前先读取 [references/pptx-authoring-profile.md](references/pptx-authoring-profile.md)，避免普通元素被误标为截图模块。
 
 - 多文件 deck 用 `--slides-dir <project>/slides` 交给 `pptx-design`；每个 `slides/*.html` 应是一页完整 `1280 x 720` HTML。
+- 项目根目录有 `bgy.project.json` 时，导出命令应传 `--project-root <project>`；脚本也会尝试从 `slides/` 自动识别项目根目录，并把项目字体、BGY 组件 selector 和 preflight 主题约束一起传给转换链路。
 - 普通卡片、面板、分割线、圆形、状态标签、指标框用真实 DOM/CSS 表达，不要加 `data-ppt-component`；让 `pptx-design` 转成原生 PPT 形状。
 - 表格必须使用语义化 `<table>`；图片必须使用真实 `<img>`；文字必须保留真实 DOM 文本；线性 SVG icon 优先使用简单 `line/path/rect/circle`，便于转成 PPT 原生 icon 形状。
 - 线条/箭头使用 `data-ppt-line-start`、`data-ppt-line-end` 和 `data-ppt-line-dash` 显式声明，不要用图片或 SVG marker 猜测箭头。
