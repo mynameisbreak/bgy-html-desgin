@@ -117,7 +117,7 @@ npm --prefix <bgy-html-design>/scripts run init-project -- --dir <project> --tit
 npm --prefix <bgy-html-design>/scripts run serve -- --root <project> --entry project-config.html --project-api --port auto --open
 ```
 
-`project-config.html` 是主入口：采用浅色 Photoshop/Slidev 式工作台，左侧是可滚动组件库，中间是 16:9 项目画布和页面缩略条，右侧是主题/项目/组件检查器。先选择 preset，必要时切到自定义主题调整颜色、圆角、阴影、图标包和表格密度；主题变化会实时作用到组件预览。
+`project-config.html` 是主入口：采用浅色 Photoshop/Slidev 式工作台，左侧是工作区导航和组件分类目录，中间按“画布 / 组件 / 主题”切换唯一主工作区，右侧只显示当前模式相关的属性检查器。先选择 preset，必要时切到自定义主题调整颜色、圆角、阴影、图标包和表格密度；主题变化会实时作用到画布和组件预览。
 
 `project-style-board.html` 是兼容入口：打开同一个 Project Studio，但默认进入组件面板。按 KPI、Card、Chart、Progress、Comparison、Ranking、Process、Timeline、Risk、Image/Case 滚动展示组件预览。新增组件时应同步加入这里，避免后续页面临场发明样式。
 

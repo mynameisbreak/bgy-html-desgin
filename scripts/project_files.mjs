@@ -655,15 +655,12 @@ function componentCatalog() {
   })));
 }
 
-function studioComponentSections(normalized) {
+function studioComponentSections() {
   return COMPONENT_GROUPS.map(group => `<section class="studio-component-group" data-component-group="${escapeHtml(group.id)}">
     <button type="button" class="group-title" data-group-jump="${escapeHtml(group.id)}">
       <span>${escapeHtml(group.title)}</span>
       <small>${group.items.length}</small>
     </button>
-    <div class="studio-component-list">
-      ${group.items.map(item => renderComponentCard(item, normalized, "studio-component", "data-component-ref")).join("")}
-    </div>
   </section>`).join("");
 }
 
@@ -745,18 +742,10 @@ function buildProjectStudioHtml(config, presets = loadBuiltinPresets(), { initia
   const normalized = normalizeProjectConfig(config);
   const presetCards = renderPresetCards(presets, normalized.project.preset);
   const defaultPresetOptions = studioPresetOptions(presets);
-  const componentSections = studioComponentSections(normalized);
+  const componentSections = studioComponentSections();
   const componentGallerySections = studioComponentGallerySections(normalized);
   const catalog = componentCatalog();
   const firstComponent = catalog[0] || {};
-  const palette = [
-    ["主色", normalized.theme.brand],
-    ["深色", normalized.theme.deepBrand],
-    ["成功", normalized.theme.success],
-    ["警示", normalized.theme.warning],
-    ["风险", normalized.theme.danger],
-    ["信息", normalized.theme.info],
-  ];
 
   return `<!DOCTYPE html>
 <html lang="zh-CN">
@@ -788,7 +777,7 @@ function buildProjectStudioHtml(config, presets = loadBuiltinPresets(), { initia
     }
     .studio {
       display: grid;
-      grid-template-columns: 324px minmax(560px, 1fr) 360px;
+      grid-template-columns: 236px minmax(640px, 1fr) 330px;
       grid-template-rows: 52px minmax(0, 1fr);
       height: 100vh;
     }
@@ -909,6 +898,51 @@ function buildProjectStudioHtml(config, presets = loadBuiltinPresets(), { initia
       padding: 12px 14px;
       border-bottom: 1px solid var(--line);
     }
+    .nav-block {
+      display: grid;
+      gap: 6px;
+      padding: 12px 10px;
+      border-bottom: 1px solid var(--line);
+      background: #fff;
+    }
+    .nav-block h3 {
+      margin: 0 4px 4px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 34px;
+      padding: 7px 10px;
+      border-radius: 6px;
+      color: var(--text);
+      background: transparent;
+      text-align: left;
+      font-size: 13px;
+      font-weight: 700;
+    }
+    .nav-item span:last-child {
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 600;
+    }
+    .nav-item:hover,
+    body[data-panel="canvas"] .nav-item[data-panel-toggle="canvas"],
+    body[data-panel="components"] .nav-item[data-panel-toggle="components"],
+    body[data-panel="theme"] .nav-item[data-panel-toggle="theme"] {
+      color: var(--deep);
+      background: #eef5f8;
+    }
+    body:not([data-panel="components"]) .search-box {
+      display: none;
+    }
+    body:not([data-panel="components"]) .component-scroll {
+      display: none;
+    }
     .search-box input,
     .field input,
     .field select,
@@ -944,24 +978,29 @@ function buildProjectStudioHtml(config, presets = loadBuiltinPresets(), { initia
     .component-scroll {
       min-height: 0;
       overflow: auto;
-      padding: 10px 12px 18px;
+      padding: 12px 10px 18px;
       background: #f8fafc;
     }
     .studio-component-group {
-      margin-bottom: 14px;
+      margin-bottom: 4px;
     }
     .group-title {
       display: flex;
       align-items: center;
       justify-content: space-between;
       width: 100%;
-      margin-bottom: 8px;
-      padding: 7px 8px;
+      min-height: 34px;
+      margin: 0;
+      padding: 7px 10px;
+      border-radius: 6px;
       color: var(--deep);
       background: transparent;
       font-size: 13px;
       font-weight: 800;
       text-align: left;
+    }
+    .group-title:hover {
+      background: #eef5f8;
     }
     .group-title small {
       min-width: 24px;
@@ -971,10 +1010,6 @@ function buildProjectStudioHtml(config, presets = loadBuiltinPresets(), { initia
       text-align: center;
       font-size: 11px;
       line-height: 18px;
-    }
-    .studio-component-list {
-      display: grid;
-      gap: 10px;
     }
     .component-card {
       border: 1px solid var(--line);
@@ -1043,7 +1078,8 @@ function buildProjectStudioHtml(config, presets = loadBuiltinPresets(), { initia
       overflow: hidden;
       background: var(--page);
     }
-    body[data-panel="components"] .stage {
+    body[data-panel="components"] .stage,
+    body[data-panel="theme"] .stage {
       grid-template-rows: auto minmax(0, 1fr);
     }
     .stage-toolbar {
@@ -1080,10 +1116,15 @@ function buildProjectStudioHtml(config, presets = loadBuiltinPresets(), { initia
     body[data-panel="components"] .canvas-wrap {
       display: none;
     }
-    body:not([data-panel="components"]) .component-gallery {
+    body[data-panel="theme"] .canvas-wrap {
       display: none;
     }
-    body[data-panel="components"] .page-strip {
+    body:not([data-panel="components"]) .component-gallery,
+    body:not([data-panel="theme"]) .theme-workspace {
+      display: none;
+    }
+    body[data-panel="components"] .page-strip,
+    body[data-panel="theme"] .page-strip {
       display: none;
     }
     .component-gallery {
@@ -1145,9 +1186,113 @@ function buildProjectStudioHtml(config, presets = loadBuiltinPresets(), { initia
       gap: 12px;
       align-items: start;
     }
+    .theme-workspace {
+      min-height: 0;
+      overflow: auto;
+      padding: 28px;
+      background:
+        linear-gradient(#e5edf4 1px, transparent 1px),
+        linear-gradient(90deg, #e5edf4 1px, transparent 1px);
+      background-size: 24px 24px;
+      background-color: #f5f8fb;
+    }
+    .theme-board {
+      max-width: 1080px;
+      margin: 0 auto;
+      display: grid;
+      gap: 18px;
+      padding: 22px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      box-shadow: 0 10px 28px rgba(15, 23, 42, 0.08);
+    }
+    .theme-board__head {
+      display: flex;
+      justify-content: space-between;
+      gap: 24px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--line);
+    }
+    .theme-board__head h2 {
+      margin: 0 0 6px;
+      color: var(--deep);
+      font-size: 20px;
+    }
+    .theme-board__head p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+    .theme-board__meta {
+      min-width: 170px;
+      color: var(--muted);
+      font-size: 12px;
+      text-align: right;
+      line-height: 1.7;
+    }
+    .theme-samples {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 16px;
+      align-items: start;
+    }
+    .theme-sample-panel {
+      min-height: 180px;
+      padding: 18px;
+      border: 1px solid var(--bgy-line);
+      border-radius: var(--bgy-panel-radius);
+      background: var(--bgy-panel);
+    }
+    .theme-sample-panel h3 {
+      margin: 0 0 12px;
+      color: var(--bgy-deep-brand);
+      font-size: 15px;
+    }
+    .theme-sample-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .theme-sample-card {
+      min-height: 96px;
+      padding: 12px;
+      border: 1px solid var(--bgy-line);
+      border-radius: var(--bgy-card-radius);
+      background: var(--bgy-surface);
+      box-shadow: var(--bgy-card-shadow);
+    }
+    .theme-sample-value {
+      color: var(--bgy-brand);
+      font-size: 22px;
+      line-height: 1;
+      font-weight: 800;
+    }
+    .theme-sample-label {
+      margin-top: 8px;
+      color: var(--bgy-muted);
+      font-size: 12px;
+    }
+    .theme-sample-panel table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+    .theme-sample-panel th,
+    .theme-sample-panel td {
+      padding: 8px 9px;
+      border-bottom: 1px solid var(--bgy-line);
+      text-align: left;
+    }
+    .theme-sample-panel th {
+      color: var(--bgy-muted);
+      background: var(--bgy-table-header-bg);
+    }
     .preview {
-      width: 960px;
-      height: 540px;
+      width: min(900px, 100%);
+      aspect-ratio: 16 / 9;
+      height: auto;
       background: #fff;
       border: 1px solid #cfd9e3;
       box-shadow: 0 14px 34px rgba(15, 23, 42, 0.18);
@@ -1239,6 +1384,12 @@ function buildProjectStudioHtml(config, presets = loadBuiltinPresets(), { initia
       border-radius: 5px;
       border: 1px solid rgba(0,0,0,0.08);
     }
+    .swatch.is-brand { background: var(--bgy-brand); }
+    .swatch.is-deep { background: var(--bgy-deep-brand); }
+    .swatch.is-success { background: var(--bgy-success); }
+    .swatch.is-warning { background: var(--bgy-warning); }
+    .swatch.is-danger { background: var(--bgy-danger); }
+    .swatch.is-info { background: var(--bgy-info); }
     .page-strip {
       display: flex;
       align-items: center;
@@ -1275,9 +1426,15 @@ function buildProjectStudioHtml(config, presets = loadBuiltinPresets(), { initia
       padding: 12px 14px 18px;
     }
     .inspector-section {
+      display: none;
       margin-bottom: 16px;
       padding-bottom: 14px;
       border-bottom: 1px solid var(--line);
+    }
+    body[data-panel="canvas"] .inspector-section[data-inspector~="canvas"],
+    body[data-panel="components"] .inspector-section[data-inspector~="components"],
+    body[data-panel="theme"] .inspector-section[data-inspector~="theme"] {
+      display: block;
     }
     .inspector-section h3 {
       margin: 0 0 10px;
@@ -1380,8 +1537,11 @@ function buildProjectStudioHtml(config, presets = loadBuiltinPresets(), { initia
       background: var(--brand);
       color: #fff;
     }
-    body[data-theme-mode="preset"] .custom-editor {
+    body[data-panel="theme"][data-theme-mode="preset"] .custom-editor {
       display: none;
+    }
+    body[data-panel="theme"][data-theme-mode="custom"] .custom-editor {
+      display: block;
     }
     .selected-preview {
       min-height: 130px;
@@ -1445,9 +1605,15 @@ function buildProjectStudioHtml(config, presets = loadBuiltinPresets(), { initia
 
     <aside class="left-panel">
       <div class="panel-head">
-        <div class="panel-title"><h1>组件库</h1><small>${catalog.length} 个</small></div>
-        <p>KPI、图表、进度、流程、风险、图片案例统一从这里选择。</p>
+        <div class="panel-title"><h1>工作区</h1><small>Studio</small></div>
+        <p>页面、组件、主题分开处理。</p>
       </div>
+      <nav class="nav-block" aria-label="主要工作区">
+        <h3>模式</h3>
+        <button class="nav-item" type="button" data-panel-toggle="canvas"><span>画布</span><span>页面预览</span></button>
+        <button class="nav-item" type="button" data-panel-toggle="components"><span>组件</span><span>${catalog.length} 个</span></button>
+        <button class="nav-item" type="button" data-panel-toggle="theme"><span>主题</span><span>${escapeHtml(normalized.label || normalized.project.preset)}</span></button>
+      </nav>
       <div class="search-box">
         <input id="componentSearch" type="search" placeholder="搜索组件 / class / 场景">
       </div>
@@ -1457,11 +1623,6 @@ function buildProjectStudioHtml(config, presets = loadBuiltinPresets(), { initia
     <main class="stage">
       <div class="stage-toolbar">
         <strong id="stageTitle">项目画布</strong>
-        <div class="stage-tools">
-          <button class="tool-button" type="button" data-zoom="fit">适合</button>
-          <button class="tool-button" type="button" data-panel-toggle="components">组件库</button>
-          <button class="tool-button" type="button" data-panel-toggle="theme">主题设置</button>
-        </div>
       </div>
       <section class="canvas-wrap">
         <div class="preview" id="previewSlide">
@@ -1491,6 +1652,54 @@ function buildProjectStudioHtml(config, presets = loadBuiltinPresets(), { initia
       <section class="component-gallery" id="componentGallery">
         <div class="component-gallery__inner">${componentGallerySections}</div>
       </section>
+      <section class="theme-workspace" id="themeWorkspace">
+        <div class="theme-board">
+          <div class="theme-board__head">
+            <div>
+              <h2>主题效果</h2>
+              <p>标题、指标、标签、表格和色板统一使用当前项目 token。</p>
+            </div>
+            <div class="theme-board__meta">
+              <div>${escapeHtml(normalized.label || normalized.project.preset)}</div>
+              <div>${escapeHtml(normalized.components.iconPack)} · ${escapeHtml(normalized.components.tableDensity)}</div>
+            </div>
+          </div>
+          <div class="theme-samples">
+            <section class="theme-sample-panel">
+              <h3>经营摘要</h3>
+              <div class="theme-sample-grid">
+                <div class="theme-sample-card"><div class="theme-sample-value">96.4%</div><div class="theme-sample-label">完成率</div></div>
+                <div class="theme-sample-card"><div class="theme-sample-value">128</div><div class="theme-sample-label">闭环事项</div></div>
+                <div class="theme-sample-card"><div class="theme-sample-value">0起</div><div class="theme-sample-label">重大风险</div></div>
+              </div>
+              <div class="tag-row">
+                <span class="tag success">已完成</span>
+                <span class="tag warning">推进中</span>
+                <span class="tag danger">需协调</span>
+              </div>
+              <div class="palette" aria-hidden="true">
+                <div class="swatch is-brand"></div>
+                <div class="swatch is-deep"></div>
+                <div class="swatch is-success"></div>
+                <div class="swatch is-warning"></div>
+                <div class="swatch is-danger"></div>
+                <div class="swatch is-info"></div>
+              </div>
+            </section>
+            <section class="theme-sample-panel">
+              <h3>表格样式</h3>
+              <table>
+                <thead><tr><th>事项</th><th>状态</th><th>责任</th></tr></thead>
+                <tbody>
+                  <tr><td>客户诉求闭环</td><td>推进中</td><td>客服部</td></tr>
+                  <tr><td>消防维保巡检</td><td>已完成</td><td>工程部</td></tr>
+                  <tr><td>品质问题整改</td><td>需协调</td><td>项目部</td></tr>
+                </tbody>
+              </table>
+            </section>
+          </div>
+        </div>
+      </section>
       <footer class="page-strip">
         <button class="page-thumb is-active" type="button">01 主题</button>
         <button class="page-thumb" type="button">02 组件</button>
@@ -1504,7 +1713,7 @@ function buildProjectStudioHtml(config, presets = loadBuiltinPresets(), { initia
         <p id="inspectorSubtitle">项目、主题和选中组件。</p>
       </div>
       <div class="inspector-body">
-        <section class="inspector-section">
+        <section class="inspector-section" data-inspector="canvas theme">
           <h3>项目</h3>
           <label class="field">标题 <input id="projectTitle" type="text"></label>
           <label class="field">名称 <input id="projectName" type="text"></label>
@@ -1513,7 +1722,7 @@ function buildProjectStudioHtml(config, presets = loadBuiltinPresets(), { initia
           <label class="field"><span><input id="locked" type="checkbox"> 锁定主题</span></label>
         </section>
 
-        <section class="inspector-section">
+        <section class="inspector-section" data-inspector="theme">
           <h3>主题</h3>
           <div class="mode-toggle">
             <button type="button" data-mode-toggle="preset">预设主题</button>
@@ -1522,7 +1731,7 @@ function buildProjectStudioHtml(config, presets = loadBuiltinPresets(), { initia
           <div class="preset-grid">${presetCards}</div>
         </section>
 
-        <section id="customEditor" class="inspector-section custom-editor">
+        <section id="customEditor" class="inspector-section custom-editor" data-inspector="theme">
           <h3>颜色</h3>
           <div class="color-grid">
             ${[
@@ -1571,12 +1780,12 @@ function buildProjectStudioHtml(config, presets = loadBuiltinPresets(), { initia
           </label>
         </section>
 
-        <section class="inspector-section">
+        <section class="inspector-section" data-inspector="components">
           <h3 id="selectedComponentTitle">${escapeHtml(firstComponent.title || "组件")}</h3>
           <p id="selectedComponentSummary" class="bgy-card__text">${escapeHtml(firstComponent.summary || "")}</p>
           <div id="selectedComponentPreview" class="selected-preview"></div>
         </section>
-        <section class="inspector-section">
+        <section class="inspector-section" data-inspector="components">
           <h3>PPTX</h3>
           <label class="field">推荐 class <input id="selectedComponentClass" type="text" readonly value="${escapeHtml(firstComponent.classHint || "")}"></label>
           <code id="selectedComponentCode" class="code-box">${escapeHtml(firstComponent.code || "")}</code>
@@ -1645,14 +1854,21 @@ function buildProjectStudioHtml(config, presets = loadBuiltinPresets(), { initia
       renderPreview();
     }
     function setPanel(panel) {
-      document.body.dataset.panel = panel || "canvas";
-      document.getElementById("stageTitle").textContent = panel === "components" ? "组件预览" : panel === "theme" ? "主题配置" : "项目画布";
+      const activePanel = panel || "canvas";
+      const meta = {
+        canvas: ["项目画布", "项目属性和页面结构。"],
+        components: ["组件库", "选中组件和 PPTX 结构。"],
+        theme: ["主题配置", "项目主题和组件样式。"],
+      }[activePanel] || ["项目画布", "项目属性和页面结构。"];
+      document.body.dataset.panel = activePanel;
+      document.getElementById("stageTitle").textContent = meta[0];
+      document.getElementById("inspectorSubtitle").textContent = meta[1];
     }
     function componentCards() {
-      return document.querySelectorAll("[data-component-id], [data-component-ref]");
+      return document.querySelectorAll("#componentGallery [data-component-id]");
     }
     function cardComponentId(card) {
-      return card.dataset.componentId || card.dataset.componentRef || "";
+      return card.dataset.componentId || "";
     }
     function updateThemeModeUI() {
       document.body.dataset.themeMode = config.project.themeMode === "custom" ? "custom" : "preset";
@@ -1841,8 +2057,7 @@ function buildProjectStudioHtml(config, presets = loadBuiltinPresets(), { initia
       document.getElementById("selectedComponentSummary").textContent = item.groupTitle + " / " + item.summary;
       document.getElementById("selectedComponentClass").value = item.classHint;
       document.getElementById("selectedComponentCode").textContent = item.code;
-      const source = document.querySelector('#componentGallery [data-component-id="' + CSS.escape(item.id) + '"] .component-card__preview')
-        || document.querySelector('[data-component-ref="' + CSS.escape(item.id) + '"] .component-card__preview');
+      const source = document.querySelector('#componentGallery [data-component-id="' + CSS.escape(item.id) + '"] .component-card__preview');
       document.getElementById("selectedComponentPreview").innerHTML = source ? source.innerHTML : "";
     }
     function filterComponents() {
@@ -1857,15 +2072,20 @@ function buildProjectStudioHtml(config, presets = loadBuiltinPresets(), { initia
         if (visible && componentId) visibleTypes.add(componentId);
       });
       document.querySelectorAll(".studio-component-group").forEach(group => {
-        const hasVisible = Array.from(group.querySelectorAll("[data-component-ref]")).some(card => card.style.display !== "none");
+        const galleryGroup = document.querySelector('[data-gallery-group="' + CSS.escape(group.dataset.componentGroup) + '"]');
+        const hasVisible = galleryGroup && Array.from(galleryGroup.querySelectorAll("[data-component-id]")).some(card => card.style.display !== "none");
         group.style.display = hasVisible ? "" : "none";
       });
       document.querySelectorAll(".component-section").forEach(group => {
         const hasVisible = Array.from(group.querySelectorAll("[data-component-id]")).some(card => card.style.display !== "none");
         group.style.display = hasVisible ? "" : "none";
       });
-      if (!visibleTypes.size) {
+      if (!query) {
+        setStatus(apiAvailable ? "已连接本地配置服务" : "静态预览模式");
+      } else if (!visibleTypes.size) {
         setStatus("没有匹配的组件");
+      } else {
+        setStatus("已匹配 " + visibleTypes.size + " 个组件");
       }
     }
     document.querySelectorAll("[data-panel-toggle]").forEach(button => {
@@ -1909,8 +2129,9 @@ function buildProjectStudioHtml(config, presets = loadBuiltinPresets(), { initia
     document.getElementById("componentSearch").addEventListener("input", filterComponents);
     document.querySelectorAll("input, select").forEach(el => {
       if (el.id === "projectPreset" || el.id === "componentSearch" || el.readOnly) return;
-      el.addEventListener("input", () => { readForm(); setPanel("theme"); });
-      el.addEventListener("change", () => { readForm(); setPanel("theme"); });
+      const keepPanel = ["projectTitle", "projectName", "projectType", "locked"].includes(el.id);
+      el.addEventListener("input", () => { readForm(); if (!keepPanel) setPanel("theme"); });
+      el.addEventListener("change", () => { readForm(); if (!keepPanel) setPanel("theme"); });
     });
     document.getElementById("projectPreset").addEventListener("change", () => { applyPreset(); setPanel("theme"); });
     document.getElementById("saveTop").addEventListener("click", () => saveConfig().catch(err => setStatus("保存失败：" + err.message)));

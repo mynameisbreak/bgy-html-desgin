@@ -81,7 +81,7 @@
 - 选择 preset
 - 调整主题色与字体
 - 调整组件圆角、阴影、边线
-- 以浅色 Photoshop/Slidev 式工作台预览画布、页面缩略条和滚动组件库
+- 以浅色 Photoshop/Slidev 式工作台分别承载画布、组件展廊和主题效果板
 - 预览标题、卡片、表格、指标、标签、图标
 - 导出或写回 `bgy.project.json`
 - 生成或同步 `shared/tokens.css`、`shared/components.css`
