@@ -184,6 +184,8 @@ description: 碧桂园服务/碧桂园体系 PPT 专用 HTML 设计技能。适�
 项目级设计契约：
 
 - 同一项目逐页生成时，必须优先使用 `scripts/init_bgy_project.mjs` 建立项目根目录，生成 `bgy.project.json`、`project-config.html`、`project-style-board.html`、`shared/tokens.css` 和 `shared/components.css`。
+- `project-config.html` 必须作为项目主题控制台：先通过主题卡片选择 preset；只有切到“自定义主题”时，才展开完整颜色、圆角、阴影、图标包和表格密度等细项。
+- `project-style-board.html` 必须作为组件库看板：按基础容器、数据展示、视觉辅助、页面结构展示组件效果；新增共享组件时必须同步加入预览。
 - 每页 HTML 必须同时引入 `../shared/tokens.css` 和 `../shared/components.css`，并复用 `.bgy-card`、`.bgy-panel`、`.bgy-metric-card`、`.bgy-table`、`.bgy-status-tag`、`.bgy-divider` 等组件类。
 - 不要在单页里临场发明新主题色、字体、圆角、阴影或组件风格；确实要改时，先改 `bgy.project.json`，再运行 `scripts/sync_bgy_project.mjs`。
 

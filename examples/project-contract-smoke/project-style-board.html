@@ -91,6 +91,207 @@
       flex: 1;
       border-radius: 4px 4px 0 0;
     }
+    .component-nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 28px 0 12px;
+      padding: 14px 0;
+      border-top: 1px solid var(--bgy-line);
+      border-bottom: 1px solid var(--bgy-line);
+    }
+    .component-nav a {
+      display: inline-flex;
+      align-items: center;
+      min-height: 30px;
+      padding: 6px 11px;
+      border: 1px solid var(--bgy-line);
+      border-radius: var(--bgy-tag-radius);
+      color: var(--bgy-deep-brand);
+      background: var(--bgy-surface);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .component-section {
+      margin-top: 34px;
+    }
+    .component-section__head {
+      margin-bottom: 14px;
+    }
+    .component-section__head h2 {
+      margin: 0 0 6px;
+    }
+    .component-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+    .component-card {
+      min-height: 260px;
+      border: 1px solid var(--bgy-line);
+      border-radius: var(--bgy-card-radius);
+      background: var(--bgy-surface);
+      box-shadow: var(--bgy-panel-shadow);
+      overflow: hidden;
+    }
+    .component-card__head {
+      min-height: 96px;
+      padding: 16px 16px 12px;
+      border-bottom: 1px solid var(--bgy-line);
+    }
+    .component-card__head h3 {
+      margin: 0 0 7px;
+      color: var(--bgy-deep-brand);
+      font-size: 17px;
+    }
+    .component-card__preview {
+      min-height: 160px;
+      padding: 16px;
+      background: var(--bgy-panel);
+    }
+    .demo-panel {
+      padding: 14px;
+    }
+    .demo-panel__head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 10px;
+      color: var(--bgy-deep-brand);
+    }
+    .demo-stack {
+      display: grid;
+      gap: 10px;
+    }
+    .demo-stack__item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 11px 12px;
+      border: 1px solid var(--bgy-line);
+      border-radius: var(--bgy-panel-radius);
+      background: var(--bgy-surface);
+      color: var(--bgy-text);
+      font-size: 13px;
+    }
+    .demo-stack__item span {
+      color: var(--bgy-muted);
+    }
+    .demo-divider {
+      display: grid;
+      gap: 14px;
+      padding: 12px;
+      border: 1px solid var(--bgy-line);
+      border-radius: var(--bgy-panel-radius);
+      background: var(--bgy-surface);
+    }
+    .demo-metrics {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+    .demo-tags,
+    .demo-icons {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+    }
+    .demo-chart {
+      display: flex;
+      align-items: end;
+      gap: 10px;
+      height: 128px;
+      padding: 14px;
+      border: 1px solid var(--bgy-line);
+      border-radius: var(--bgy-panel-radius);
+      background: var(--bgy-surface);
+    }
+    .demo-chart span {
+      flex: 1;
+      min-width: 0;
+      border-radius: 4px 4px 0 0;
+    }
+    .demo-image-frame {
+      height: 128px;
+    }
+    .demo-image-placeholder,
+    .demo-mini-image {
+      display: grid;
+      place-items: center;
+      width: 100%;
+      height: 100%;
+      color: var(--bgy-muted);
+      background: repeating-linear-gradient(135deg, #f8fafc 0, #f8fafc 8px, #eef3f6 8px, #eef3f6 16px);
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .bgy-icon-chip svg {
+      width: 18px;
+      height: 18px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    .demo-hero {
+      display: flex;
+      gap: 16px;
+      padding: 18px;
+      border-left: 5px solid var(--bgy-brand);
+      border-radius: var(--bgy-panel-radius);
+      background: var(--bgy-surface);
+    }
+    .demo-hero > span {
+      color: var(--bgy-brand);
+      font-size: 30px;
+      font-weight: 700;
+    }
+    .demo-hero h3 {
+      margin: 0 0 8px;
+      color: var(--bgy-deep-brand);
+      font-size: 20px;
+    }
+    .demo-two-col,
+    .demo-comparison {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+    .demo-two-col > div,
+    .demo-comparison > div {
+      min-height: 118px;
+      padding: 13px;
+      border: 1px solid var(--bgy-line);
+      border-radius: var(--bgy-panel-radius);
+      background: var(--bgy-surface);
+    }
+    .demo-timeline {
+      display: grid;
+      gap: 12px;
+    }
+    .demo-timeline > div {
+      position: relative;
+      padding-left: 28px;
+    }
+    .demo-timeline span {
+      position: absolute;
+      left: 0;
+      top: 4px;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--bgy-brand);
+      box-shadow: 0 0 0 4px var(--bgy-info-bg);
+    }
+    @media (max-width: 980px) {
+      .board { width: 100%; }
+      .component-grid { grid-template-columns: 1fr; }
+    }
   </style>
 </head>
 <body>
@@ -111,6 +312,189 @@
     <section class="palette">
       <div class="swatch"><div class="swatch-color" style="background:#006d9a"></div><div class="swatch-label">主色<br>#006d9a</div></div><div class="swatch"><div class="swatch-color" style="background:#004b6b"></div><div class="swatch-label">深主色<br>#004b6b</div></div><div class="swatch"><div class="swatch-color" style="background:#2e7d32"></div><div class="swatch-label">成功<br>#2e7d32</div></div><div class="swatch"><div class="swatch-color" style="background:#c97400"></div><div class="swatch-label">警示<br>#c97400</div></div><div class="swatch"><div class="swatch-color" style="background:#c00000"></div><div class="swatch-label">风险<br>#c00000</div></div><div class="swatch"><div class="swatch-color" style="background:#2b6cb0"></div><div class="swatch-label">信息<br>#2b6cb0</div></div><div class="swatch"><div class="swatch-color" style="background:#1f2933"></div><div class="swatch-label">正文<br>#1f2933</div></div><div class="swatch"><div class="swatch-color" style="background:#d8e3ea"></div><div class="swatch-label">线条<br>#d8e3ea</div></div>
     </section>
+
+    <h2>组件库</h2>
+    <p>以下按组件类型展示当前主题下的可复用样式，生成 PPT 页面时优先复用这些结构和 class。</p>
+    <nav class="component-nav"><a href="#containers">基础容器</a><a href="#data">数据展示</a><a href="#visual">视觉辅助</a><a href="#layouts">页面结构</a></nav>
+    <section class="component-section" id="containers">
+    <div class="component-section__head">
+      <div>
+        <h2>基础容器</h2>
+        <p>卡片、面板、分隔线和栈式排版，用来稳定页面层级。</p>
+      </div>
+    </div>
+    <div class="component-grid">
+      <article class="component-card" id="component-panel">
+    <div class="component-card__head">
+      <h3>面板 / 卡片</h3>
+      <p>承载摘要、说明和小型信息块。</p>
+    </div>
+    <div class="component-card__preview"><div class="demo-panel bgy-panel">
+        <div class="demo-panel__head"><strong>项目概览</strong><span class="bgy-status-tag is-info">本周</span></div>
+        <p>用于承载摘要、说明、责任项和小型信息组。</p>
+      </div></div>
+  </article><article class="component-card" id="component-stack">
+    <div class="component-card__head">
+      <h3>栈 / 网格</h3>
+      <p>让多块内容沿统一间距排列。</p>
+    </div>
+    <div class="component-card__preview"><div class="demo-stack">
+        <div class="demo-stack__item"><strong>目标</strong><span>完成率 96.4%</span></div>
+        <div class="demo-stack__item"><strong>风险</strong><span>0 起重大事件</span></div>
+        <div class="demo-stack__item"><strong>下一步</strong><span>持续闭环</span></div>
+      </div></div>
+  </article><article class="component-card" id="component-divider">
+    <div class="component-card__head">
+      <h3>分隔线</h3>
+      <p>在不加重视觉负担的情况下划分信息。</p>
+    </div>
+    <div class="component-card__preview"><div class="demo-divider">
+        <p>上半区用于结论。</p>
+        <div class="bgy-divider"></div>
+        <p>下半区用于行动项。</p>
+      </div></div>
+  </article>
+    </div>
+  </section><section class="component-section" id="data">
+    <div class="component-section__head">
+      <div>
+        <h2>数据展示</h2>
+        <p>指标、状态、表格和图表尽量保留为 PPT 原生对象。</p>
+      </div>
+    </div>
+    <div class="component-grid">
+      <article class="component-card" id="component-metric">
+    <div class="component-card__head">
+      <h3>指标卡</h3>
+      <p>突出关键经营指标和完成情况。</p>
+    </div>
+    <div class="component-card__preview"><div class="demo-metrics">
+        <div class="bgy-metric-card"><p class="bgy-metric-value">96.4%</p><p class="bgy-metric-label">完成率</p></div>
+        <div class="bgy-metric-card"><p class="bgy-metric-value">12项</p><p class="bgy-metric-label">闭环事项</p></div>
+      </div></div>
+  </article><article class="component-card" id="component-status">
+    <div class="component-card__head">
+      <h3>状态标签</h3>
+      <p>统一表达完成、推进、风险和待确认。</p>
+    </div>
+    <div class="component-card__preview"><div class="demo-tags">
+        <span class="bgy-status-tag is-success">已完成</span>
+        <span class="bgy-status-tag is-warning">推进中</span>
+        <span class="bgy-status-tag is-danger">需协调</span>
+        <span class="bgy-status-tag is-info">待确认</span>
+      </div></div>
+  </article><article class="component-card" id="component-table">
+    <div class="component-card__head">
+      <h3>表格</h3>
+      <p>使用真实 table 结构，便于转为 PPT 表格。</p>
+    </div>
+    <div class="component-card__preview"><table class="bgy-table demo-table">
+        <thead><tr><th>事项</th><th>状态</th><th>责任</th></tr></thead>
+        <tbody>
+          <tr><td>巡检复核</td><td>已完成</td><td>工程部</td></tr>
+          <tr><td>诉求闭环</td><td>推进中</td><td>客服部</td></tr>
+          <tr><td>问题整改</td><td>需协调</td><td>品质部</td></tr>
+        </tbody>
+      </table></div>
+  </article><article class="component-card" id="component-chart">
+    <div class="component-card__head">
+      <h3>图表配色</h3>
+      <p>图表颜色来自同一套项目 token。</p>
+    </div>
+    <div class="component-card__preview"><div class="demo-chart">
+        <span style="height:46px;background:#006d9a"></span><span style="height:63px;background:#2e7d32"></span><span style="height:80px;background:#c00000"></span><span style="height:97px;background:#c97400"></span><span style="height:114px;background:#64748b"></span>
+      </div></div>
+  </article>
+    </div>
+  </section><section class="component-section" id="visual">
+    <div class="component-section__head">
+      <div>
+        <h2>视觉辅助</h2>
+        <p>图片、图标和提示块都保持克制，避免整块截图兜底。</p>
+      </div>
+    </div>
+    <div class="component-grid">
+      <article class="component-card" id="component-callout">
+    <div class="component-card__head">
+      <h3>重点提示</h3>
+      <p>用于结论、风险和行动要求。</p>
+    </div>
+    <div class="component-card__preview"><div class="bgy-callout">
+        <p class="bgy-callout__title">本页结论</p>
+        <p class="bgy-callout__text">重点任务已进入闭环阶段，风险项需在月底前完成复核。</p>
+      </div></div>
+  </article><article class="component-card" id="component-image">
+    <div class="component-card__head">
+      <h3>图片框</h3>
+      <p>统一图片圆角、边线和占位状态。</p>
+    </div>
+    <div class="component-card__preview"><div class="bgy-image-frame demo-image-frame">
+        <div class="demo-image-placeholder">图片 / 现场图 / 系统截图</div>
+      </div></div>
+  </article><article class="component-card" id="component-icon">
+    <div class="component-card__head">
+      <h3>图标芯片</h3>
+      <p>优先 inline SVG，便于转换为形状。</p>
+    </div>
+    <div class="component-card__preview"><div class="demo-icons">
+        <span class="bgy-icon-chip"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12l4 4L19 6"/></svg></span>
+        <span class="bgy-icon-chip"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 7v5l3 2"/></svg></span>
+        <span class="bgy-icon-chip"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4l9 16H3L12 4z"/><path d="M12 9v4M12 17h.01"/></svg></span>
+        <span class="bgy-icon-chip"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 19V9M12 19V5M19 19v-7"/></svg></span>
+      </div></div>
+  </article>
+    </div>
+  </section><section class="component-section" id="layouts">
+    <div class="component-section__head">
+      <div>
+        <h2>页面结构</h2>
+        <p>封面、双栏、对比和时间线用于统一逐页生成的版式语言。</p>
+      </div>
+    </div>
+    <div class="component-grid">
+      <article class="component-card" id="component-hero">
+    <div class="component-card__head">
+      <h3>标题区</h3>
+      <p>页标题、序号和结论表达。</p>
+    </div>
+    <div class="component-card__preview"><div class="demo-hero">
+        <span>01</span>
+        <div>
+          <h3>项目级设计契约样例</h3>
+          <p>主题、字体、组件和间距来自同一份 bgy.project.json。</p>
+        </div>
+      </div></div>
+  </article><article class="component-card" id="component-two-column">
+    <div class="component-card__head">
+      <h3>双栏图文</h3>
+      <p>左侧结论，右侧素材或示意。</p>
+    </div>
+    <div class="component-card__preview"><div class="demo-two-col">
+        <div><strong>核心结论</strong><p>左侧放结论和要点，右侧放图片或图表。</p></div>
+        <div class="demo-mini-image"></div>
+      </div></div>
+  </article><article class="component-card" id="component-comparison">
+    <div class="component-card__head">
+      <h3>对比块</h3>
+      <p>用于现状 / 优化后、目标 / 实际。</p>
+    </div>
+    <div class="component-card__preview"><div class="demo-comparison">
+        <div><strong>现状</strong><p>流程分散</p></div>
+        <div><strong>优化后</strong><p>统一闭环</p></div>
+      </div></div>
+  </article><article class="component-card" id="component-timeline">
+    <div class="component-card__head">
+      <h3>时间线</h3>
+      <p>用于计划、节点和闭环动作。</p>
+    </div>
+    <div class="component-card__preview"><div class="demo-timeline">
+        <div><span></span><strong>7月</strong><p>主题锁定</p></div>
+        <div><span></span><strong>8月</strong><p>页面复用</p></div>
+        <div><span></span><strong>9月</strong><p>PPTX 交付</p></div>
+      </div></div>
+  </article>
+    </div>
+  </section>
 
     <h2>组件</h2>
     <section class="grid">
@@ -150,6 +534,7 @@
     <div class="chart-bars">
       <div class="bar" style="height:45px;background:#006d9a"></div><div class="bar" style="height:61px;background:#2e7d32"></div><div class="bar" style="height:77px;background:#c00000"></div><div class="bar" style="height:93px;background:#c97400"></div><div class="bar" style="height:109px;background:#64748b"></div>
     </div>
+
   </main>
 </body>
 </html>

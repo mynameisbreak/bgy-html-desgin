@@ -59,7 +59,7 @@ npm --prefix <bgy-skill-root>/scripts run serve -- \
   --open
 ```
 
-`project-config.html` 可以选择 preset、调整颜色、圆角、阴影、图标包和锁定状态。使用 `--project-api` 打开时，保存会直接写回：
+`project-config.html` 是项目主题控制台。默认先用主题卡片选择 preset；只有切到“自定义主题”时，才展开颜色、圆角、阴影、图标包和表格密度等细项。页面右侧应实时预览当前主题下的常用组件效果。使用 `--project-api` 打开时，保存会直接写回：
 
 - `bgy.project.json`
 - `shared/tokens.css`
@@ -68,6 +68,8 @@ npm --prefix <bgy-skill-root>/scripts run serve -- \
 - `project-style-board.html`
 
 如果只是双击 HTML 或普通静态预览，页面只能下载 `bgy.project.json`，不能直接写回文件。
+
+`project-style-board.html` 是组件库看板。它必须按组件类型展示当前主题下的预览效果，新增共享组件或新的 PPT 结构样式时，也要把示例同步加入这个看板，避免后续页面临场发明样式。
 
 ## 同步命令
 

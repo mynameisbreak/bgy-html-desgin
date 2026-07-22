@@ -6,6 +6,7 @@
     "name": "project-contract-smoke",
     "type": "management-report",
     "preset": "management-report",
+    "themeMode": "preset",
     "ratio": "16:9",
     "editablePptx": true
   },

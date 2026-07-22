@@ -301,6 +301,7 @@ function createBaseConfig() {
       name: "",
       type: "management-report",
       preset: "management-report",
+      themeMode: "preset",
       ratio: "16:9",
       editablePptx: true,
     },
@@ -355,6 +356,7 @@ export function buildDefaultProjectConfig({
   config.project.name = String(projectName || slugifyName(config.project.title || presetName, presetName)).trim();
   config.project.type = String(type || presetConfig.projectType || presetName).trim();
   config.project.preset = presetName;
+  config.project.themeMode = "preset";
   config.project.ratio = "16:9";
   config.project.editablePptx = normalizeBoolean(editablePptx, true);
   config.locked = normalizeBoolean(locked, false);
@@ -380,6 +382,9 @@ export function normalizeProjectConfig(input = {}) {
   config.project.name = String(config.project.name || "").trim() || slugifyName(config.project.title || presetName, presetName);
   config.project.type = String(config.project.type || presetName).trim() || presetName;
   config.project.preset = normalizePresetName(config.project.preset || config.project.type || presetName);
+  config.project.themeMode = String(config.project.themeMode || "preset").trim().toLowerCase() === "custom"
+    ? "custom"
+    : "preset";
   config.project.ratio = String(config.project.ratio || "16:9").trim() || "16:9";
   config.project.editablePptx = normalizeBoolean(config.project.editablePptx, true);
 

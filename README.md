@@ -116,6 +116,10 @@ npm --prefix <bgy-html-design>/scripts run init-project -- --dir <project> --tit
 npm --prefix <bgy-html-design>/scripts run serve -- --root <project> --entry project-config.html --project-api --port auto --open
 ```
 
+`project-config.html` 是项目主题控制台：先用主题卡片选择 preset，再按需切到“自定义主题”调整颜色、圆角、阴影、图标包和表格密度。页面右侧会实时展示当前主题下的常用组件效果。
+
+`project-style-board.html` 是组件库看板：按基础容器、数据展示、视觉辅助、页面结构展示组件预览，新增组件时应同步加入这里，避免后续页面临场发明样式。
+
 修改配置后可重新同步：
 
 ```bash
