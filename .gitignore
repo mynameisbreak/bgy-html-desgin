@@ -1,0 +1,16 @@
+.claude/
+.omc/
+node_modules/
+package-lock.json
+output/
+dist/
+test-ai-demo/
+**/node_modules/
+**/.playwright/
+**/.cache/
+**/.local-browsers/
+**/.ms-playwright/
+**/~$*.pptx
+**/.DS_Store
+**/output/.*-assets/
+**/output/.html-*-assets/

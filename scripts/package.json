@@ -1,0 +1,14 @@
+{
+  "name": "bgy-html-design-tools",
+  "version": "1.0.0",
+  "private": true,
+  "description": "HTML deck helper scripts for bgy-html-design",
+  "type": "module",
+  "scripts": {
+    "serve": "node serve_deck.mjs",
+    "gen-deck-thumbs": "node gen_deck_thumbs.mjs",
+    "verify-html": "node verify_html.mjs",
+    "pptx-preflight": "node pptx_preflight.mjs",
+    "export-bgy-pptx": "node export_bgy_pptx.mjs"
+  }
+}

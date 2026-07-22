@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>PPT基础模版</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
+            background: #555;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+        .slide {
+            width: 1280px;
+            height: 720px;
+            position: relative;
+            overflow: hidden;
+            background: #ffffff;
+            box-shadow: 0 8px 40px rgba(0,0,0,0.4);
+        }
+        /* 换算说明：
+           标准PPT画布 12192000×6858000 EMU = 13.333×7.5 in
+           渲染为 1280×720px → 统一比例 96px/in
+        */
+
+        /* image5.png：右下大图
+           slideLayout4.xml rId2: x=8467090 y=3250225 cx=3724910 cy=3607775
+           8467090/12192000*1280=889  3250225/6858000*720=341
+           3724910/12192000*1280=391  3607775/6858000*720=379 */
+        .img-large {
+            position: absolute;
+            left: 889px;
+            top: 341px;
+            width: 391px;
+            height: 379px;
+            object-fit: fill;
+        }
+
+        /* image1.png：右上小图
+           slideLayout4.xml rId3: x=10086535 y=225118 cx=1814284 cy=434369
+           10086535/12192000*1280=1059  225118/6858000*720=24
+           1814284/12192000*1280=190  434369/6858000*720=46 */
+        .img-small {
+            position: absolute;
+            left: 1059px;
+            top: 24px;
+            width: 190px;
+            height: 46px;
+            object-fit: fill;
+        }
+
+        /* 标题栏 */
+        .title-bar {
+            position: absolute;
+            left: 80px;
+            top: 70px;
+            font-family: "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
+            font-size: 26pt;
+            color: rgb(11, 108, 155);
+        }
+        .slide-number {
+            font-family: "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
+            font-size: 37pt;
+        }
+        .slide-title {
+            margin-left: 53px;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide">
+        <img class="img-large" src="模版底图/image5.png" alt="image5">
+        <img class="img-small" src="模版底图/image1.png" alt="image1">
+        <div class="title-bar"><span class="slide-number">{slideNumber}</span><span class="slide-title">{slideTitle}</span></div>
+    </div>
+</body>
+</html>
