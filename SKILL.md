@@ -17,12 +17,16 @@ description: 碧桂园服务/碧桂园体系 PPT 专用 HTML 设计技能。适�
 - `assets/ppt-base-template/模版底图/image1.png`
 - `assets/ppt-base-template/模版底图/image5.png`
 - `assets/deck_index.html`，多页 HTML deck 的默认聚合演示器
+- `assets/icons/line/`、`assets/icons/solid/`、`assets/icons/bgy-business/`，PPT 友好的本地图标库
+- `assets/svg/diagrams/`、`assets/svg/patterns/`、`assets/svg/empty-states/`，克制的本地 SVG 视觉组件库
+- `assets/icon-gallery.html`，本地图标与 SVG 资产预览页
 
 右上角小 logo 与右下角浅色水印属于默认品牌框架。除封面、章节页或用户明确要求更换母版外，应保留其位置与视觉关系。
 
 涉及外部项目照片、现场图、设备图、数据截图、合作方 logo 或用户提供的新品牌模板时，先读取 [references/brand-asset-checklist.md](references/brand-asset-checklist.md) 做资产自检。
 涉及 HTML deck 交付、后续 PPTX 转换、或需要按 huashu-design 标准做反 AI slop 审查时，读取 [references/huashu-quality-gates.md](references/huashu-quality-gates.md)。
 凡是后续需要导出可编辑 PPTX，必须先读取 [references/pptx-authoring-profile.md](references/pptx-authoring-profile.md)，按其中的 DOM、类名和 `data-ppt-*` 契约生成 HTML。
+凡是页面需要图标、流程箭头、空状态、框架图或轻量装饰 SVG，必须先读取 [references/local-visual-assets.md](references/local-visual-assets.md)，优先复用本地资产，不要默认加载远程 icon CDN。
 
 ## 工作流程
 
@@ -190,6 +194,13 @@ description: 碧桂园服务/碧桂园体系 PPT 专用 HTML 设计技能。适�
 - 只有 1-4 页轻量单文件演示时，才可读取 [references/interactive-components.md](references/interactive-components.md)，使用 `assets/deck_stage.js`。
 - `assets/deck_stage.js` 不作为默认架构；5 页及以上必须回到多文件 HTML deck。
 
+本地视觉资产规则：
+
+- 图标和装饰性 SVG 必须优先使用本地资产库，选择规则见 [references/local-visual-assets.md](references/local-visual-assets.md)。
+- PPTX-bound 页面中，图标优先复制本地 SVG 内容为 inline SVG，并保持 `path/line/polyline/rect/circle/ellipse` 等简单元素，便于 `pptx-design` 转成原生 icon 形状。
+- 不要在 PPTX-bound HTML 中加载 Lucide、Font Awesome、Iconfont、Remix、Bootstrap Icons 等远程图标库。
+- 不要把本地 icon 作为 `<img src="*.svg">` 使用，除非明确接受它在 PPT 中成为图片。
+
 强制要求：
 
 - 使用 `lang="zh-CN"` 和 UTF-8。
@@ -263,8 +274,11 @@ description: 碧桂园服务/碧桂园体系 PPT 专用 HTML 设计技能。适�
 - `scripts/pptx_preflight.mjs`：静态检查 PPTX 转换前的常见结构风险，减少误截图和聚合页误转。
 - `scripts/export_bgy_pptx.mjs`：调用 `pptx-design` 将 BGY HTML 转为可编辑 PPTX。
 - `scripts/verify_html.mjs`：用 `pptx-design` 的 Playwright 环境打开 HTML、截图并收集控制台错误。
+- `scripts/build_icon_assets.mjs` / `scripts/build_icon_gallery.mjs`：生成本地图标/SVG 资产和 `assets/icon-gallery.html` 图库页。
 - `assets/design_canvas.jsx`：封面/重点页多方案对比组件。
 - `assets/deck_stage.js`：1-4 页轻量单文件演示组件，不用于正式多页 deck。
+- `assets/icon-gallery.html`：本地图标与 SVG 视觉资产预览页。
+- `references/local-visual-assets.md`：本地图标、业务 SVG、流程 SVG、空状态资产的选择和 PPTX 转换约束。
 - `references/pptx-authoring-profile.md`：BGY HTML 与 `pptx-design` 的结构契约，规定形状、图片、文字、表格、图标、图表占位和截图例外。
 - `references/huashu-quality-gates.md`：复制兼容、品牌资产、组件纪律、反 AI slop 和交付评审门禁。
 

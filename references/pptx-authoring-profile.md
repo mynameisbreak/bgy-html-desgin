@@ -171,6 +171,8 @@ PPTX-bound 页面不要依赖复杂浏览器层叠上下文。普通堆叠视觉
 
 ## 图标
 
+默认使用 `assets/icons/line/`、`assets/icons/solid/`、`assets/icons/bgy-business/` 中的本地图标。PPTX-bound 页面不要加载远程图标库，也不要把本地 icon 当作 `<img src="*.svg">` 引用。需要可编辑时，把本地 SVG 内容复制为 inline SVG。
+
 简单线性 icon 可以转为原生形状：
 
 ```html
@@ -182,6 +184,13 @@ PPTX-bound 页面不要依赖复杂浏览器层叠上下文。普通堆叠视觉
 可原生化元素：`line`、`polyline`、`polygon`、`rect`、`circle`、`ellipse`、常见 stroked `path`。
 
 会转为图片的 SVG：包含 `filter`、`mask`、`clipPath`、`linearGradient`、`radialGradient`、`pattern`、`image`、`foreignObject`、复杂填充图形或 SVG 文本。
+
+选择本地图标时按 [local-visual-assets.md](local-visual-assets.md) 执行：
+
+- 管理汇报默认用 `icons/line`。
+- 状态标签用 `icons/solid`，且一页不要超过 2 种状态色。
+- 物业/工程/客服/消防/巡检/收费/工单等业务场景用 `icons/bgy-business`。
+- 流程箭头、闭环、矩阵和里程碑轴用 `assets/svg/diagrams`，但真实文本必须留在 DOM 文本节点中。
 
 ## 图表
 

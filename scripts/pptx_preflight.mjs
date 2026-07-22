@@ -157,6 +157,74 @@ function linkedStyleBlocks(html, file, warnings) {
   return blocks;
 }
 
+function remoteAssetHost(value) {
+  const raw = String(value || "").trim();
+  if (!/^(?:https?:)?\/\//i.test(raw)) return "";
+  try {
+    const url = raw.startsWith("//") ? new URL(`https:${raw}`) : new URL(raw);
+    return url.hostname.toLowerCase();
+  } catch (_) {
+    return raw.toLowerCase();
+  }
+}
+
+function iconLibraryName(value) {
+  const raw = String(value || "").toLowerCase();
+  const host = remoteAssetHost(raw);
+  const haystack = `${host} ${raw}`;
+  if (/\blucide\b|lucide-static|lucide-react/.test(haystack)) return "lucide";
+  if (/fontawesome|font-awesome|kit\.fontawesome/.test(haystack)) return "font-awesome";
+  if (/iconfont|at\.alicdn|alicdn\.com\/t\/font_/.test(haystack)) return "iconfont";
+  if (/remixicon/.test(haystack)) return "remixicon";
+  if (/bootstrap-icons/.test(haystack)) return "bootstrap-icons";
+  if (/heroicons/.test(haystack)) return "heroicons";
+  if (/phosphor-icons|phosphoricons/.test(haystack)) return "phosphor";
+  if (/boxicons/.test(haystack)) return "boxicons";
+  return "";
+}
+
+function checkIconLibraries(html, warnings) {
+  const libraries = new Set();
+  const remoteRefs = [];
+  const tagRe = /<(script|link|use|img)\b([^>]*)>/gi;
+  let match;
+  while ((match = tagRe.exec(html))) {
+    const tag = match[1].toLowerCase();
+    const attrs = match[2] || "";
+    const src = attrValue(attrs, tag === "link" ? "href" : "src") || attrValue(attrs, "href") || attrValue(attrs, "xlink:href");
+    const lib = iconLibraryName(src);
+    if (lib) libraries.add(lib);
+    if (tag === "script" && remoteAssetHost(src)) remoteRefs.push(src);
+    if (tag === "link" && remoteAssetHost(src)) remoteRefs.push(src);
+    if (tag === "use" && /^https?:\/\//i.test(src)) remoteRefs.push(src);
+    if (tag === "img" && /\.svg(?:[?#].*)?$/i.test(src)) {
+      warnings.push(`${descriptor(tag, attrs)} references SVG as an image; copy local SVG inline for editable PPT icons.`);
+    }
+  }
+
+  libraries.forEach(lib => {
+    warnings.push(`External icon library detected (${lib}); use local BGY icons from assets/icons and inline SVG for PPTX-bound HTML.`);
+  });
+  if (libraries.size > 1) {
+    warnings.push(`Multiple icon libraries detected (${Array.from(libraries).join(", ")}); keep one local BGY icon style per slide/deck.`);
+  }
+  if (remoteRefs.length > 0 && libraries.size > 0) {
+    const sample = remoteRefs.slice(0, 3).join(", ");
+    warnings.push(`Remote icon/script/style references detected (${sample}); PPTX-bound BGY pages should be self-contained.`);
+  }
+
+  const classLibs = new Set();
+  const classRe = /\bclass\s*=\s*["']([^"']*)["']/gi;
+  while ((match = classRe.exec(html))) {
+    const cls = match[1].toLowerCase();
+    if (/\b(?:fa|fas|far|fab|fa-solid|fa-regular|fa-brands)\b/.test(cls)) classLibs.add("font-awesome");
+    if (/\b(?:ri-[\w-]+)\b/.test(cls)) classLibs.add("remixicon");
+    if (/\b(?:bi-[\w-]+)\b/.test(cls)) classLibs.add("bootstrap-icons");
+    if (/\biconfont\b|\biconfont-[\w-]+\b/.test(cls)) classLibs.add("iconfont");
+  }
+  classLibs.forEach(lib => warnings.push(`Icon-font class pattern detected (${lib}); use local inline SVG instead of font icons.`));
+}
+
 function splitCssList(value) {
   const parts = [];
   let start = 0;
@@ -436,6 +504,7 @@ function scanFile(file, opts) {
 
   checkSnapshotMarkers(cleanHtml, warnings);
   checkGlobalCss(cleanHtml, file, warnings);
+  checkIconLibraries(cleanHtml, warnings);
   checkTags(cleanHtml, warnings);
   checkSvg(cleanHtml, warnings);
   checkTables(cleanHtml, warnings);

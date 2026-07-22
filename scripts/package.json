@@ -7,6 +7,7 @@
   "scripts": {
     "serve": "node serve_deck.mjs",
     "gen-deck-thumbs": "node gen_deck_thumbs.mjs",
+    "build-icons": "node build_icon_assets.mjs && node build_icon_gallery.mjs",
     "verify-html": "node verify_html.mjs",
     "pptx-preflight": "node pptx_preflight.mjs",
     "export-bgy-pptx": "node export_bgy_pptx.mjs"

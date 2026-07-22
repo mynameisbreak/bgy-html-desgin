@@ -8,6 +8,7 @@
 - **16:9 固定画布**：默认 1280×720px，确保演示文稿比例统一
 - **多文件 HTML Deck**：支持 `index.html + slides/*.html + shared/` 多页聚合演示结构
 - **服务器预览**：内置零依赖本地静态服务器，适合检查相对路径、中文路径和 iframe 聚合页
+- **本地视觉资产库**：内置 PPT 友好的线性 icon、状态 icon、物业业务 icon、流程 SVG、空状态和克制纹理，避免远程 CDN 和临场乱画
 - **场景模板丰富**：覆盖管理汇报、经营分析、节能降本、维修/公维资金、社区运营等常见场景
 - **交付质量可控**：内置 preflight、缩略图生成和可编辑 PPTX 交接检查
 
@@ -31,6 +32,9 @@ bgy-html-design/
 │   ├── deck_index.html            # 多页 HTML deck 聚合演示器
 │   ├── deck_stage.js              # 1-4 页轻量单文件演示组件
 │   ├── design_canvas.jsx          # 封面/重点页多方案对比组件
+│   ├── icon-gallery.html          # 本地图标/SVG 资产预览页
+│   ├── icons/                     # 本地 PPT 友好图标库
+│   ├── svg/                       # 本地 SVG 视觉组件库
 │   └── ppt-base-template/         # 内置 PPT 基础模板及底图
 ├── references/
 │   ├── basic-layout-variants.md   # 基础版式变体说明
@@ -38,6 +42,7 @@ bgy-html-design/
 │   ├── components.md              # deck.json 组件规范
 │   ├── html-deck-workflow.md      # 多文件 HTML Deck 工作流程
 │   ├── pptx-authoring-profile.md  # PPTX 友好 HTML 作者规范
+│   ├── local-visual-assets.md     # 本地 icon/SVG 资产使用规范
 │   ├── animations.md              # HTML 动画效果目录
 │   ├── interactive-components.md  # 交互组件说明
 │   ├── brand-asset-checklist.md   # 品牌资产自检清单
@@ -47,6 +52,8 @@ bgy-html-design/
 │   ├── serve_deck.mjs             # 本地 HTML 预览服务器
 │   ├── pptx_preflight.mjs         # PPTX 转换前结构检查
 │   ├── export_bgy_pptx.mjs        # 转为可编辑 PPTX
+│   ├── build_icon_assets.mjs      # 生成本地图标/SVG 资产
+│   ├── build_icon_gallery.mjs     # 生成图标预览页
 │   ├── runtime.mjs                # 共享运行时/依赖定位
 │   └── verify_html.mjs            # Playwright 截图校验
 └── SKILL.md                       # 技能说明文档

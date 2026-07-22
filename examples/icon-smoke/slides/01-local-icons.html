@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>BGY Local Icon Smoke</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      width: 1280px;
+      height: 720px;
+      overflow: hidden;
+      font-family: "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
+      color: #1F2933;
+      background: #fff;
+    }
+    .slide {
+      position: relative;
+      width: 1280px;
+      height: 720px;
+      overflow: hidden;
+      background: #fff;
+    }
+    .title {
+      position: absolute;
+      left: 80px;
+      top: 64px;
+      color: #004B6B;
+      font-size: 34px;
+      font-weight: 700;
+      line-height: 1.2;
+    }
+    .subtitle {
+      position: absolute;
+      left: 80px;
+      top: 112px;
+      color: #64748B;
+      font-size: 18px;
+      line-height: 1.4;
+    }
+    .grid {
+      position: absolute;
+      left: 80px;
+      top: 164px;
+      width: 1120px;
+      height: 450px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+    .card {
+      position: relative;
+      height: 104px;
+      border: 1px solid #D8E3EA;
+      background: #F8FBFD;
+      border-radius: 8px;
+      padding: 22px 14px 18px 76px;
+    }
+    .icon-box {
+      position: absolute;
+      left: 20px;
+      top: 24px;
+      width: 42px;
+      height: 42px;
+      border-radius: 8px;
+      background: #EDF7FB;
+      color: #006D9A;
+      display: grid;
+      place-items: center;
+      border: 1px solid #B9DCE8;
+    }
+    .icon-box.green { color: #2E7D32; background: #EEF8F0; border-color: #B8DEC0; }
+    .icon-box.red { color: #C00000; background: #FFF1F1; border-color: #E8B6B6; }
+    .bgy-icon {
+      width: 26px;
+      height: 26px;
+      display: block;
+    }
+    .card-title {
+      color: #004B6B;
+      font-size: 18px;
+      font-weight: 700;
+      line-height: 1.2;
+      white-space: nowrap;
+    }
+    .card-text {
+      margin-top: 8px;
+      color: #64748B;
+      font-size: 16px;
+      line-height: 1.35;
+    }
+    .footer {
+      position: absolute;
+      left: 80px;
+      top: 632px;
+      width: 1120px;
+      height: 42px;
+      border-left: 5px solid #8B1E2D;
+      background: #F5F8FA;
+      padding: 10px 18px;
+    }
+    .footer p {
+      color: #1F2933;
+      font-size: 16px;
+      font-weight: 700;
+    }
+  </style>
+</head>
+<body>
+  <section class="slide" data-slide data-bgy-slide>
+    <h1 class="title">本地 icon 库支持 PPT 原生转换</h1>
+    <p class="subtitle">线性图标、业务图标和状态图标均以内联 SVG 使用，避免远程 CDN 和整页图片化。</p>
+
+    <div class="grid">
+      <article class="card">
+        <div class="icon-box">
+          <svg class="bgy-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <rect fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" x="4" y="4" width="16" height="16" rx="2"/>
+            <line fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" x1="8" y1="8" x2="16" y2="8"/>
+            <line fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" x1="8" y1="12" x2="16" y2="12"/>
+            <polyline fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" points="8 16 10 18 16 14"/>
+          </svg>
+        </div>
+        <p class="card-title">工单闭环</p>
+        <p class="card-text">报修、派单、处理、验收保持线上留痕。</p>
+      </article>
+      <article class="card">
+        <div class="icon-box green">
+          <svg class="bgy-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <polyline fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" points="3 17 9 11 13 15 21 7"/>
+            <polyline fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" points="15 7 21 7 21 13"/>
+          </svg>
+        </div>
+        <p class="card-title">指标改善</p>
+        <p class="card-text">趋势类信息优先使用简洁线性图标。</p>
+      </article>
+      <article class="card">
+        <div class="icon-box red">
+          <svg class="bgy-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M12 3 22 20H2L12 3Z"/>
+            <line fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" x1="12" y1="9" x2="12" y2="13"/>
+            <line fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" x1="12" y1="17" x2="12.01" y2="17"/>
+          </svg>
+        </div>
+        <p class="card-title">风险预警</p>
+        <p class="card-text">红色仅用于风险、逾期和异常提示。</p>
+      </article>
+      <article class="card">
+        <div class="icon-box">
+          <svg class="bgy-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M12 3 20 7v5c0 4.5-3.2 7.5-8 9-4.8-1.5-8-4.5-8-9V7l8-4Z"/>
+            <path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-5"/>
+          </svg>
+        </div>
+        <p class="card-title">巡检保障</p>
+        <p class="card-text">物业场景优先使用本地业务图标。</p>
+      </article>
+      <article class="card">
+        <div class="icon-box">
+          <svg class="bgy-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M13 2 5 13h6l-1 9 8-12h-6l1-8Z"/>
+          </svg>
+        </div>
+        <p class="card-title">节能降本</p>
+        <p class="card-text">用统一线宽强化企业汇报质感。</p>
+      </article>
+      <article class="card">
+        <div class="icon-box">
+          <svg class="bgy-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <circle fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" cx="12" cy="12" r="8"/>
+            <path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M8.5 9h7"/>
+            <path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M8.5 12h6"/>
+            <path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M12 9v8"/>
+            <path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M9 17h6"/>
+          </svg>
+        </div>
+        <p class="card-title">收费管理</p>
+        <p class="card-text">业务图标服务内容识别，不做装饰堆砌。</p>
+      </article>
+      <article class="card">
+        <div class="icon-box">
+          <svg class="bgy-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M5 6c0-2 14-2 14 0s-14 2-14 0Z"/>
+            <path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M5 6v6c0 2 14 2 14 0V6"/>
+            <path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M5 12v6c0 2 14 2 14 0v-6"/>
+          </svg>
+        </div>
+        <p class="card-title">数据留存</p>
+        <p class="card-text">图标保持可编辑，文字保持 DOM 文本。</p>
+      </article>
+      <article class="card">
+        <div class="icon-box green">
+          <svg class="bgy-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <circle fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" cx="12" cy="12" r="9"/>
+            <path d="M7 12.3 10.3 15.5 17.5 8.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <p class="card-title">状态标签</p>
+        <p class="card-text">实心图标只用于状态，不混用多套风格。</p>
+      </article>
+    </div>
+
+    <div class="footer">
+      <p>本地资产 + inline SVG + PPTX preflight，可减少“网页感”和图标图片化。</p>
+    </div>
+  </section>
+</body>
+</html>

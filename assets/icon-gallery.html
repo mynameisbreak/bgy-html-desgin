@@ -1,0 +1,381 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>BGY Local Icon Gallery</title>
+  <style>
+    :root {
+      --bgy-blue: #006D9A;
+      --bgy-deep-blue: #004B6B;
+      --line: #D8E3EA;
+      --panel: #F5F8FA;
+      --text: #1F2933;
+      --muted: #64748B;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: #fff;
+      color: var(--text);
+      font-family: "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
+    }
+    header {
+      padding: 32px 44px 24px;
+      border-bottom: 1px solid var(--line);
+      background: var(--panel);
+    }
+    h1 {
+      margin: 0;
+      color: var(--bgy-deep-blue);
+      font-size: 30px;
+      line-height: 1.2;
+    }
+    header p {
+      margin: 10px 0 0;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.6;
+    }
+    section {
+      padding: 28px 44px 8px;
+    }
+    .section-head {
+      display: flex;
+      align-items: baseline;
+      gap: 16px;
+      margin-bottom: 14px;
+    }
+    h2 {
+      margin: 0;
+      color: var(--bgy-deep-blue);
+      font-size: 21px;
+    }
+    .section-head p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .asset-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 12px;
+    }
+    .asset-card {
+      min-height: 132px;
+      border: 1px solid var(--line);
+      background: #fff;
+      padding: 14px;
+      display: grid;
+      grid-template-rows: 44px auto auto;
+      gap: 8px;
+      align-items: start;
+    }
+    .icon-wrap {
+      width: 44px;
+      height: 44px;
+      color: var(--bgy-blue);
+      display: grid;
+      place-items: center;
+      border-radius: 8px;
+      background: #EDF7FB;
+    }
+    .icon-wrap img {
+      width: 26px;
+      height: 26px;
+      color: var(--bgy-blue);
+    }
+    .asset-name {
+      margin: 0;
+      color: var(--text);
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1.3;
+    }
+    .asset-path {
+      margin: 0;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.35;
+      word-break: break-all;
+    }
+    footer {
+      padding: 28px 44px 40px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>BGY Local Icon Gallery</h1>
+    <p>Use these local assets for BGY PPT-bound HTML. Prefer inline SVG copied from the source files when the icon should become editable native PPT shapes.</p>
+  </header>
+  <section>
+    <div class="section-head">
+      <h2>Line Icons</h2>
+      <p>Default for report cards, lists, and process labels.</p>
+    </div>
+    <div class="asset-grid"><article class="asset-card">
+      <div class="icon-wrap"><img src="assets/icons/line/alert.svg" alt="alert"></div>
+      <p class="asset-name">alert</p>
+      <p class="asset-path">assets/icons/line/alert.svg</p>
+    </article>
+<article class="asset-card">
+      <div class="icon-wrap"><img src="assets/icons/line/building.svg" alt="building"></div>
+      <p class="asset-name">building</p>
+      <p class="asset-path">assets/icons/line/building.svg</p>
+    </article>
+<article class="asset-card">
+      <div class="icon-wrap"><img src="assets/icons/line/calendar.svg" alt="calendar"></div>
+      <p class="asset-name">calendar</p>
+      <p class="asset-path">assets/icons/line/calendar.svg</p>
+    </article>
+<article class="asset-card">
+      <div class="icon-wrap"><img src="assets/icons/line/chartBar.svg" alt="chartBar"></div>
+      <p class="asset-name">chartBar</p>
+      <p class="asset-path">assets/icons/line/chartBar.svg</p>
+    </article>
+<article class="asset-card">
+      <div class="icon-wrap"><img src="assets/icons/line/chartLine.svg" alt="chartLine"></div>
+      <p class="asset-name">chartLine</p>
+      <p class="asset-path">assets/icons/line/chartLine.svg</p>
+    </article>
+<article class="asset-card">
+      <div class="icon-wrap"><img src="assets/icons/line/check.svg" alt="check"></div>
+      <p class="asset-name">check</p>
+      <p class="asset-path">assets/icons/line/check.svg</p>
+    </article>
+<article class="asset-card">
+      <div class="icon-wrap"><img src="assets/icons/line/clipboard.svg" alt="clipboard"></div>
+      <p class="asset-name">clipboard</p>
+      <p class="asset-path">assets/icons/line/clipboard.svg</p>
+    </article>
+<article class="asset-card">
+      <div class="icon-wrap"><img src="assets/icons/line/clock.svg" alt="clock"></div>
+      <p class="asset-name">clock</p>
+      <p class="asset-path">assets/icons/line/clock.svg</p>
+    </article>
+<article class="asset-card">
+      <div class="icon-wrap"><img src="assets/icons/line/database.svg" alt="database"></div>
+      <p class="asset-name">database</p>
+      <p class="asset-path">assets/icons/line/database.svg</p>
+    </article>
+<article class="asset-card">
+      <div class="icon-wrap"><img src="assets/icons/line/fileText.svg" alt="fileText"></div>
+      <p class="asset-name">fileText</p>
+      <p class="asset-path">assets/icons/line/fileText.svg</p>
+    </article>
+<article class="asset-card">
+      <div class="icon-wrap"><img src="assets/icons/line/mapPin.svg" alt="mapPin"></div>
+      <p class="asset-name">mapPin</p>
+      <p class="asset-path">assets/icons/line/mapPin.svg</p>
+    </article>
+<article class="asset-card">
+      <div class="icon-wrap"><img src="assets/icons/line/phone.svg" alt="phone"></div>
+      <p class="asset-name">phone</p>
+      <p class="asset-path">assets/icons/line/phone.svg</p>
+    </article>
+<article class="asset-card">
+      <div class="icon-wrap"><img src="assets/icons/line/pie.svg" alt="pie"></div>
+      <p class="asset-name">pie</p>
+      <p class="asset-path">assets/icons/line/pie.svg</p>
+    </article>
+<article class="asset-card">
+      <div class="icon-wrap"><img src="assets/icons/line/search.svg" alt="search"></div>
+      <p class="asset-name">search</p>
+      <p class="asset-path">assets/icons/line/search.svg</p>
+    </article>
+<article class="asset-card">
+      <div class="icon-wrap"><img src="assets/icons/line/send.svg" alt="send"></div>
+      <p class="asset-name">send</p>
+      <p class="asset-path">assets/icons/line/send.svg</p>
+    </article>
+<article class="asset-card">
+      <div class="icon-wrap"><img src="assets/icons/line/shield.svg" alt="shield"></div>
+      <p class="asset-name">shield</p>
+      <p class="asset-path">assets/icons/line/shield.svg</p>
+    </article>
+<article class="asset-card">
+      <div class="icon-wrap"><img src="assets/icons/line/trendDown.svg" alt="trendDown"></div>
+      <p class="asset-name">trendDown</p>
+      <p class="asset-path">assets/icons/line/trendDown.svg</p>
+    </article>
+<article class="asset-card">
+      <div class="icon-wrap"><img src="assets/icons/line/trendUp.svg" alt="trendUp"></div>
+      <p class="asset-name">trendUp</p>
+      <p class="asset-path">assets/icons/line/trendUp.svg</p>
+    </article>
+<article class="asset-card">
+      <div class="icon-wrap"><img src="assets/icons/line/users.svg" alt="users"></div>
+      <p class="asset-name">users</p>
+      <p class="asset-path">assets/icons/line/users.svg</p>
+    </article>
+<article class="asset-card">
+      <div class="icon-wrap"><img src="assets/icons/line/wrench.svg" alt="wrench"></div>
+      <p class="asset-name">wrench</p>
+      <p class="asset-path">assets/icons/line/wrench.svg</p>
+    </article></div>
+  </section>
+<section>
+    <div class="section-head">
+      <h2>Solid Status Icons</h2>
+      <p>Use only inside compact status tags and alert markers.</p>
+    </div>
+    <div class="asset-grid"><article class="asset-card">
+      <div class="icon-wrap"><img src="assets/icons/solid/statusCoordinate.svg" alt="statusCoordinate"></div>
+      <p class="asset-name">statusCoordinate</p>
+      <p class="asset-path">assets/icons/solid/statusCoordinate.svg</p>
+    </article>
+<article class="asset-card">
+      <div class="icon-wrap"><img src="assets/icons/solid/statusDone.svg" alt="statusDone"></div>
+      <p class="asset-name">statusDone</p>
+      <p class="asset-path">assets/icons/solid/statusDone.svg</p>
+    </article>
+<article class="asset-card">
+      <div class="icon-wrap"><img src="assets/icons/solid/statusPending.svg" alt="statusPending"></div>
+      <p class="asset-name">statusPending</p>
+      <p class="asset-path">assets/icons/solid/statusPending.svg</p>
+    </article>
+<article class="asset-card">
+      <div class="icon-wrap"><img src="assets/icons/solid/statusProgress.svg" alt="statusProgress"></div>
+      <p class="asset-name">statusProgress</p>
+      <p class="asset-path">assets/icons/solid/statusProgress.svg</p>
+    </article>
+<article class="asset-card">
+      <div class="icon-wrap"><img src="assets/icons/solid/statusRisk.svg" alt="statusRisk"></div>
+      <p class="asset-name">statusRisk</p>
+      <p class="asset-path">assets/icons/solid/statusRisk.svg</p>
+    </article></div>
+  </section>
+<section>
+    <div class="section-head">
+      <h2>BGY Business Icons</h2>
+      <p>Property-management domains and operation topics.</p>
+    </div>
+    <div class="asset-grid"><article class="asset-card">
+      <div class="icon-wrap"><img src="assets/icons/bgy-business/community.svg" alt="community"></div>
+      <p class="asset-name">community</p>
+      <p class="asset-path">assets/icons/bgy-business/community.svg</p>
+    </article>
+<article class="asset-card">
+      <div class="icon-wrap"><img src="assets/icons/bgy-business/customer.svg" alt="customer"></div>
+      <p class="asset-name">customer</p>
+      <p class="asset-path">assets/icons/bgy-business/customer.svg</p>
+    </article>
+<article class="asset-card">
+      <div class="icon-wrap"><img src="assets/icons/bgy-business/elevator.svg" alt="elevator"></div>
+      <p class="asset-name">elevator</p>
+      <p class="asset-path">assets/icons/bgy-business/elevator.svg</p>
+    </article>
+<article class="asset-card">
+      <div class="icon-wrap"><img src="assets/icons/bgy-business/energy.svg" alt="energy"></div>
+      <p class="asset-name">energy</p>
+      <p class="asset-path">assets/icons/bgy-business/energy.svg</p>
+    </article>
+<article class="asset-card">
+      <div class="icon-wrap"><img src="assets/icons/bgy-business/engineering.svg" alt="engineering"></div>
+      <p class="asset-name">engineering</p>
+      <p class="asset-path">assets/icons/bgy-business/engineering.svg</p>
+    </article>
+<article class="asset-card">
+      <div class="icon-wrap"><img src="assets/icons/bgy-business/fee.svg" alt="fee"></div>
+      <p class="asset-name">fee</p>
+      <p class="asset-path">assets/icons/bgy-business/fee.svg</p>
+    </article>
+<article class="asset-card">
+      <div class="icon-wrap"><img src="assets/icons/bgy-business/fire.svg" alt="fire"></div>
+      <p class="asset-name">fire</p>
+      <p class="asset-path">assets/icons/bgy-business/fire.svg</p>
+    </article>
+<article class="asset-card">
+      <div class="icon-wrap"><img src="assets/icons/bgy-business/inspection.svg" alt="inspection"></div>
+      <p class="asset-name">inspection</p>
+      <p class="asset-path">assets/icons/bgy-business/inspection.svg</p>
+    </article>
+<article class="asset-card">
+      <div class="icon-wrap"><img src="assets/icons/bgy-business/parking.svg" alt="parking"></div>
+      <p class="asset-name">parking</p>
+      <p class="asset-path">assets/icons/bgy-business/parking.svg</p>
+    </article>
+<article class="asset-card">
+      <div class="icon-wrap"><img src="assets/icons/bgy-business/patrol.svg" alt="patrol"></div>
+      <p class="asset-name">patrol</p>
+      <p class="asset-path">assets/icons/bgy-business/patrol.svg</p>
+    </article>
+<article class="asset-card">
+      <div class="icon-wrap"><img src="assets/icons/bgy-business/quality.svg" alt="quality"></div>
+      <p class="asset-name">quality</p>
+      <p class="asset-path">assets/icons/bgy-business/quality.svg</p>
+    </article>
+<article class="asset-card">
+      <div class="icon-wrap"><img src="assets/icons/bgy-business/workOrder.svg" alt="workOrder"></div>
+      <p class="asset-name">workOrder</p>
+      <p class="asset-path">assets/icons/bgy-business/workOrder.svg</p>
+    </article></div>
+  </section>
+<section>
+    <div class="section-head">
+      <h2>Diagram SVG</h2>
+      <p>Simple framework and process motifs.</p>
+    </div>
+    <div class="asset-grid"><article class="asset-card">
+      <div class="icon-wrap"><img src="assets/svg/diagrams/closedLoop.svg" alt="closedLoop"></div>
+      <p class="asset-name">closedLoop</p>
+      <p class="asset-path">assets/svg/diagrams/closedLoop.svg</p>
+    </article>
+<article class="asset-card">
+      <div class="icon-wrap"><img src="assets/svg/diagrams/matrixFrame.svg" alt="matrixFrame"></div>
+      <p class="asset-name">matrixFrame</p>
+      <p class="asset-path">assets/svg/diagrams/matrixFrame.svg</p>
+    </article>
+<article class="asset-card">
+      <div class="icon-wrap"><img src="assets/svg/diagrams/milestoneAxis.svg" alt="milestoneAxis"></div>
+      <p class="asset-name">milestoneAxis</p>
+      <p class="asset-path">assets/svg/diagrams/milestoneAxis.svg</p>
+    </article>
+<article class="asset-card">
+      <div class="icon-wrap"><img src="assets/svg/diagrams/processArrow.svg" alt="processArrow"></div>
+      <p class="asset-name">processArrow</p>
+      <p class="asset-path">assets/svg/diagrams/processArrow.svg</p>
+    </article></div>
+  </section>
+<section>
+    <div class="section-head">
+      <h2>Empty States</h2>
+      <p>Honest placeholders for missing evidence or screenshots.</p>
+    </div>
+    <div class="asset-grid"><article class="asset-card">
+      <div class="icon-wrap"><img src="assets/svg/empty-states/missingMaterial.svg" alt="missingMaterial"></div>
+      <p class="asset-name">missingMaterial</p>
+      <p class="asset-path">assets/svg/empty-states/missingMaterial.svg</p>
+    </article>
+<article class="asset-card">
+      <div class="icon-wrap"><img src="assets/svg/empty-states/noData.svg" alt="noData"></div>
+      <p class="asset-name">noData</p>
+      <p class="asset-path">assets/svg/empty-states/noData.svg</p>
+    </article>
+<article class="asset-card">
+      <div class="icon-wrap"><img src="assets/svg/empty-states/screenshotPlaceholder.svg" alt="screenshotPlaceholder"></div>
+      <p class="asset-name">screenshotPlaceholder</p>
+      <p class="asset-path">assets/svg/empty-states/screenshotPlaceholder.svg</p>
+    </article></div>
+  </section>
+<section>
+    <div class="section-head">
+      <h2>Patterns</h2>
+      <p>Restrained background/corner motifs; keep decorative only.</p>
+    </div>
+    <div class="asset-grid"><article class="asset-card">
+      <div class="icon-wrap"><img src="assets/svg/patterns/bgyCornerFrame.svg" alt="bgyCornerFrame"></div>
+      <p class="asset-name">bgyCornerFrame</p>
+      <p class="asset-path">assets/svg/patterns/bgyCornerFrame.svg</p>
+    </article>
+<article class="asset-card">
+      <div class="icon-wrap"><img src="assets/svg/patterns/bgyGridDots.svg" alt="bgyGridDots"></div>
+      <p class="asset-name">bgyGridDots</p>
+      <p class="asset-path">assets/svg/patterns/bgyGridDots.svg</p>
+    </article></div>
+  </section>
+  <footer>Generated by scripts/build_icon_gallery.mjs.</footer>
+</body>
+</html>

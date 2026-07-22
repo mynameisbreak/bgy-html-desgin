@@ -5,6 +5,7 @@ package-lock.json
 output/
 dist/
 test-ai-demo/
+examples/**/output/
 **/node_modules/
 **/.playwright/
 **/.cache/
